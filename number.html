@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Игра «Угадай правило» — Машинное обучение для начинающих</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none; /* чуть аккуратнее при кликах на кнопки, но текст копировать можно */
+        }
+
+        body {
+            background: linear-gradient(145deg, #0b0f1c 0%, #0a0e1a 100%);
+            font-family: 'Segoe UI', 'Poppins', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* главная карточка игры */
+        .game-container {
+            max-width: 1300px;
+            width: 100%;
+            background: rgba(18, 25, 45, 0.75);
+            backdrop-filter: blur(2px);
+            border-radius: 3rem;
+            padding: 1.8rem;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(66, 220, 255, 0.15);
+            transition: all 0.2s;
+        }
+
+        /* заголовок + подзаголовок */
+        .game-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .game-header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #FFFFFF 0%, #B2F0FF 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin: 0 0 0.5rem 0;
+            letter-spacing: -0.5px;
+        }
+
+        .game-header p {
+            color: #8d9bb0;
+            font-size: 1.5rem;
+            margin: 0;
+            font-weight: 500;
+        }
+
+        .rule-badge {
+            display: inline-block;
+            background: #1e2a3e;
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-size: 1.45rem;
+            font-weight: 500;
+            color: #7f8fa4;
+            margin-top: 12px;
+        }
+
+        /* игровая зона: две колонки */
+        .game-play-area {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .examples-panel {
+            flex: 2;
+            min-width: 260px;
+            background: #0f1422e0;
+            border-radius: 2rem;
+            padding: 1.4rem;
+            backdrop-filter: blur(4px);
+            border: 1px solid #2a3452;
+        }
+
+        .rule-panel {
+            flex: 1.2;
+            min-width: 260px;
+            background: #0c1020e0;
+            border-radius: 2rem;
+            padding: 1.4rem;
+            border: 1px solid #2f3b60;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #c4e0ff;
+            border-left: 4px solid #3b82f6;
+            padding-left: 12px;
+        }
+
+        /* таблица с примерами */
+        .examples-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 1.1rem;
+        }
+
+        .examples-table th, .examples-table td {
+            text-align: left;
+            padding: 12px 8px;
+            border-bottom: 1px solid #2a3452;
+            color: #FFFFFF;
+        }
+
+        .examples-table th {
+            color: #8da3d0;
+            font-weight: 500;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        .verdict {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .verdict-yes {
+            color: #4ade80;
+            background: #1a3a2a;
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+        }
+
+        .verdict-no {
+            color: #f87171;
+            background: #3a1e2a;
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+        }
+
+        .add-word-form {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .add-word-form input {
+            flex: 2;
+            background: #010a1f;
+            border: 1px solid #3f4b6e;
+            padding: 12px 16px;
+            border-radius: 60px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        .add-word-form input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59,130,246,0.3);
+        }
+
+        .btn {
+            background: #1f2a48;
+            border: none;
+            padding: 0 20px;
+            border-radius: 60px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: #3b82f6;
+            box-shadow: 0 2px 8px #3b82f640;
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+            transform: scale(0.97);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #4b5a82;
+        }
+
+        .btn-outline:hover {
+            background: #1a2542;
+        }
+
+        /* панель правил и догадок */
+        .guess-area {
+            margin-top: 20px;
+        }
+
+        .guess-input-group {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .guess-input-group input {
+            flex: 1;
+            background: #0a0f1c;
+            border: 1px solid #3b4a6e;
+            padding: 12px;
+            border-radius: 40px;
+            color: white;
+        }
+
+        .rule-reveal {
+            background: #111827;
+            border-radius: 1.5rem;
+            padding: 1rem;
+            margin: 20px 0;
+            text-align: center;
+            transition: 0.2s;
+        }
+
+        .hidden-rule {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #facc15;
+            background: #2d2a1a;
+            display: inline-block;
+            padding: 6px 18px;
+            border-radius: 40px;
+        }
+
+        .feedback {
+            font-size: 0.9rem;
+            margin-top: 10px;
+            color: #b9c7e0;
+        }
+
+        .ml-lesson {
+            background: #10162bf0;
+            border-radius: 1.5rem;
+            padding: 1rem 1.5rem;
+            margin-top: 1.5rem;
+            text-align: center;
+            border: 1px dashed #4c6ef5;
+        }
+
+        button:active {
+            transform: scale(0.96);
+        }
+
+        @media (max-width: 780px) {
+            .game-container { padding: 1rem; }
+            .section-title { font-size: 1.2rem; }
+        }
+
+        .reset-link {
+            text-align: right;
+            margin-top: 10px;
+        }
+        .small-btn {
+            background: none;
+            border: none;
+            color: #7d8eb0;
+            cursor: pointer;
+            text-decoration: underline;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container" id="gameApp">
+    <div class="game-header">
+        <h1> Угадай правило</h1>
+        <p> Ты становишься ML-моделью: смотри на примеры и найди закономерность </p>
+        <div class="rule-badge"> Обучение на примерах • без кода</div>
+    </div>
+
+    <div class="game-play-area">
+        <!-- Левая колонка: примеры (данные) -->
+        <div class="examples-panel">
+            <div class="section-title"> Примеры от «учителя»</div>
+            <table class="examples-table" id="examplesTable">
+                <thead>
+                    <tr><th>Слово / объект</th><th>Вердикт ✅ / ❌</th></tr>
+                </thead>
+                <tbody id="examplesBody">
+                    <!-- динамически заполняется -->
+                </tbody>
+            </table>
+            <div class="add-word-form">
+                <input type="text" id="newWordInput" placeholder="Напиши слово... (например, робот)" autocomplete="off">
+                <button class="btn btn-primary" id="addWordBtn"> Добавить пример</button>
+            </div>
+            <div class="reset-link">
+                <button class="small-btn" id="resetGameBtn">⟳ Сбросить & начать заново</button>
+            </div>
+            <div class="feedback" id="addFeedback"></div>
+        </div>
+
+        <!-- Правая колонка: угадай правило, связь с ML -->
+        <div class="rule-panel">
+            <div class="section-title"> Твоя гипотеза (правило)</div>
+            <div class="guess-area">
+                <p style="margin:0 0 8px 0; color:#a7bbdf;"> На основе примеров предположи:</p>
+                <div class="guess-input-group">
+                    <input type="text" id="ruleGuessInput" placeholder="Например: «животное» или «есть буква А»" autocomplete="off">
+                    <button class="btn btn-outline" id="submitGuessBtn"> Проверить догадку</button>
+                </div>
+                <div id="guessResult" class="feedback" style="font-weight:500;"></div>
+                
+                <div class="rule-reveal" id="ruleRevealBlock">
+                    <div style="font-size:0.8rem; color:#7a89aa;">🔐 Секретное правило (скрыто)</div>
+                    <div id="secretRuleDisplay" class="hidden-rule" style="background:#212a44; color:#e2e8f0;">???</div>
+                    <button class="small-btn" id="revealRuleBtn" style="margin-top:10px;">🔥 Показать правило (если сдаёшься)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- мостик к машинному обучению -->
+    <div class="ml-lesson" id="mlLessonBlock">
+        <div style="font-weight: bold; font-size: 1.5rem; color: #FFFFFF;"> Метафора машинного обучения</div>
+        <div style="margin-top: 8px;"> <strong>Обычная программа</strong>: человек пишет правила → компьютер отвечает.<br>
+         <strong>Машинное обучение</strong>: человек даёт <strong>примеры (данные)</strong> → компьютер сам находит правило.<br>
+         <span id="dynamicExplanation">Сейчас ты сам учишь правило по примерам — так же работает нейросеть!</span></div>
+    </div>
+</div>
+
+<script>
+    // ======================== ИГРА «УГАДАЙ ПРАВИЛО» =========================
+    // Учитель загадывает правило. Определяем функцию проверки (скрытая логика)
+    // Для наглядности используем несколько предустановленных уровней сложности.
+    // Но для первого урока лучше классическое понятное правило: "животное" + легкое.
+    // По умолчанию правило: «Это животное (существо, а не предмет)».
+    
+    // Можно менять правила динамически, но чтобы было честно и интерактивно,
+    // создадим систему: текущее правило, функция проверки, список примеров.
+    
+    // Список правил (можно менять для перезапуска)
+    const RULES_LIBRARY = [
+        {
+            name: "🦁 Это животное (млекопитающее, птица, рыба, насекомое — живое существо)",
+            check: (word) => {
+                const animals = ["кот", "пёс", "собака", "лиса", "слон", "жираф", "медведь", "волк", "воробей", "орёл", "кит", "дельфин", "тигр", "лев", "зебра", "заяц", "ёж", "белка", "хомяк", "попугай", "кошка", "птица", "рыба", "муравей"];
+                return animals.includes(word.toLowerCase());
+            }
+        },
+        {
+            name: "🔤 В слове есть буква «О» (русская О)",
+            check: (word) => word.toLowerCase().includes("о")
+        },
+        {
+            name: "📏 В слове ровно 3 буквы",
+            check: (word) => word.length === 3
+        },
+        {
+            name: "🚀 Слово начинается на гласную букву (А, Е, Ё, И, О, У, Ы, Э, Ю, Я)",
+            check: (word) => {
+                const vowels = ["а","е","ё","и","о","у","ы","э","ю","я"];
+                return vowels.includes(word.charAt(0).toLowerCase());
+            }
+        },
+        {
+            name: "🍎 Съедобное / еда (базовый список)",
+            check: (word) => {
+                const food = ["хлеб", "пицца", "яблоко", "банан", "суп", "каша", "мороженое", "торт", "сок", "молоко", "шоколад", "сыр", "мясо", "рыба", "салат"];
+                return food.includes(word.toLowerCase());
+            }
+        }
+    ];
+    
+    // Текущий индекс правила (0 = животные, идеально для старта)
+    let currentRuleIndex = 0;      // животные
+    let currentRule = RULES_LIBRARY[currentRuleIndex];
+    
+    // Начальные примеры (убедимся, что они соответствуют текущему правилу)
+    // Базовые примеры для правила "животное"
+    let examples = [
+        { word: "кот", verdict: true },
+        { word: "пёс", verdict: true },
+        { word: "слон", verdict: true },
+        { word: "стол", verdict: false },
+        { word: "дом", verdict: false }
+    ];
+    
+    // Функция синхронизации вердиктов (пересчёт для текущего правила)
+    function refreshVerdicts() {
+        for (let i = 0; i < examples.length; i++) {
+            const ex = examples[i];
+            ex.verdict = currentRule.check(ex.word);
+        }
+        renderExamplesTable();
+        updateMLmessage();
+    }
+    
+    // Добавить новый пример с проверкой
+    function addExample(word) {
+        if (!word || word.trim() === "") return false;
+        const cleanWord = word.trim().toLowerCase();
+        // Проверка на дубликат (для чистоты)
+        if (examples.some(ex => ex.word.toLowerCase() === cleanWord)) {
+            document.getElementById("addFeedback").innerHTML = "⚠️ Такое слово уже есть в примерах!";
+            setTimeout(() => { document.getElementById("addFeedback").innerHTML = ""; }, 1500);
+            return false;
+        }
+        const verdict = currentRule.check(cleanWord);
+        examples.push({ word: cleanWord, verdict: verdict });
+        renderExamplesTable();
+        document.getElementById("addFeedback").innerHTML = `➕ Добавлено: "${cleanWord}" → ${verdict ? "✅ ДА" : "❌ НЕТ"}`;
+        setTimeout(() => { document.getElementById("addFeedback").innerHTML = ""; }, 1800);
+        return true;
+    }
+    
+    // Отрисовка таблицы
+    function renderExamplesTable() {
+        const tbody = document.getElementById("examplesBody");
+        tbody.innerHTML = "";
+        for (let ex of examples) {
+            const row = tbody.insertRow();
+            const cellWord = row.insertCell(0);
+            const cellVerdict = row.insertCell(1);
+            cellWord.textContent = ex.word.charAt(0).toUpperCase() + ex.word.slice(1);
+            cellVerdict.className = "verdict";
+            if (ex.verdict) {
+                cellVerdict.innerHTML = '<span class="verdict-yes">✅ ДА</span>';
+            } else {
+                cellVerdict.innerHTML = '<span class="verdict-no">❌ НЕТ</span>';
+            }
+        }
+    }
+    
+    // Обновить динамическое сообщение о ML
+    function updateMLmessage() {
+        const span = document.getElementById("dynamicExplanation");
+        span.innerHTML = `Ты анализируешь ${examples.length} примеров. Каждый новый пример уточняет правило — именно так ML-модель «обучается» на данных. Правило: скрыто, но ты можешь угадать!`;
+    }
+    
+    // Проверка догадки пользователя
+    let ruleRevealedExplicitly = false;   // если нажал "показать правило"
+    
+    function checkGuess(guessText) {
+        const guess = guessText.trim().toLowerCase();
+        if (guess === "") {
+            document.getElementById("guessResult").innerHTML = "✏️ Напиши свою гипотезу!";
+            return;
+        }
+        // Сравниваем с текущим правилом (нормализация)
+        const currentRuleName = currentRule.name.toLowerCase();
+        // эвристическое сравнение: удаляем смайлы, лишние пробелы
+        let normalizedGuess = guess.replace(/[^а-яa-z0-9\s]/g, '').trim();
+        let normalizedRule = currentRuleName.replace(/[^а-яa-z0-9\s]/g, '').trim();
+        
+        let isMatch = false;
+        // точное совпадение по ключевым словам
+        if (currentRuleIndex === 0) { // животное
+            if (normalizedGuess.includes("животн") || normalizedGuess.includes("живое существо") || normalizedGuess.includes("зверь") || normalizedGuess === "животное") isMatch = true;
+        } else if (currentRuleIndex === 1) { // буква О
+            if (normalizedGuess.includes("буква о") || normalizedGuess.includes("есть о") || normalizedGuess === "о") isMatch = true;
+        } else if (currentRuleIndex === 2) { // 3 буквы
+            if (normalizedGuess.includes("3 букв") || normalizedGuess.includes("три буквы") || normalizedGuess === "три") isMatch = true;
+        } else if (currentRuleIndex === 3) { // гласная
+            if (normalizedGuess.includes("гласн") || normalizedGuess.includes("начинается на гласную")) isMatch = true;
+        } else if (currentRuleIndex === 4) { // съедобное
+            if (normalizedGuess.includes("съедобн") || normalizedGuess.includes("еда") || normalizedGuess.includes("можно есть")) isMatch = true;
+        }
+        
+        // дополнительно, если пользователь ввел почти точное название правила
+        if (!isMatch && (normalizedGuess === normalizedRule || normalizedRule.includes(normalizedGuess) || normalizedGuess.includes(normalizedRule))) {
+            isMatch = true;
+        }
+        
+        if (isMatch) {
+            document.getElementById("guessResult").innerHTML = "🎉 ПОЗДРАВЛЯЮ! Ты угадал правило! 🎉<br> Ты только что сделал то же, что делает ML: выявил закономерность из примеров.";
+            // Показать правило открыто
+            revealRulePublic();
+        } else {
+            document.getElementById("guessResult").innerHTML = `❌ Не угадал. Твоя догадка: "${guessText}". Посмотри на примеры и попробуй снова! Обрати внимание на закономерность.`;
+        }
+    }
+    
+    function revealRulePublic() {
+        const ruleDiv = document.getElementById("secretRuleDisplay");
+        ruleDiv.innerHTML = currentRule.name;
+        ruleDiv.style.background = "#2e3a5e";
+        ruleDiv.style.color = "#facc15";
+        ruleRevealedExplicitly = true;
+    }
+    
+    // Сброс игры (или смена правила с сохранением базовых примеров, чтобы не потерять интерес)
+    function resetGameToNewRule() {
+        // Меняем правило на следующее по кругу (демонстрация разных типов закономерностей)
+        currentRuleIndex = (currentRuleIndex + 1) % RULES_LIBRARY.length;
+        currentRule = RULES_LIBRARY[currentRuleIndex];
+        
+        // Сбрасываем примеры в зависимости от нового правила: создаём 5 чистых стартовых примеров,
+        // которые точно соответствуют новому правилу (и пару неподходящих)
+        let freshExamples = [];
+        if (currentRuleIndex === 0) { // животные
+            freshExamples = [
+                { word: "кот", verdict: true }, { word: "пёс", verdict: true }, { word: "слон", verdict: true },
+                { word: "стул", verdict: false }, { word: "окно", verdict: false }
+            ];
+        } else if (currentRuleIndex === 1) { // буква О
+            freshExamples = [
+                { word: "кот", verdict: true }, { word: "дом", verdict: true }, { word: "слон", verdict: true },
+                { word: "лиса", verdict: false }, { word: "ёж", verdict: false }
+            ];
+        } else if (currentRuleIndex === 2) { // 3 буквы
+            freshExamples = [
+                { word: "кот", verdict: true }, { word: "дом", verdict: true }, { word: "лес", verdict: true },
+                { word: "собака", verdict: false }, { word: "машина", verdict: false }
+            ];
+        } else if (currentRuleIndex === 3) { // гласная
+            freshExamples = [
+                { word: "арбуз", verdict: true }, { word: "окно", verdict: true }, { word: "утка", verdict: true },
+                { word: "кот", verdict: false }, { word: "дом", verdict: false }
+            ];
+        } else { // съедобное
+            freshExamples = [
+                { word: "хлеб", verdict: true }, { word: "яблоко", verdict: true }, { word: "суп", verdict: true },
+                { word: "камень", verdict: false }, { word: "стол", verdict: false }
+            ];
+        }
+        
+        examples = freshExamples;
+        // гарантируем вердикты по правилу (на всякий случай)
+        refreshVerdicts();
+        
+        // Сбросить панель догадок
+        document.getElementById("guessResult").innerHTML = "";
+        document.getElementById("ruleGuessInput").value = "";
+        const secretDiv = document.getElementById("secretRuleDisplay");
+        secretDiv.innerHTML = "???";
+        secretDiv.style.background = "#212a44";
+        secretDiv.style.color = "#e2e8f0";
+        ruleRevealedExplicitly = false;
+        
+        // дополнительно сообщение
+        document.getElementById("addFeedback").innerHTML = "🔄 Правило изменено! Теперь новая закономерность. Анализируй примеры.";
+        setTimeout(() => { document.getElementById("addFeedback").innerHTML = ""; }, 2000);
+        updateMLmessage();
+    }
+    
+    // Экстренный ручной сброс (не меняя правило, только сбрасывает примеры к дефолтным текущего правила)
+    function fullResetDefault() {
+        if (currentRuleIndex === 0) {
+            examples = [
+                { word: "кот", verdict: true }, { word: "пёс", verdict: true }, { word: "слон", verdict: true },
+                { word: "стол", verdict: false }, { word: "дом", verdict: false }
+            ];
+        } else if (currentRuleIndex === 1) {
+            examples = [
+                { word: "кот", verdict: true }, { word: "дом", verdict: true }, { word: "слон", verdict: true },
+                { word: "лиса", verdict: false }, { word: "ёж", verdict: false }
+            ];
+        } else if (currentRuleIndex === 2) {
+            examples = [
+                { word: "кот", verdict: true }, { word: "дом", verdict: true }, { word: "лес", verdict: true },
+                { word: "собака", verdict: false }, { word: "машина", verdict: false }
+            ];
+        } else if (currentRuleIndex === 3) {
+            examples = [
+                { word: "арбуз", verdict: true }, { word: "окно", verdict: true }, { word: "утка", verdict: true },
+                { word: "кот", verdict: false }, { word: "дом", verdict: false }
+            ];
+        } else {
+            examples = [
+                { word: "хлеб", verdict: true }, { word: "яблоко", verdict: true }, { word: "суп", verdict: true },
+                { word: "камень", verdict: false }, { word: "стол", verdict: false }
+            ];
+        }
+        refreshVerdicts();
+        document.getElementById("guessResult").innerHTML = "";
+        document.getElementById("ruleGuessInput").value = "";
+        const secretDiv = document.getElementById("secretRuleDisplay");
+        secretDiv.innerHTML = "???";
+        secretDiv.style.background = "#212a44";
+        ruleRevealedExplicitly = false;
+        updateMLmessage();
+    }
+    
+    // Инициализация
+    function initGame() {
+        // синхронизируем вердикты по текущему правилу
+        refreshVerdicts();
+        // события
+        document.getElementById("addWordBtn").addEventListener("click", () => {
+            const input = document.getElementById("newWordInput");
+            if (input.value.trim() !== "") {
+                addExample(input.value);
+                input.value = "";
+            } else {
+                document.getElementById("addFeedback").innerHTML = "✏️ Введи слово!";
+                setTimeout(() => { document.getElementById("addFeedback").innerHTML = ""; }, 1000);
+            }
+        });
+        document.getElementById("submitGuessBtn").addEventListener("click", () => {
+            const guessInput = document.getElementById("ruleGuessInput");
+            checkGuess(guessInput.value);
+        });
+        document.getElementById("revealRuleBtn").addEventListener("click", () => {
+            revealRulePublic();
+        });
+        document.getElementById("resetGameBtn").addEventListener("click", () => {
+            fullResetDefault();
+        });
+        // дополнительная кнопка смены правила скрыта в тексте? сделаем "сменить правило" в панели
+        // добавим маленькую кнопку в сброс - но для учителя можно добавить смену правила при клике на заголовок? добавим скрытую?
+        const header = document.querySelector(".game-header h1");
+        if (header) {
+            // маленький секрет для учителя: двойной клик меняет правило
+            header.addEventListener("dblclick", () => {
+                resetGameToNewRule();
+                document.getElementById("addFeedback").innerHTML = "🌟 Учитель сменил правило (double tap)! Изучай новые примеры.";
+                setTimeout(() => { document.getElementById("addFeedback").innerHTML = ""; }, 2000);
+            });
+        }
+        // дополнительный комфорт: клавиша Enter
+        const wordInput = document.getElementById("newWordInput");
+        wordInput.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                if (wordInput.value.trim() !== "") {
+                    addExample(wordInput.value);
+                    wordInput.value = "";
+                }
+            }
+        });
+        const guessInput = document.getElementById("ruleGuessInput");
+        guessInput.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                checkGuess(guessInput.value);
+            }
+        });
+    }
+    
+    initGame();
+</script>
+</body>
+</html>

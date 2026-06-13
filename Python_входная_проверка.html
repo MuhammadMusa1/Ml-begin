@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Входная проверка Python — Урок 1</title>
+<style>
+  :root{
+    --bg:#1E1B4B; --bg2:#2E2A6B; --violet:#6D5DF6; --electric:#22D3EE;
+    --ink:#1F2937; --muted:#6B7280; --light:#F5F4FF; --line:#E5E3F5;
+    --ok:#1D9E75; --okbg:#E1F5EE; --bad:#E24B4A; --badbg:#FCEBEB;
+    --card:#FFFFFF;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#F3F2FB;color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.5;padding:0 0 60px}
+  .wrap{max-width:760px;margin:0 auto;padding:0 18px}
+  header{background:var(--bg);color:#fff;padding:34px 0 30px;margin-bottom:26px;
+    border-radius:0 0 22px 22px}
+  header .wrap{max-width:760px}
+  h1{margin:0 0 6px;font-size:27px;font-weight:700}
+  .sub{color:#C7C4F0;font-size:15px;margin:0}
+  .meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+  .chip{background:var(--bg2);color:#E6E4FB;font-size:13px;padding:5px 12px;border-radius:20px}
+  .progress-bar{height:6px;background:var(--bg2);border-radius:4px;margin-top:18px;overflow:hidden}
+  .progress-fill{height:100%;width:0;background:var(--electric);transition:width .3s}
+  .section-label{font-size:13px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+    color:var(--violet);margin:28px 0 12px}
+  .q{background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:20px 22px;margin-bottom:16px;box-shadow:0 1px 3px rgba(30,27,75,.05)}
+  .q-num{display:inline-flex;align-items:center;justify-content:center;
+    min-width:26px;height:26px;background:var(--violet);color:#fff;border-radius:7px;
+    font-size:13px;font-weight:700;margin-right:10px}
+  .q-head{display:flex;align-items:flex-start;margin-bottom:6px}
+  .q-text{font-size:16px;font-weight:600;flex:1;padding-top:2px}
+  .lvl{font-size:11px;font-weight:700;padding:3px 9px;border-radius:12px;margin-left:8px;white-space:nowrap}
+  .lvl-1{background:#E1F5EE;color:#0F6E56}
+  .lvl-2{background:#FAEEDA;color:#854F0B}
+  .lvl-3{background:#FCEBEB;color:#A32D2D}
+  pre{background:#1E1B4B;color:#E6E4FB;border-radius:10px;padding:14px 16px;
+    overflow-x:auto;font-size:14px;line-height:1.5;margin:12px 0;
+    font-family:"SF Mono",Consolas,Monaco,monospace}
+  .opts{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+  .opt{display:flex;align-items:center;gap:11px;padding:11px 14px;border:1.5px solid var(--line);
+    border-radius:10px;cursor:pointer;font-size:15px;transition:.15s;background:#fff}
+  .opt:hover{border-color:var(--violet);background:var(--light)}
+  .opt input{width:18px;height:18px;accent-color:var(--violet);cursor:pointer;flex-shrink:0}
+  .opt code{background:#F1EFE8;padding:1px 6px;border-radius:5px;font-size:14px}
+  .opt.correct{border-color:var(--ok);background:var(--okbg)}
+  .opt.wrong{border-color:var(--bad);background:var(--badbg)}
+  .opt.locked{cursor:default;pointer-events:none}
+  .feedback{margin-top:12px;padding:11px 14px;border-radius:10px;font-size:14px;display:none}
+  .feedback.show{display:block}
+  .feedback.ok{background:var(--okbg);color:#0F6E56}
+  .feedback.no{background:var(--badbg);color:#A32D2D}
+  .feedback b{font-weight:700}
+  textarea{width:100%;min-height:120px;border:1.5px solid var(--line);border-radius:10px;
+    padding:12px 14px;font-size:14px;font-family:"SF Mono",Consolas,Monaco,monospace;
+    resize:vertical;margin-top:10px;background:#FAFAFE}
+  textarea:focus{outline:none;border-color:var(--violet)}
+  .reveal-btn{margin-top:10px;background:var(--bg);color:#fff;border:none;
+    padding:9px 18px;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer}
+  .reveal-btn:hover{background:var(--violet)}
+  .solution{margin-top:12px;display:none}
+  .solution.show{display:block}
+  .solution h4{margin:0 0 6px;font-size:14px;color:var(--ok)}
+  .check-btn{display:block;width:100%;background:var(--violet);color:#fff;border:none;
+    padding:15px;border-radius:12px;font-size:17px;font-weight:700;cursor:pointer;margin:26px 0 0}
+  .check-btn:hover{background:#5848e0}
+  .check-btn:disabled{background:#B4B2C9;cursor:not-allowed}
+  .result{background:var(--bg);color:#fff;border-radius:16px;padding:28px 26px;
+    margin-top:26px;text-align:center;display:none}
+  .result.show{display:block}
+  .score-num{font-size:52px;font-weight:800;line-height:1}
+  .score-lbl{color:#C7C4F0;font-size:15px;margin-top:6px}
+  .verdict{font-size:20px;font-weight:700;margin-top:18px}
+  .verdict-sub{color:#C7C4F0;font-size:14px;margin-top:8px;line-height:1.6}
+  .retry{margin-top:20px;background:transparent;color:var(--electric);border:1.5px solid var(--electric);
+    padding:10px 22px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer}
+  .retry:hover{background:rgba(34,211,238,.12)}
+  .note{font-size:13px;color:var(--muted);margin-top:6px}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>Входная проверка Python</h1>
+    <p class="sub">Урок 1 · давай посмотрим, что ты уже умеешь — это не оценка, а старт</p>
+    <div class="meta">
+      <span class="chip">10 вопросов</span>
+      <span class="chip">3 задачи</span>
+      <span class="chip">~20 минут</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="pfill"></div></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="section-label">Часть 1 · Тест с выбором ответа</div>
+  <div id="quiz"></div>
+
+  <button class="check-btn" id="checkBtn">Проверить тест</button>
+
+  <div class="result" id="result">
+    <div class="score-num" id="scoreNum">0 / 10</div>
+    <div class="score-lbl">правильных ответов в тесте</div>
+    <div class="verdict" id="verdict"></div>
+    <div class="verdict-sub" id="verdictSub"></div>
+    <button class="retry" id="retryBtn">Пройти заново</button>
+  </div>
+
+  <div class="section-label">Часть 2 · Практические задачи</div>
+  <p class="note">Реши в окне ниже, потом нажми «Показать решение» и сравни. Эту часть проверяет преподаватель.</p>
+  <div id="tasks"></div>
+</div>
+
+<script>
+const QUESTIONS = [
+  {
+    lvl:1, text:"Что выведет этот код?",
+    code:"x = 5\ny = 2\nprint(x + y)",
+    opts:["52","7","'52'","Ошибка"], correct:1,
+    why:"Это сложение чисел: 5 + 2 = 7. Кавычек нет, значит это int, а не строки."
+  },
+  {
+    lvl:1, text:"Как создать список из трёх чисел?",
+    opts:["nums = (1, 2, 3)","nums = {1, 2, 3}","nums = [1, 2, 3]","nums = <1, 2, 3>"],
+    correct:2,
+    why:"Список — это квадратные скобки []. Круглые () — кортеж, фигурные {} — множество/словарь."
+  },
+  {
+    lvl:1, text:"Что выведет код?",
+    code:'name = "Аня"\nprint("Привет, " + name + "!")',
+    opts:['Привет, Аня!','Привет, + name + !','Привет, name!','Ошибка'],
+    correct:0,
+    why:"Оператор + склеивает строки. Переменная name подставляется без кавычек."
+  },
+  {
+    lvl:2, text:"Сколько раз выполнится тело цикла?",
+    code:"for i in range(3):\n    print(i)",
+    opts:["2 раза","3 раза","4 раза","range(3) не работает в for"],
+    correct:1,
+    why:"range(3) даёт 0, 1, 2 — три значения. Цикл выполнится 3 раза."
+  },
+  {
+    lvl:2, text:"Что выведет код?",
+    code:"nums = [10, 20, 30, 40]\nprint(nums[1])",
+    opts:["10","20","30","[20]"],
+    correct:1,
+    why:"Индексация с нуля: nums[0]=10, nums[1]=20. Поэтому ответ 20."
+  },
+  {
+    lvl:2, text:"Какое условие истинно?",
+    code:"age = 15",
+    opts:["age > 18","age == 15","age != 15","age < 10"],
+    correct:1,
+    why:"== проверяет равенство. age равно 15, поэтому age == 15 истинно. (= это присваивание, == это сравнение.)"
+  },
+  {
+    lvl:2, text:"Что вернёт функция?",
+    code:"def square(n):\n    return n * n\n\nprint(square(4))",
+    opts:["8","16","44","Ничего не выведет"],
+    correct:1,
+    why:"Функция возвращает n умножить на n: 4 * 4 = 16."
+  },
+  {
+    lvl:3, text:"Что выведет код?",
+    code:'d = {"кот": 3, "пёс": 5}\nprint(d["пёс"])',
+    opts:["3","5","пёс","KeyError"],
+    correct:1,
+    why:"Словарь: по ключу 'пёс' хранится значение 5. d[ключ] возвращает значение."
+  },
+  {
+    lvl:3, text:"Что выведет код?",
+    code:"nums = [1, 2, 3, 4, 5]\nprint([x for x in nums if x % 2 == 0])",
+    opts:["[1, 3, 5]","[2, 4]","[1, 2, 3, 4, 5]","[0, 0]"],
+    correct:1,
+    why:"List comprehension с фильтром: оставляет чётные (x % 2 == 0). Это 2 и 4."
+  },
+  {
+    lvl:3, text:"Что выведет код?",
+    code:"a = [1, 2, 3]\nb = a\nb.append(4)\nprint(a)",
+    opts:["[1, 2, 3]","[1, 2, 3, 4]","[4]","Ошибка"],
+    correct:1,
+    why:"b = a НЕ копирует список — обе переменные ссылаются на один и тот же объект. Изменив b, мы изменили a. Это частая ловушка!"
+  }
+];
+
+const TASKS = [
+  {
+    type:"Написать код",
+    text:"Напиши программу, которая считает сумму всех чисел от 1 до 100 и выводит результат.",
+    placeholder:"# твой код здесь",
+    solution:'total = 0\nfor n in range(1, 101):\n    total = total + n\nprint(total)   # 5050\n\n# короткий вариант:\nprint(sum(range(1, 101)))'
+  },
+  {
+    type:"Найти и исправить ошибку",
+    text:"В этом коде есть ошибка — программа должна вывести средний балл, но падает. Найди и исправь.",
+    given:'grades = [4, 5, 3, 5, 4]\naverage = sum(grades) / len(grade)\nprint("Средний балл:", average)',
+    placeholder:"# напиши исправленную строку",
+    solution:'# Ошибка: len(grade) — переменной grade нет, список называется grades.\ngrades = [4, 5, 3, 5, 4]\naverage = sum(grades) / len(grades)   # grades, не grade\nprint("Средний балл:", average)   # 4.2'
+  },
+  {
+    type:"Предсказать вывод",
+    text:"Не запуская код, напиши, что он выведет и почему.",
+    given:'word = "Python"\nresult = ""\nfor letter in word:\n    result = letter + result\nprint(result)',
+    placeholder:"Программа выведет: ...\nПотому что: ...",
+    solution:'Выведет: nohtyP\n\nПочему: на каждом шаге новая буква добавляется ПЕРЕД накопленным результатом\n(result = letter + result), а не после. Поэтому слово переворачивается задом наперёд.\nP → yP → tyP → htyP → ohtyP → nohtyP'
+  }
+];
+
+const quiz = document.getElementById('quiz');
+QUESTIONS.forEach((q, qi) => {
+  const lvlClass = 'lvl-' + q.lvl;
+  const lvlText = q.lvl === 1 ? 'лёгкий' : q.lvl === 2 ? 'средний' : 'сложный';
+  let html = '<div class="q" id="q'+qi+'">';
+  html += '<div class="q-head"><span class="q-num">'+(qi+1)+'</span>';
+  html += '<span class="q-text">'+q.text+'</span>';
+  html += '<span class="lvl '+lvlClass+'">'+lvlText+'</span></div>';
+  if(q.code){ html += '<pre>'+escapeHtml(q.code)+'</pre>'; }
+  html += '<div class="opts">';
+  q.opts.forEach((opt, oi) => {
+    html += '<label class="opt" data-q="'+qi+'" data-o="'+oi+'">';
+    html += '<input type="radio" name="q'+qi+'" value="'+oi+'">';
+    html += '<span>'+formatOpt(opt)+'</span></label>';
+  });
+  html += '</div>';
+  html += '<div class="feedback" id="fb'+qi+'"></div>';
+  html += '</div>';
+  quiz.insertAdjacentHTML('beforeend', html);
+});
+
+const tasks = document.getElementById('tasks');
+TASKS.forEach((t, ti) => {
+  let html = '<div class="q">';
+  html += '<div class="q-head"><span class="q-num">'+(ti+1)+'</span>';
+  html += '<span class="q-text">'+t.text+'</span>';
+  html += '<span class="lvl lvl-2">'+t.type+'</span></div>';
+  if(t.given){ html += '<pre>'+escapeHtml(t.given)+'</pre>'; }
+  html += '<textarea placeholder="'+t.placeholder+'"></textarea>';
+  html += '<button class="reveal-btn" data-t="'+ti+'">Показать решение</button>';
+  html += '<div class="solution" id="sol'+ti+'"><h4>Образец решения</h4><pre>'+escapeHtml(t.solution)+'</pre></div>';
+  html += '</div>';
+  tasks.insertAdjacentHTML('beforeend', html);
+});
+
+function escapeHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function formatOpt(s){
+  // wrap code-like options in <code>
+  if(/^[\[\(\{<]|==|!=|nums|range|d\[|age|^'/.test(s) && !/Привет|раза|Ошибка|Ничего|не работает|KeyError/.test(s)){
+    return '<code>'+escapeHtml(s)+'</code>';
+  }
+  return escapeHtml(s);
+}
+
+// progress tracking
+const totalInputs = QUESTIONS.length;
+function updateProgress(){
+  let answered = 0;
+  QUESTIONS.forEach((q,qi)=>{ if(document.querySelector('input[name="q'+qi+'"]:checked')) answered++; });
+  document.getElementById('pfill').style.width = (answered/totalInputs*100)+'%';
+}
+quiz.addEventListener('change', updateProgress);
+
+// reveal solutions
+tasks.addEventListener('click', e=>{
+  if(e.target.classList.contains('reveal-btn')){
+    const ti = e.target.dataset.t;
+    const sol = document.getElementById('sol'+ti);
+    sol.classList.toggle('show');
+    e.target.textContent = sol.classList.contains('show') ? 'Скрыть решение' : 'Показать решение';
+  }
+});
+
+// check quiz
+document.getElementById('checkBtn').addEventListener('click', ()=>{
+  let score = 0;
+  QUESTIONS.forEach((q,qi)=>{
+    const chosen = document.querySelector('input[name="q'+qi+'"]:checked');
+    const fb = document.getElementById('fb'+qi);
+    const labels = document.querySelectorAll('.opt[data-q="'+qi+'"]');
+    labels.forEach(l=>{ l.classList.add('locked'); });
+    const correctLabel = document.querySelector('.opt[data-q="'+qi+'"][data-o="'+q.correct+'"]');
+    correctLabel.classList.add('correct');
+    if(chosen){
+      const ci = parseInt(chosen.value);
+      if(ci === q.correct){
+        score++;
+        fb.className = 'feedback ok show';
+        fb.innerHTML = '<b>Верно!</b> '+q.why;
+      } else {
+        document.querySelector('.opt[data-q="'+qi+'"][data-o="'+ci+'"]').classList.add('wrong');
+        fb.className = 'feedback no show';
+        fb.innerHTML = '<b>Не совсем.</b> '+q.why;
+      }
+    } else {
+      fb.className = 'feedback no show';
+      fb.innerHTML = '<b>Нет ответа.</b> '+q.why;
+    }
+  });
+  showResult(score);
+  document.getElementById('checkBtn').disabled = true;
+  document.getElementById('result').scrollIntoView({behavior:'smooth', block:'center'});
+});
+
+function showResult(score){
+  document.getElementById('scoreNum').textContent = score + ' / 10';
+  let v='', vs='';
+  if(score>=9){ v='Отличный старт!'; vs='Базу Python ты знаешь уверенно. На курсе сразу подключайся к продвинутым заданиям.'; }
+  else if(score>=7){ v='Хороший уровень'; vs='Основы есть, пара тем требует повторения. На ML это не помешает — поехали.'; }
+  else if(score>=4){ v='Базы достаточно'; vs='Главное понимаешь. Python будем подтягивать по ходу — это нормально, курс про ML, а не про синтаксис.'; }
+  else { v='Начинаем с нуля — и это ок'; vs='Не переживай: на первых уроках весь нужный Python разберём. Главное — желание пробовать.'; }
+  document.getElementById('verdict').textContent = v;
+  document.getElementById('verdictSub').textContent = vs;
+  document.getElementById('result').classList.add('show');
+}
+
+document.getElementById('retryBtn').addEventListener('click', ()=>{
+  QUESTIONS.forEach((q,qi)=>{
+    document.querySelectorAll('.opt[data-q="'+qi+'"]').forEach(l=>{
+      l.classList.remove('locked','correct','wrong');
+    });
+    const checked = document.querySelector('input[name="q'+qi+'"]:checked');
+    if(checked) checked.checked=false;
+    document.getElementById('fb'+qi).className='feedback';
+  });
+  document.getElementById('result').classList.remove('show');
+  document.getElementById('checkBtn').disabled=false;
+  updateProgress();
+  window.scrollTo({top:0,behavior:'smooth'});
+});
+</script>
+</body>
+</html>

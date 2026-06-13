@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Полная инструкция: GitHub для курса ML | Пошаговое руководство</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0F172A;
+            color: #E2E8F0;
+            padding: 2rem 1rem;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* Заголовок курса */
+        .course-header {
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #334155;
+            padding-bottom: 1rem;
+        }
+        .course-header h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+            color: #F1F5F9;
+        }
+        .course-header p {
+            color: #94A3B8;
+            margin-top: 0.5rem;
+                font-size: 0.9rem;
+        }
+
+        /* Навигация по слайдам (презентация) */
+        .slides-container {
+            position: relative;
+        }
+
+        .slide {
+            background: #1E293B;
+            border-radius: 1.25rem;
+            border: 1px solid #334155;
+            padding: 1.8rem 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 12px 24px -12px rgba(0,0,0,0.4);
+            transition: all 0.2s;
+        }
+
+        .slide-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid #3B82F6;
+            padding-left: 1rem;
+        }
+        .slide-number {
+            background: #0F172A;
+            width: 40px;
+            height: 40px;
+            border-radius: 40px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+            border: 1px solid #3B82F6;
+            color: #60A5FA;
+        }
+        .slide-title {
+            font-size: 1.6rem;
+            font-weight: 600;
+        }
+
+        .step-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin: 1.2rem 0;
+        }
+
+        .info-card {
+            background: #0F172A;
+            border-radius: 1rem;
+            padding: 1.2rem 1.4rem;
+            border: 1px solid #334155;
+        }
+        .info-card h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: #CBD5E1;
+            border-left: 3px solid #3B82F6;
+            padding-left: 10px;
+        }
+        .info-card p, .info-card li {
+            font-size: 1.4rem;
+            color: #CBD5E1;
+        }
+
+        .code-block {
+            background: #0B1120;
+            padding: 0.8rem 1rem;
+            border-radius: 0.75rem;
+            font-family: 'SF Mono', 'Courier New', monospace;
+            font-size: 1.45rem;
+            border: 1px solid #2D3A5E;
+            margin: 1rem 0;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .warning-note {
+            background: #2D1F00;
+            border-left: 4px solid #F59E0B;
+            padding: 0.8rem 1rem;
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+            font-size: 0.85rem;
+        }
+        .success-note {
+            background: #0B2B1F;
+            border-left: 4px solid #10B981;
+            padding: 0.8rem 1rem;
+            border-radius: 0.5rem;
+        }
+        .checklist-item {
+            display: flex;
+            align-items: baseline;
+            gap: 0.6rem;
+            margin: 0.6rem 0;
+        }
+        .checklist-item input {
+            width: 16px;
+            height: 16px;
+            margin-top: 3px;
+            accent-color: #3B82F6;
+        }
+
+        hr {
+            border-color: #334155;
+            margin: 1rem 0;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+            gap: 1rem;
+        }
+        .nav-btn {
+            background: #2D3A5E;
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 2rem;
+            font-weight: 500;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.9rem;
+        }
+        .nav-btn:hover {
+            background: #3B4A6F;
+        }
+        .progress-bar-container {
+            background: #2D3A5E;
+            height: 6px;
+            border-radius: 10px;
+            margin: 1rem 0 1.2rem;
+        }
+        .progress-fill {
+            background: #3B82F6;
+            width: 0%;
+            height: 6px;
+            border-radius: 10px;
+            transition: width 0.2s;
+        }
+        .slide-counter {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #94A3B8;
+            margin-top: 0.5rem;
+        }
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.75rem;
+            color: #64748B;
+        }
+        @media (max-width: 700px) {
+            .slide {
+                padding: 1.2rem;
+            }
+            .slide-title {
+                font-size: 1.3rem;
+            }
+        }
+        strong {
+            color: #A5B4FC;
+        }
+        .mono {
+            font-family: monospace;
+            background: #0F172A;
+            padding: 0.1rem 0.3rem;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="course-header">
+        <h1>Инструкция для учеников: GitHub и подготовка к курсу ML</h1>
+        <p>Машинное обучение / Искусственный интеллект · 3-месячная программа</p>
+        <p style="font-size:0.85rem;">Версия 1.0 · Перед первым уроком выполните все шаги</p>
+    </div>
+
+    <div class="slides-container" id="slidesContainer">
+        <!-- СЛАЙД 1: Регистрация GitHub (полностью детально) -->
+        <div class="slide" id="slide1">
+            <div class="slide-header">
+                <div class="slide-number">1</div>
+                <div class="slide-title">Создание учётной записи GitHub</div>
+            </div>
+            <p><strong>GitHub</strong> — это платформа для хранения кода и совместной работы. Все проекты курса будут храниться здесь.</p>
+            <div class="step-grid">
+                <div class="info-card">
+                    <h3>Шаг 1. Переход на сайт</h3>
+                    <p>Откройте браузер (Chrome, Edge, Firefox). Перейдите по адресу:</p>
+                    <div class="code-block">https://github.com</div>
+                    <p>Нажмите кнопку <strong>Sign up</strong> (справа вверху).</p>
+                </div>
+                <div class="info-card">
+                    <h3>Шаг 2. Ввод данных</h3>
+                    <p>Заполните поля:</p>
+                    <ul style="margin-left: 1.2rem;">
+                        <li><strong>Email</strong> – действующий адрес (родительский или личный).</li>
+                        <li><strong>Password</strong> – минимум 8 символов, включая буквы и цифры.</li>
+                        <li><strong>Username</strong> – уникальное имя (латиница, цифры, дефис).</li>
+                    </ul>
+                    <div class="warning-note"><strong>Важно:</strong> Имя пользователя должно быть профессиональным. Пример: <span class="mono">ivan_petrov_ml</span> или <span class="mono">alina_2026</span>. Не используйте клички или случайные наборы цифр.</div>
+                </div>
+            </div>
+            <div class="info-card">
+                <h3>Шаг 3. Подтверждение email</h3>
+                <p>GitHub отправит письмо с кодом или ссылкой. Проверьте папку «Входящие» и «Спам». Нажмите <strong>Verify email address</strong> или введите код.</p>
+                <div class="success-note"><strong>✅ После подтверждения</strong> – запишите логин (username), пароль и email в надёжное место. Сообщите родителям, что вы создали аккаунт для обучения.</div>
+            </div>
+        </div>
+
+        <!-- СЛАЙД 2: Настройка профиля и двухфакторная аутентификация (опционально) -->
+        <div class="slide" id="slide2">
+            <div class="slide-header">
+                <div class="slide-number">2</div>
+                <div class="slide-title">Настройка профиля и присоединение к организации</div>
+            </div>
+            <div class="step-grid">
+                <div class="info-card">
+                    <h3>Настройка профиля</h3>
+                    <p>После входа нажмите на иконку аватара (右上角) → <strong>Settings</strong> → <strong>Profile</strong>.</p>
+                    <ul>
+                        <li>Добавьте реальное имя (Name) и фамилию.</li>
+                        <li>Загрузите фото (аватар).</li>
+                        <li>В поле Bio напишите: <span class="mono">Student at ML Course | Python & AI</span></li>
+                    </ul>
+                    <p>Это поможет преподавателю идентифицировать вас.</p>
+                </div>
+                <div class="info-card">
+                    <h3>Вступление в организацию курса</h3>
+                    <p>Перед первым занятием преподаватель отправит приглашение на вашу почту (связанную с GitHub). Письмо будет от <strong>github.com</strong> с темой «Invitation to join organization».</p>
+                    <p><strong>Действие:</strong> Откройте письмо, нажмите зелёную кнопку <strong>Accept Invitation</strong>. После этого вы станете участником организации, где будут опубликованы учебные репозитории и задания.</p>
+                </div>
+            </div>
+            <div class="warning-note">Если письмо не пришло в течение 10 минут после начала курса – проверьте папку «Спам» или сообщите преподавателю в чате.</div>
+        </div>
+
+        <!-- СЛАЙД 3: Установка Git, Python, VS Code – точные команды -->
+        <div class="slide" id="slide3">
+            <div class="slide-header">
+                <div class="slide-number">3</div>
+                <div class="slide-title">Установка необходимого ПО (Windows / macOS / Linux)</div>
+            </div>
+            <div class="step-grid">
+                <div class="info-card">
+                    <h3>1. Установка Git</h3>
+                    <p>Скачайте с официального сайта: <strong>git-scm.com/downloads</strong>. Выберите версию под вашу операционную систему.</p>
+                    <p><strong>Windows:</strong> запустите установщик, оставьте настройки по умолчанию (важно: выберите "Git from the command line and also from 3rd-party software").</p>
+                    <p><strong>macOS:</strong> можно через терминал: <span class="mono">xcode-select --install</span> или скачать установщик.</p>
+                    <p><strong>Проверка:</strong> Откройте терминал (CMD / PowerShell / Terminal) и введите:</p>
+                    <div class="code-block">git --version</div>
+                    <p>Вы должны увидеть версию, например <span class="mono">git version 2.42.0</span>.</p>
+                </div>
+                <div class="info-card">
+                    <h3>2. Установка Python</h3>
+                    <p>Сайт: <strong>python.org/downloads</strong>. Скачайте последнюю стабильную версию 3.11 или 3.12.</p>
+                    <div class="warning-note"><strong>КРИТИЧЕСКИ ВАЖНО:</strong> При установке обязательно отметьте флажок <strong>Add Python to PATH</strong>. Иначе Python не будет работать в терминале.</div>
+                    <p>После установки перезагрузите компьютер (рекомендуется). Проверка:</p>
+                    <div class="code-block">python --version</div>
+                    <p>Должно отобразиться <span class="mono">Python 3.11.x</span> или выше.</p>
+                </div>
+            </div>
+            <div class="info-card">
+                <h3>3. Установка Visual Studio Code</h3>
+                <p>Скачайте с <strong>code.visualstudio.com</strong>. В процессе установки на Windows отметьте следующие пункты:</p>
+                <ul>
+                    <li>✓ Add "Open with Code" to Windows Explorer context menu</li>
+                    <li>✓ Add to PATH (важно для терминала)</li>
+                    <li>✓ Register Code as an editor for supported file types</li>
+                </ul>
+                <p>После установки запустите VS Code.</p>
+            </div>
+        </div>
+
+        <!-- СЛАЙД 4: VS Code расширения и вход в GitHub через VS Code -->
+        <div class="slide" id="slide4">
+            <div class="slide-header">
+                <div class="slide-number">4</div>
+                <div class="slide-title">Настройка VS Code и подключение к GitHub</div>
+            </div>
+            <div class="step-grid">
+                <div class="info-card">
+                    <h3>Расширения (Extensions)</h3>
+                    <p>Откройте VS Code. Нажмите на значок расширений (Ctrl+Shift+X). Установите следующие:</p>
+                    <ol style="margin-left: 1.2rem;">
+                        <li><strong>Python</strong> (от Microsoft) – поддержка Python и Jupyter.</li>
+                        <li><strong>Jupyter</strong> – работа с ноутбуками.</li>
+                        <li><strong>GitHub Pull Requests and Issues</strong> – интеграция с GitHub.</li>
+                        <li><strong>GitHub Copilot</strong> – опционально (требуется подписка, но в учебных целях можно пропустить).</li>
+                    </ol>
+                </div>
+                <div class="info-card">
+                    <h3>Авторизация GitHub в VS Code</h3>
+                    <p>В VS Code откройте панель "Accounts" (иконка шестерёнки внизу слева или через меню View → Command Palette).</p>
+                    <p>Нажмите <strong>Sign in with GitHub</strong>. Откроется браузер, разрешите доступ. Вернитесь в VS Code – ваш профиль GitHub отобразится.</p>
+                    <div class="success-note">После входа вы сможете клонировать репозитории и делать commit/push прямо из редактора.</div>
+                </div>
+            </div>
+            <div class="code-block">
+                <strong>Совет:</strong> Для удобства откройте терминал в VS Code (Ctrl+`). Проверьте Git и Python ещё раз: <br>
+                git --version <br>
+                python --version
+            </div>
+        </div>
+
+        <!-- СЛАЙД 5: Создание SSH-ключа (опционально для удобства) и глобальные настройки Git -->
+        <div class="slide" id="slide5">
+            <div class="slide-header">
+                <div class="slide-number">5</div>
+                <div class="slide-title">Настройка Git: имя пользователя и email</div>
+            </div>
+            <p>Чтобы коммиты подписывались вашим именем, выполните в терминале (VS Code или системный терминал):</p>
+            <div class="code-block">
+                git config --global user.name "ваше_имя_пользователя_github" <br>
+                git config --global user.email "ваш_email@example.com"
+            </div>
+            <p><strong>Важно:</strong> email должен совпадать с тем, который привязан к GitHub.</p>
+            <div class="info-card">
+                <h3>Проверка настроек</h3>
+                <div class="code-block">git config --list</div>
+                <p>Вы увидите user.name и user.email. Это гарантирует, что ваши работы будут правильно подписаны.</p>
+                <div class="warning-note">Если вы не выполните эту настройку, GitHub не свяжет коммиты с вашим аккаунтом.</div>
+            </div>
+        </div>
+
+        <!-- СЛАЙД 6: Чек-лист готовности + тестовый скрипт -->
+        <div class="slide" id="slide6">
+            <div class="slide-header">
+                <div class="slide-number">6</div>
+                <div class="slide-title">Финальный чек-лист готовности ученика</div>
+            </div>
+            <p>Перед первым занятием отметьте следующие пункты (можно поставить мысленную галочку):</p>
+            <div class="step-grid">
+                <div class="info-card">
+                    <div class="checklist-item"><input type="checkbox" disabled> GitHub аккаунт создан и подтверждён</div>
+                    <div class="checklist-item"><input type="checkbox" disabled> Профиль заполнен (имя, фото, bio)</div>
+                    <div class="checklist-item"><input type="checkbox" disabled> Принято приглашение в организацию курса (после старта)</div>
+                    <div class="checklist-item"><input type="checkbox" disabled> Установлен Git, команда `git --version` работает</div>
+                    <div class="checklist-item"><input type="checkbox" disabled> Установлен Python с PATH, `python --version` работает</div>
+                    <div class="checklist-item"><input type="checkbox" disabled> VS Code установлен с расширениями Python + Jupyter</div>
+                    <div class="checklist-item"><input type="checkbox" disabled> Выполнен вход в GitHub через VS Code</div>
+                    <div class="checklist-item"><input type="checkbox" disabled> Настроены git config user.name / email</div>
+                </div>
+                <div class="info-card">
+                    <h3>Диагностический скрипт (проверка окружения)</h3>
+                    <p>Создайте файл <strong>check.py</strong> со следующим содержимым и запустите его:</p>
+                    <div class="code-block">
+import sys, subprocess, platform
+print("Python версия:", sys.version)
+print("ОС:", platform.system(), platform.release())
+git_ver = subprocess.getoutput("git --version")
+print("Git:", git_ver)
+print("Статус: OK — среда готова к курсу ML")
+                    </div>
+                    <p>Запуск: в терминале перейдите в папку с файлом и выполните <span class="mono">python check.py</span>. Если ошибок нет – всё готово.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- СЛАЙД 7: Hugging Face, Colab, веб-камера – дополнительные сервисы -->
+        <div class="slide" id="slide7">
+            <div class="slide-header">
+                <div class="slide-number">7</div>
+                <div class="slide-title">Дополнительные сервисы, которые понадобятся на курсе</div>
+            </div>
+            <div class="step-grid">
+                <div class="info-card">
+                    <h3>Google Colab</h3>
+                    <p>Облачные Jupyter-ноутбуки с бесплатным GPU. Требуется аккаунт Google (Gmail). Создайте его заранее, если у вас его нет. Адрес: <strong>colab.research.google.com</strong>.</p>
+                </div>
+                <div class="info-card">
+                    <h3>Hugging Face (опционально на 8-10 неделе)</h3>
+                    <p>Платформа с моделями и датасетами. Рекомендуется зарегистрироваться на <strong>huggingface.co</strong> (бесплатно) для уроков по трансферному обучению и деплою Gradio.</p>
+                </div>
+                <div class="info-card">
+                    <h3>Веб-камера и разрешения</h3>
+                    <p>На уроке 1 и на занятии по нейросетям (распознавание эмоций) потребуется доступ к веб-камере. Убедитесь, что браузер (Chrome/Edge) имеет разрешение на использование камеры. Настройки можно изменить в разделе "Конфиденциальность и безопасность" браузера.</p>
+                </div>
+            </div>
+            <div class="warning-note">Для работы с API (OpenAI, Anthropic) в рамках уроков по LLM преподаватель предоставит учебные ключи или бесплатные альтернативы. Отдельный платёж не требуется.</div>
+        </div>
+
+        <!-- СЛАЙД 8: Памятка по действиям при ошибках и контакты -->
+        <div class="slide" id="slide8">
+            <div class="slide-header">
+                <div class="slide-number">8</div>
+                <div class="slide-title">Что делать, если что-то пошло не так</div>
+            </div>
+            <div class="info-card">
+                <h3>Частая проблема: python не распознаётся как внутренняя команда</h3>
+                <p><strong>Решение:</strong> Переустановите Python и <strong>обязательно отметьте "Add Python to PATH"</strong>. После установки перезагрузите компьютер. Если ошибка остаётся – вручную добавьте путь в переменные среды (обратитесь к преподавателю).</p>
+                <h3>Ошибка авторизации GitHub в VS Code</h3>
+                <p>Убедитесь, что вы разрешили доступ в браузере. Попробуйте выйти из GitHub в VS Code и войти заново через команду <span class="mono">GitHub: Sign out</span> в палитре команд (Ctrl+Shift+P).</p>
+                <h3>Git не установлен или неизвестная команда</h3>
+                <p>Скачайте Git с официального сайта и установите. После установки перезапустите VS Code и терминал.</p>
+            </div>
+            <div class="success-note">
+                <strong>Правило:</strong> Если вы выполнили все шаги и что-то не работает – сделайте скриншот ошибки, опишите действия и отправьте в чат курса (или преподавателю). Мы поможем в течение 24 часов.
+            </div>
+            <hr>
+            <p><strong>Итог:</strong> После завершения этой инструкции вы полностью готовы к прохождению 3-месячного курса машинного обучения. Все проекты и домашние задания будут загружаться на GitHub.</p>
+        </div>
+    </div>
+
+    <div class="progress-bar-container">
+        <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div class="nav-buttons">
+        <button class="nav-btn" id="prevBtn">← Назад</button>
+        <span id="slideCounter" style="background:#1E293B; padding: 0.3rem 1rem; border-radius: 20px;">1 / 8</span>
+        <button class="nav-btn" id="nextBtn">Вперёд →</button>
+    </div>
+    <div class="slide-counter">Используйте клавиши ← → или кнопки для навигации</div>
+    <footer>
+        Инструкция является официальным документом курса «Машинное обучение и ИИ». Все ученики обязаны выполнить настройку до первого урока.
+    </footer>
+</div>
+
+<script>
+    const slides = document.querySelectorAll('.slide');
+    let currentIdx = 0;
+    const total = slides.length;
+    const progressFill = document.getElementById('progressFill');
+    const slideCounterSpan = document.getElementById('slideCounter');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+
+    function updatePresentation() {
+        slides.forEach((slide, idx) => {
+            slide.style.display = idx === currentIdx ? 'block' : 'none';
+        });
+        const percent = ((currentIdx + 1) / total) * 100;
+        progressFill.style.width = `${percent}%`;
+        slideCounterSpan.innerText = `${currentIdx+1} / ${total}`;
+        window.scrollTo({ top: 80, behavior: 'smooth' });
+    }
+
+    function nextSlide() {
+        if (currentIdx < total - 1) {
+            currentIdx++;
+            updatePresentation();
+        }
+    }
+    function prevSlide() {
+        if (currentIdx > 0) {
+            currentIdx--;
+            updatePresentation();
+        }
+    }
+
+    prevBtn.addEventListener('click', prevSlide);
+    nextBtn.addEventListener('click', nextSlide);
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight') nextSlide();
+        if (e.key === 'ArrowLeft') prevSlide();
+    });
+
+    // initial display
+    updatePresentation();
+</script>
+</body>
+</html>
