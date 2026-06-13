@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Подготовка к курсу ML — простой старт</title>
+<style>
+  :root{
+    --bg:#1E1B4B; --surface:#252160; --surface2:#2E2A6B; --line:#3A3578;
+    --violet:#6D5DF6; --electric:#22D3EE; --text:#EDECFB; --muted:#A7A3D8;
+    --gold:#FCD34D; --amber-bg:#3a2e0f; --green:#34D399; --green-bg:#0e3a2a;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--text);padding:2rem 1rem 1rem;line-height:1.55}
+  .container{max-width:1100px;margin:0 auto}
+
+  .course-header{margin-bottom:1.6rem;border-bottom:1px solid var(--line);padding-bottom:1.1rem}
+  .course-header h1{font-size:1.9rem;font-weight:700;color:#fff;letter-spacing:-.3px}
+  .course-header p{color:var(--muted);margin-top:.5rem;font-size:1rem}
+  .course-header .tag{display:inline-block;background:var(--surface2);color:#C7C4F0;
+    font-size:.85rem;padding:4px 14px;border-radius:20px;margin-top:10px}
+
+  .slide{background:var(--surface);border-radius:18px;border:1px solid var(--line);
+    padding:1.8rem 2rem;margin-bottom:1.4rem;box-shadow:0 12px 24px -14px rgba(0,0,0,.5)}
+  .slide-header{display:flex;align-items:center;gap:14px;margin-bottom:1.4rem;
+    border-left:4px solid var(--violet);padding-left:1rem}
+  .slide-number{background:var(--bg);width:40px;height:40px;border-radius:40px;
+    display:inline-flex;align-items:center;justify-content:center;font-weight:700;
+    font-size:1.15rem;border:1px solid var(--violet);color:var(--electric);flex-shrink:0}
+  .slide-title{font-size:1.5rem;font-weight:600;color:#fff}
+
+  .lead{font-size:1.05rem;color:var(--text);margin-bottom:1rem}
+  .lead.big{font-size:1.15rem}
+
+  .step-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:1.2rem;margin:1.1rem 0}
+  .info-card{background:var(--bg);border-radius:14px;padding:1.2rem 1.4rem;border:1px solid var(--line)}
+  .info-card h3{font-size:1.15rem;font-weight:600;margin-bottom:.7rem;color:#fff;
+    border-left:3px solid var(--electric);padding-left:10px}
+  .info-card p{font-size:1rem;color:var(--text);margin-bottom:.6rem}
+  .info-card p:last-child{margin-bottom:0}
+  .info-card ul,.info-card ol{margin:.4rem 0 .4rem 1.3rem;font-size:1rem;color:var(--text)}
+  .info-card li{margin-bottom:.4rem}
+  strong{color:#C9C3FB;font-weight:600}
+
+  .code-block{background:#11102e;padding:.9rem 1.1rem;border-radius:10px;
+    font-family:"SF Mono","Courier New",monospace;font-size:.95rem;color:#C7E8F5;
+    border:1px solid var(--line);margin:.8rem 0;overflow-x:auto;white-space:pre-wrap;word-break:break-word}
+  .mono{font-family:"SF Mono",monospace;background:var(--bg);padding:.1rem .4rem;
+    border-radius:6px;font-size:.92em;color:#C7E8F5}
+
+  .note{padding:.85rem 1.1rem;border-radius:10px;margin:.9rem 0;font-size:.98rem}
+  .note-warn{background:var(--amber-bg);border-left:4px solid var(--gold);color:#F5E5BE}
+  .note-ok{background:var(--green-bg);border-left:4px solid var(--green);color:#C5F0DE}
+  .note-info{background:var(--surface2);border-left:4px solid var(--violet);color:#D8D5F5}
+
+  .optional-banner{background:var(--surface2);border:1px dashed var(--violet);
+    border-radius:12px;padding:.8rem 1.2rem;margin-bottom:1.2rem;font-size:1rem;color:#D8D5F5}
+  .optional-banner b{color:var(--electric)}
+
+  .checklist-item{display:flex;align-items:baseline;gap:.7rem;margin:.7rem 0;font-size:1.02rem}
+  .checklist-item input{width:18px;height:18px;margin-top:2px;accent-color:var(--violet);flex-shrink:0;cursor:pointer}
+
+  hr{border:none;border-top:1px solid var(--line);margin:1.2rem 0}
+
+  .nav-wrap{position:sticky;bottom:0;background:var(--bg);padding-top:.6rem;margin-top:1rem}
+  .progress-bar{background:var(--surface2);height:6px;border-radius:10px;margin-bottom:1rem;overflow:hidden}
+  .progress-fill{background:var(--electric);width:0;height:100%;border-radius:10px;transition:width .25s}
+  .nav-buttons{display:flex;justify-content:space-between;align-items:center;gap:1rem}
+  .nav-btn{background:var(--violet);border:none;padding:.7rem 1.6rem;border-radius:30px;
+    font-weight:600;color:#fff;cursor:pointer;transition:.15s;font-size:.95rem}
+  .nav-btn:hover{background:#5848e0}
+  .nav-btn:disabled{background:var(--surface2);color:var(--muted);cursor:not-allowed}
+  .nav-btn:active:not(:disabled){transform:scale(.97)}
+  .counter{background:var(--surface);padding:.4rem 1.1rem;border-radius:20px;font-size:.9rem;color:var(--muted)}
+  .hint{text-align:center;font-size:.82rem;color:var(--muted);margin-top:.6rem}
+  footer{text-align:center;margin-top:1.4rem;font-size:.8rem;color:#7873B0;padding-bottom:1rem}
+
+  @media(max-width:700px){
+    .slide{padding:1.3rem}
+    .slide-title{font-size:1.25rem}
+    .course-header h1{font-size:1.5rem}
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="course-header">
+    <h1>Подготовка к курсу: простой старт за 5 минут</h1>
+    <p>Машинное обучение и ИИ · 3-месячная программа для начинающих</p>
+    <span class="tag">Ничего сложного ставить не нужно — работаем прямо в браузере</span>
+  </div>
+
+  <div id="slidesContainer">
+
+    <!-- СЛАЙД 1: Главное — Google Colab -->
+    <div class="slide" id="slide1">
+      <div class="slide-header">
+        <div class="slide-number">1</div>
+        <div class="slide-title">Главный инструмент курса — Google Colab</div>
+      </div>
+      <p class="lead big">Хорошая новость: весь код мы пишем прямо в браузере. Не нужно ничего устанавливать на компьютер — ни Python, ни программы. Нужен только аккаунт Google.</p>
+      <div class="step-grid">
+        <div class="info-card">
+          <h3>Что такое Colab</h3>
+          <p>Google Colab — это бесплатная среда, где можно писать и запускать код Python прямо в браузере. Там уже всё установлено: Python, библиотеки, даже мощные видеокарты для нейросетей.</p>
+          <p>Открывается по адресу: <span class="mono">colab.research.google.com</span></p>
+        </div>
+        <div class="info-card">
+          <h3>Что сделать заранее</h3>
+          <ol>
+            <li>Завести аккаунт Google (если ещё нет почты Gmail) — на <span class="mono">accounts.google.com</span>.</li>
+            <li>Открыть <span class="mono">colab.research.google.com</span> и войти под этим аккаунтом.</li>
+            <li>Нажать «Создать новый блокнот» и убедиться, что страница открылась.</li>
+          </ol>
+          <div class="note note-ok">Если открылся пустой блокнот с полем для кода — всё готово. Это займёт пару минут.</div>
+        </div>
+      </div>
+      <div class="note note-info">На первом уроке мы сразу запустим в Colab настоящую нейросеть. Никакой установки — просто откроешь ссылку, которую даст преподаватель.</div>
+    </div>
+
+    <!-- СЛАЙД 2: Первый запуск Colab -->
+    <div class="slide" id="slide2">
+      <div class="slide-header">
+        <div class="slide-number">2</div>
+        <div class="slide-title">Как пользоваться Colab (на 1 минуту)</div>
+      </div>
+      <p class="lead">В Colab код живёт в «ячейках». Ты пишешь команду в ячейку и нажимаешь на кнопку запуска слева от неё (или Shift+Enter).</p>
+      <div class="step-grid">
+        <div class="info-card">
+          <h3>Попробуй прямо сейчас</h3>
+          <p>Создай блокнот, вставь в ячейку эту строку и запусти:</p>
+          <div class="code-block">print("Привет! Я готов к курсу ML")</div>
+          <p>Под ячейкой должна появиться надпись. Поздравляю — ты запустил свой первый код!</p>
+        </div>
+        <div class="info-card">
+          <h3>Полезно знать</h3>
+          <ul>
+            <li>Блокноты сохраняются автоматически на твой Google Диск.</li>
+            <li>Первый запуск ячейки бывает медленным (5–30 секунд) — это нормально.</li>
+            <li>Если что-то сломалось — меню «Среда выполнения» → «Перезапустить».</li>
+          </ul>
+        </div>
+      </div>
+      <div class="note note-ok">Это всё, что нужно для старта. Остальное разберём вместе на уроках.</div>
+    </div>
+
+    <!-- СЛАЙД 3: GitHub — понадобится позже -->
+    <div class="slide" id="slide3">
+      <div class="slide-header">
+        <div class="slide-number">3</div>
+        <div class="slide-title">GitHub — для портфолио (понадобится позже)</div>
+      </div>
+      <div class="optional-banner"><b>Не срочно к первому уроку.</b> GitHub пригодится ближе к проектам — туда мы будем складывать готовые работы, чтобы показать родителям и добавить в портфолио. Аккаунт можно создать заранее, но это не блокирует старт.</div>
+      <div class="step-grid">
+        <div class="info-card">
+          <h3>Что это и зачем</h3>
+          <p>GitHub — это место в интернете, где хранят код и проекты. К концу курса у тебя будет страница с твоими работами по ИИ — её можно показать кому угодно.</p>
+        </div>
+        <div class="info-card">
+          <h3>Как создать аккаунт</h3>
+          <ol>
+            <li>Открой <span class="mono">github.com</span> и нажми <strong>Sign up</strong>.</li>
+            <li>Укажи email, пароль и имя пользователя.</li>
+            <li>Подтверди email по ссылке из письма (проверь и папку «Спам»).</li>
+          </ol>
+          <div class="note note-warn">Совет: выбери понятное имя, например <span class="mono">ivan-petrov-ml</span> — оно будет частью твоего портфолио.</div>
+        </div>
+      </div>
+      <div class="note note-info">Приглашение в общий репозиторий курса преподаватель пришлёт, когда дойдём до проектов. Тогда же разберём, как загружать туда работы — пошагово и вместе.</div>
+    </div>
+
+    <!-- СЛАЙД 4: Другие сервисы -->
+    <div class="slide" id="slide4">
+      <div class="slide-header">
+        <div class="slide-number">4</div>
+        <div class="slide-title">Что ещё понадобится по ходу курса</div>
+      </div>
+      <div class="step-grid">
+        <div class="info-card">
+          <h3>Веб-камера (уже на уроке 1)</h3>
+          <p>На первом уроке и на занятии про нейросети мы используем камеру для распознавания объектов и эмоций. Разреши браузеру (Chrome или Edge) доступ к камере, когда он спросит.</p>
+        </div>
+        <div class="info-card">
+          <h3>Hugging Face (примерно 8–10 неделя)</h3>
+          <p>Платформа с готовыми ИИ-моделями. Бесплатная регистрация на <span class="mono">huggingface.co</span> понадобится для уроков про современные модели и веб-приложения. Заранее можно не спешить.</p>
+        </div>
+        <div class="info-card">
+          <h3>API для LLM (блок про нейросети-помощники)</h3>
+          <p>Для уроков с ChatGPT-подобными моделями преподаватель выдаст учебные ключи или бесплатные альтернативы. Платить отдельно не нужно.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- СЛАЙД 5: Чек-лист -->
+    <div class="slide" id="slide5">
+      <div class="slide-header">
+        <div class="slide-number">5</div>
+        <div class="slide-title">Чек-лист готовности к первому уроку</div>
+      </div>
+      <p class="lead">Отметь то, что сделал. Обязательны только первые три пункта — остальное успеется.</p>
+      <div class="step-grid">
+        <div class="info-card">
+          <h3>Обязательно к уроку 1</h3>
+          <div class="checklist-item"><input type="checkbox"> Есть аккаунт Google (Gmail)</div>
+          <div class="checklist-item"><input type="checkbox"> Открыл Colab и создал тестовый блокнот</div>
+          <div class="checklist-item"><input type="checkbox"> Запустил <span class="mono">print(...)</span> и увидел результат</div>
+        </div>
+        <div class="info-card">
+          <h3>Можно позже</h3>
+          <div class="checklist-item"><input type="checkbox"> Создан аккаунт GitHub</div>
+          <div class="checklist-item"><input type="checkbox"> Браузер разрешает доступ к камере</div>
+          <div class="checklist-item"><input type="checkbox"> (по желанию) Регистрация на Hugging Face</div>
+        </div>
+      </div>
+      <div class="note note-ok">Если первые три пункта отмечены — ты полностью готов к старту. Приходи на урок 1, дальше всё делаем вместе.</div>
+    </div>
+
+    <!-- СЛАЙД 6: Для продвинутых -->
+    <div class="slide" id="slide6">
+      <div class="slide-header">
+        <div class="slide-number">6</div>
+        <div class="slide-title">Для продвинутых: локальная установка (по желанию)</div>
+      </div>
+      <div class="optional-banner"><b>Этот слайд можно пропустить.</b> Весь курс проходит в Colab. Но если ты хочешь писать код прямо на своём компьютере (это пригодится в будущем) — вот как настроить. Если что-то не выйдет, ничего страшного: на уроках это не нужно.</div>
+      <div class="step-grid">
+        <div class="info-card">
+          <h3>Python</h3>
+          <p>Скачай с <span class="mono">python.org/downloads</span> версию 3.11 или 3.12.</p>
+          <div class="note note-warn">При установке на Windows обязательно поставь галочку <strong>Add Python to PATH</strong> — иначе команды не заработают в терминале.</div>
+          <p>Проверка в терминале:</p>
+          <div class="code-block">python --version</div>
+        </div>
+        <div class="info-card">
+          <h3>VS Code + Git</h3>
+          <p>Редактор кода: <span class="mono">code.visualstudio.com</span>. После установки добавь расширения <strong>Python</strong> и <strong>Jupyter</strong>.</p>
+          <p>Git (для работы с GitHub локально): <span class="mono">git-scm.com/downloads</span>. Проверка:</p>
+          <div class="code-block">git --version</div>
+          <p>Чтобы коммиты подписывались твоим именем:</p>
+          <div class="code-block">git config --global user.name "твой-логин"
+git config --global user.email "твой@email"</div>
+        </div>
+      </div>
+      <div class="note note-info">Застрял на установке? Сделай скриншот ошибки и пришли преподавателю — поможем. Но помни: для уроков это не обязательно, Colab всё закрывает.</div>
+    </div>
+
+  </div>
+
+  <div class="nav-wrap">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="nav-buttons">
+      <button class="nav-btn" id="prevBtn">← Назад</button>
+      <span class="counter" id="counter">1 / 6</span>
+      <button class="nav-btn" id="nextBtn">Вперёд →</button>
+    </div>
+    <div class="hint">Листай кнопками или клавишами ← →</div>
+  </div>
+
+  <footer>Памятка курса «Машинное обучение и ИИ». Главное — прийти с желанием пробовать, остальное освоим вместе.</footer>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let idx = 0;
+  const fill = document.getElementById('progressFill');
+  const counter = document.getElementById('counter');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+
+  function render(){
+    slides.forEach((s,i)=>{ s.style.display = i===idx ? 'block':'none'; });
+    fill.style.width = ((idx+1)/total*100) + '%';
+    counter.textContent = (idx+1) + ' / ' + total;
+    prevBtn.disabled = idx===0;
+    nextBtn.disabled = idx===total-1;
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+  function next(){ if(idx<total-1){ idx++; render(); } }
+  function prev(){ if(idx>0){ idx--; render(); } }
+
+  prevBtn.addEventListener('click', prev);
+  nextBtn.addEventListener('click', next);
+  document.addEventListener('keydown', e=>{
+    if(e.key==='ArrowRight') next();
+    if(e.key==='ArrowLeft') prev();
+  });
+  render();
+</script>
+</body>
+</html>
