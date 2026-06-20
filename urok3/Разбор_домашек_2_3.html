@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Разбор домашек · Уроки 2 и 3</title>
+<style>
+  :root{
+    --bg:#1E1B4B; --bg2:#2E2A6B; --panel:#252160; --line:#3A3578;
+    --violet:#6D5DF6; --electric:#22D3EE; --gold:#FCD34D; --green:#34D399;
+    --text:#EDECFB; --muted:#A7A3D8; --code:#C7E8F5; --ink:#1F2937;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#F3F2FB;color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.55;padding:0 0 60px}
+  .wrap{max-width:820px;margin:0 auto;padding:0 18px}
+  header{background:var(--bg);color:#fff;padding:32px 0 28px;margin-bottom:8px;border-radius:0 0 22px 22px}
+  header h1{font-size:26px;font-weight:800}
+  header p{color:#C7C4F0;margin-top:8px;font-size:15px}
+
+  .tabs{display:flex;gap:10px;margin:24px 0 18px}
+  .tab{flex:1;background:#fff;border:2px solid var(--line);color:var(--muted);
+    font-size:16px;font-weight:700;padding:12px;border-radius:12px;cursor:pointer;transition:.15s}
+  .tab.active{background:var(--violet);border-color:var(--violet);color:#fff}
+
+  .panel{display:none}
+  .panel.active{display:block;animation:fade .3s}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  .task-box{background:#EDE9FE;border-left:4px solid var(--violet);border-radius:10px;
+    padding:14px 18px;margin-bottom:22px}
+  .task-box .lbl{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--violet);display:block;margin-bottom:6px}
+  .task-box p{font-size:15px;color:var(--ink)}
+
+  .step{background:#fff;border:1px solid #E5E3F5;border-radius:14px;padding:18px 20px;margin-bottom:16px;
+    box-shadow:0 1px 3px rgba(30,27,75,.05)}
+  .step-head{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+  .step-num{background:var(--violet);color:#fff;width:30px;height:30px;border-radius:8px;
+    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;flex-shrink:0}
+  .step-title{font-size:17px;font-weight:700;color:var(--ink)}
+  pre{background:#11102e;color:var(--code);border-radius:10px;padding:13px 16px;overflow-x:auto;
+    font-family:"SF Mono",Consolas,Monaco,monospace;font-size:14px;line-height:1.5;margin:8px 0}
+  .out{background:#E1F5EE;border-left:4px solid var(--green);border-radius:8px;padding:10px 14px;
+    margin-top:10px;font-size:14px;color:#0F6E56}
+  .out b{font-weight:700}
+  .tip{background:#FEF6E0;border-left:4px solid var(--gold);border-radius:8px;padding:10px 14px;
+    margin-top:10px;font-size:14px;color:#7a5a06}
+  .answer{background:var(--bg);color:#EDECFB;border-radius:12px;padding:16px 18px;margin-top:10px;font-size:14px;line-height:1.6}
+  .answer b{color:var(--electric)}
+  .checklist{background:#fff;border:1px solid #E5E3F5;border-radius:14px;padding:18px 20px;margin-top:8px}
+  .checklist h3{font-size:16px;margin-bottom:10px;color:var(--violet)}
+  .checklist div{font-size:15px;margin:7px 0;padding-left:26px;position:relative}
+  .checklist div::before{content:"✅";position:absolute;left:0}
+  .note{font-size:13px;color:var(--muted);margin:6px 0 18px}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>Разбор домашних заданий</h1>
+    <p>Уроки 2 и 3 · образец решения для сравнения со своим</p>
+  </div>
+</header>
+
+<div class="wrap">
+  <p class="note">Мы берём один датасет (фильмы) и проходим обе домашки на нём. У тебя датасет другой — но шаги те же, меняются только названия столбцов.</p>
+
+  <div class="tabs">
+    <button class="tab active" data-p="hw2">ДЗ урока 2 — датасет</button>
+    <button class="tab" data-p="hw3">ДЗ урока 3 — графики</button>
+  </div>
+
+  <!-- ===== HW2 ===== -->
+  <div class="panel active" id="hw2">
+    <div class="task-box">
+      <span class="lbl">Задание</span>
+      <p>Найти датасет, записать: про что он, сколько строк и столбцов, и какой столбец мог бы быть target.</p>
+    </div>
+
+    <div class="step">
+      <div class="step-head"><div class="step-num">1</div><div class="step-title">Загрузить датасет</div></div>
+      <pre>import pandas as pd
+
+url = "ссылка_на_твой_датасет.csv"
+df = pd.read_csv(url)
+df.head()</pre>
+      <div class="tip">💡 На Kaggle нажми на датасет → вкладка Data → скопируй ссылку на CSV. Или скачай и загрузи через <code>files.upload()</code>.</div>
+    </div>
+
+    <div class="step">
+      <div class="step-head"><div class="step-num">2</div><div class="step-title">Узнать размер</div></div>
+      <pre>print(df.shape)</pre>
+      <div class="out"><b>Результат:</b> например (970, 16) — 970 строк (фильмов) и 16 столбцов (признаков).</div>
+    </div>
+
+    <div class="step">
+      <div class="step-head"><div class="step-num">3</div><div class="step-title">Посмотреть столбцы и типы</div></div>
+      <pre>df.info()</pre>
+      <div class="out"><b>Что искать:</b> какие столбцы числовые (int/float), а какие — текст (object, это категории).</div>
+    </div>
+
+    <div class="step">
+      <div class="step-head"><div class="step-num">4</div><div class="step-title">Описать словами</div></div>
+      <p style="font-size:15px;margin-bottom:6px">Так выглядит хороший письменный ответ:</p>
+      <div class="answer">
+        <b>Про что:</b> датасет о голливудских фильмах — название, жанр, бюджет, сборы, рейтинг, год.<br><br>
+        <b>Размер:</b> ~970 строк и 16 столбцов. Одна строка — один фильм.<br><br>
+        <b>Числовые признаки:</b> бюджет (Budget), мировые сборы (WorldGross), рейтинг (AudienceScore).<br><br>
+        <b>Категориальные:</b> жанр (Genre), студия (LeadStudio).<br><br>
+        <b>Target (что предсказывать):</b> AudienceScore — можно ли по бюджету и жанру предсказать, понравится ли фильм зрителям.
+      </div>
+      <div class="tip">💡 Главное в этой домашке — не команды, а понять структуру данных и придумать осмысленный target.</div>
+    </div>
+
+    <div class="checklist">
+      <h3>Что должно быть в твоей работе</h3>
+      <div>датасет загружен через read_csv</div>
+      <div>указан размер (строки × столбцы)</div>
+      <div>названы числовые и категориальные признаки</div>
+      <div>предложен осмысленный target</div>
+    </div>
+  </div>
+
+  <!-- ===== HW3 ===== -->
+  <div class="panel" id="hw3">
+    <div class="task-box">
+      <span class="lbl">Задание</span>
+      <p>Построить 3 графика (гистограмма, scatter, heatmap) и под каждым написать, что видно.</p>
+    </div>
+
+    <div class="step">
+      <div class="step-head"><div class="step-num">0</div><div class="step-title">Подключить библиотеки</div></div>
+      <pre>import matplotlib.pyplot as plt
+import seaborn as sns
+sns.set_theme(style="whitegrid")</pre>
+    </div>
+
+    <div class="step">
+      <div class="step-head"><div class="step-num">1</div><div class="step-title">Гистограмма — «сколько чего?»</div></div>
+      <pre>plt.figure(figsize=(8,4))
+sns.histplot(data=df, x="AudienceScore", bins=20)
+plt.title("Распределение рейтинга")
+plt.xlabel("Рейтинг зрителей")
+plt.ylabel("Количество фильмов")
+plt.show()</pre>
+      <div class="out"><b>Вывод:</b> большинство фильмов имеют рейтинг 50–70. Очень плохих и идеальных мало — основная масса «средние».</div>
+    </div>
+
+    <div class="step">
+      <div class="step-head"><div class="step-num">2</div><div class="step-title">Scatter — «связаны ли два признака?»</div></div>
+      <pre>plt.figure(figsize=(8,4))
+sns.scatterplot(data=df, x="Budget", y="WorldGross")
+plt.title("Бюджет и мировые сборы")
+plt.xlabel("Бюджет")
+plt.ylabel("Сборы")
+plt.show()</pre>
+      <div class="out"><b>Вывод:</b> точки идут вверх — дорогие фильмы чаще собирают больше (положительная связь). Но есть выбросы: дорогие провалы в прокате.</div>
+    </div>
+
+    <div class="step">
+      <div class="step-head"><div class="step-num">3</div><div class="step-title">Heatmap — связь всех признаков</div></div>
+      <pre>numeric = df.select_dtypes(include="number")
+
+plt.figure(figsize=(8,6))
+sns.heatmap(numeric.corr(), annot=True, cmap="coolwarm")
+plt.title("Корреляция признаков")
+plt.show()</pre>
+      <div class="out"><b>Вывод:</b> самая сильная связь — бюджет и сборы (≈0.74, самый красный квадрат). Логично: дорогие фильмы активнее рекламируют.</div>
+      <div class="tip">⚠️ Связь или причина? Большой бюджет помогает сборам, но не гарантирует — провалы на scatter это подтверждают. Значит, это связь, а не строгая причина.</div>
+    </div>
+
+    <div class="checklist">
+      <h3>Что должно быть в твоей работе</h3>
+      <div>три графика: гистограмма, scatter, heatmap</div>
+      <div>у каждого — заголовок и подписи осей</div>
+      <div>под каждым — предложение «что я вижу»</div>
+      <div>есть мысль про «связь ≠ причина» на heatmap</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const tabs=document.querySelectorAll('.tab');
+  const panels=document.querySelectorAll('.panel');
+  tabs.forEach(t=>t.addEventListener('click',()=>{
+    tabs.forEach(x=>x.classList.remove('active'));
+    panels.forEach(p=>p.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById(t.dataset.p).classList.add('active');
+  }));
+</script>
+</body>
+</html>

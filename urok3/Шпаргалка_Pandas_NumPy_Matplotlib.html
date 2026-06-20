@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Шпаргалка: Pandas · NumPy · Matplotlib</title>
+<style>
+  :root{
+    --bg:#1E1B4B; --bg2:#2E2A6B; --panel:#252160; --line:#3A3578;
+    --violet:#6D5DF6; --electric:#22D3EE; --gold:#FCD34D; --pink:#F472A6;
+    --text:#EDECFB; --muted:#A7A3D8; --code:#C7E8F5;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    min-height:100vh;padding:2.5vh 2vw}
+  .wrap{max-width:1500px;margin:0 auto}
+
+  /* tab switcher */
+  .tabs{display:flex;gap:1rem;justify-content:center;margin-bottom:2.2vh;flex-wrap:wrap}
+  .tab{background:var(--bg2);border:2px solid var(--line);color:var(--muted);
+    font-size:clamp(1.1rem,2.2vw,1.7rem);font-weight:800;padding:.7rem 2rem;border-radius:50px;
+    cursor:pointer;transition:.18s;letter-spacing:.5px}
+  .tab:hover{border-color:var(--violet);color:var(--text)}
+  .tab.active{color:#fff;transform:translateY(-2px)}
+  .tab[data-lib="pandas"].active{background:var(--violet);border-color:var(--violet)}
+  .tab[data-lib="numpy"].active{background:#0E7490;border-color:var(--electric);color:#fff}
+  .tab[data-lib="matplotlib"].active{background:#9D5BD2;border-color:#C084FC}
+
+  /* panel */
+  .panel{display:none;animation:fade .3s ease}
+  .panel.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  .hero{display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;
+    background:var(--panel);border:1px solid var(--line);border-radius:22px;
+    padding:2.2vh 2vw;margin-bottom:2vh}
+  .hero-icon{font-size:clamp(2.5rem,6vw,4.5rem);line-height:1}
+  .hero-main{flex:1;min-width:260px}
+  .hero-title{font-size:clamp(2.2rem,6vw,4.5rem);font-weight:900;letter-spacing:-1px;line-height:1}
+  .hero-sub{font-size:clamp(1rem,2.2vw,1.6rem);color:var(--muted);margin-top:.4rem;font-weight:600}
+  .hero-analogy{background:var(--bg);border-radius:16px;padding:1.4vh 1.4vw;
+    font-size:clamp(1rem,2.1vw,1.5rem);line-height:1.45;min-width:260px;flex:1}
+  .hero-analogy .lbl{font-size:.8em;font-weight:800;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:.4rem}
+  .why{font-size:clamp(1rem,2.1vw,1.5rem);line-height:1.5;margin-bottom:2.2vh;padding:0 .5vw}
+  .why b{font-weight:800}
+
+  /* command grid */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:1.1rem}
+  .cmd{background:var(--bg2);border:1px solid var(--line);border-radius:16px;
+    padding:1.6vh 1.4vw;transition:.15s}
+  .cmd:hover{border-color:var(--violet);transform:translateY(-2px)}
+  .cmd code{display:block;font-family:"SF Mono",Consolas,Monaco,monospace;
+    font-size:clamp(1.1rem,2.4vw,1.7rem);font-weight:700;color:var(--electric);
+    margin-bottom:.5rem;word-break:break-word}
+  .cmd .desc{font-size:clamp(.95rem,1.9vw,1.25rem);color:var(--text);line-height:1.4}
+
+  .accent-p code{color:#A99BFF}
+  .accent-n code{color:#22D3EE}
+  .accent-m code{color:#D9A6F5}
+
+  footer{text-align:center;margin-top:2.5vh;color:var(--muted);font-size:clamp(.85rem,1.6vw,1.05rem)}
+  .hint{display:inline-block;background:var(--bg2);padding:.4rem 1.2rem;border-radius:20px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="tabs">
+    <button class="tab active" data-lib="pandas">🐼 PANDAS</button>
+    <button class="tab" data-lib="numpy">🔢 NUMPY</button>
+    <button class="tab" data-lib="matplotlib">📊 MATPLOTLIB</button>
+  </div>
+
+  <!-- ============ PANDAS ============ -->
+  <div class="panel active" id="pandas">
+    <div class="hero">
+      <div class="hero-icon">🐼</div>
+      <div class="hero-main">
+        <div class="hero-title" style="color:#A99BFF">PANDAS</div>
+        <div class="hero-sub">Работа с таблицами данных</div>
+      </div>
+      <div class="hero-analogy" style="border-left:5px solid var(--violet)">
+        <span class="lbl" style="color:var(--violet)">Аналогия</span>
+        Это <b>Excel внутри Python</b>. Только вместо мышки — короткие команды,
+        и таблица в тысячи строк обрабатывается за секунду.
+      </div>
+    </div>
+    <div class="why">
+      <b>Зачем нужен:</b> вручную тысячи строк не пролистать. Pandas открывает таблицу,
+      считает, фильтрует и сортирует данные одной командой. Главный объект — <b>DataFrame</b> (его называют <code style="color:#A99BFF">df</code>).
+    </div>
+    <div class="grid accent-p">
+      <div class="cmd"><code>pd.read_csv(url)</code><div class="desc">Загрузить таблицу из файла или интернета</div></div>
+      <div class="cmd"><code>df.head()</code><div class="desc">Показать первые 5 строк — взглянуть на данные</div></div>
+      <div class="cmd"><code>df.tail()</code><div class="desc">Показать последние 5 строк</div></div>
+      <div class="cmd"><code>df.shape</code><div class="desc">Размер: (сколько строк, сколько столбцов)</div></div>
+      <div class="cmd"><code>df.info()</code><div class="desc">Список столбцов, их типы и где есть пропуски</div></div>
+      <div class="cmd"><code>df.describe()</code><div class="desc">Статистика: среднее, минимум, максимум</div></div>
+      <div class="cmd"><code>df.columns</code><div class="desc">Названия всех столбцов</div></div>
+      <div class="cmd"><code>df["Age"]</code><div class="desc">Взять один столбец по имени</div></div>
+      <div class="cmd"><code>df["Age"].mean()</code><div class="desc">Среднее значение по столбцу</div></div>
+      <div class="cmd"><code>df["Age"].max()</code><div class="desc">Максимум (и так же .min())</div></div>
+      <div class="cmd"><code>df["Sex"].value_counts()</code><div class="desc">Сколько раз встречается каждое значение</div></div>
+      <div class="cmd"><code>df[df["Age"] &gt; 18]</code><div class="desc">Фильтр: только строки, где возраст больше 18</div></div>
+      <div class="cmd"><code>df.sort_values("Age")</code><div class="desc">Отсортировать по столбцу</div></div>
+      <div class="cmd"><code>df.groupby("Sex").mean()</code><div class="desc">Сгруппировать и посчитать среднее по группам</div></div>
+      <div class="cmd"><code>df.isnull().sum()</code><div class="desc">Сколько пропусков в каждом столбце</div></div>
+      <div class="cmd"><code>df.dropna()</code><div class="desc">Удалить строки с пропусками</div></div>
+    </div>
+  </div>
+
+  <!-- ============ NUMPY ============ -->
+  <div class="panel" id="numpy">
+    <div class="hero">
+      <div class="hero-icon">🔢</div>
+      <div class="hero-main">
+        <div class="hero-title" style="color:#22D3EE">NUMPY</div>
+        <div class="hero-sub">Быстрые вычисления над числами</div>
+      </div>
+      <div class="hero-analogy" style="border-left:5px solid var(--electric)">
+        <span class="lbl" style="color:var(--electric)">Аналогия</span>
+        Это <b>супер-калькулятор для списков чисел</b>. Одна операция меняет сразу
+        тысячи чисел — не нужно проходить их по одному в цикле.
+      </div>
+    </div>
+    <div class="why">
+      <b>Зачем нужен:</b> считает быстро и сразу со всем массивом. На нём построены
+      <b>все ML-библиотеки и нейросети</b> — внутри они «думают» массивами NumPy.
+      Главный объект — <b>массив</b> (<code style="color:#22D3EE">array</code>).
+    </div>
+    <div class="grid accent-n">
+      <div class="cmd"><code>np.array([1, 2, 3])</code><div class="desc">Создать массив из списка чисел</div></div>
+      <div class="cmd"><code>np.zeros(5)</code><div class="desc">Массив из пяти нулей</div></div>
+      <div class="cmd"><code>np.ones(5)</code><div class="desc">Массив из пяти единиц</div></div>
+      <div class="cmd"><code>np.arange(0, 10)</code><div class="desc">Числа по порядку: 0,1,2…9</div></div>
+      <div class="cmd"><code>np.linspace(0, 1, 5)</code><div class="desc">5 чисел равномерно от 0 до 1</div></div>
+      <div class="cmd"><code>a + 1</code><div class="desc">Прибавить 1 ко ВСЕМ числам сразу</div></div>
+      <div class="cmd"><code>a * 2</code><div class="desc">Умножить все числа на 2 одной строкой</div></div>
+      <div class="cmd"><code>a.mean()</code><div class="desc">Среднее значение массива</div></div>
+      <div class="cmd"><code>a.sum()</code><div class="desc">Сумма всех чисел</div></div>
+      <div class="cmd"><code>a.max()</code><div class="desc">Максимум (и так же .min())</div></div>
+      <div class="cmd"><code>a.std()</code><div class="desc">Разброс значений (стандартное отклонение)</div></div>
+      <div class="cmd"><code>a.shape</code><div class="desc">Размер массива</div></div>
+      <div class="cmd"><code>a.reshape(2, 3)</code><div class="desc">Поменять форму: например в таблицу 2×3</div></div>
+      <div class="cmd"><code>a[0]</code><div class="desc">Взять первый элемент (счёт с нуля!)</div></div>
+      <div class="cmd"><code>a[a &gt; 5]</code><div class="desc">Оставить только числа больше 5</div></div>
+      <div class="cmd"><code>np.sqrt(a)</code><div class="desc">Корень из каждого числа сразу</div></div>
+    </div>
+  </div>
+
+  <!-- ============ MATPLOTLIB ============ -->
+  <div class="panel" id="matplotlib">
+    <div class="hero">
+      <div class="hero-icon">📊</div>
+      <div class="hero-main">
+        <div class="hero-title" style="color:#D9A6F5">MATPLOTLIB</div>
+        <div class="hero-sub">Графики и визуализация · + Seaborn</div>
+      </div>
+      <div class="hero-analogy" style="border-left:5px solid #C084FC">
+        <span class="lbl" style="color:#C084FC">Аналогия</span>
+        Это <b>художник для данных</b>. Таблицу чисел превращает в картинку,
+        где закономерность видно глазами за секунду. <b>Seaborn</b> делает то же, но красивее.
+      </div>
+    </div>
+    <div class="why">
+      <b>Зачем нужен:</b> один хороший график говорит больше, чем сто строк чисел.
+      <code style="color:#D9A6F5">plt</code> — это matplotlib, <code style="color:#D9A6F5">sns</code> — seaborn (надстройка для красоты).
+    </div>
+    <div class="grid accent-m">
+      <div class="cmd"><code>plt.figure(figsize=(8,4))</code><div class="desc">Задать размер будущего графика</div></div>
+      <div class="cmd"><code>sns.histplot(data=df, x="Age")</code><div class="desc">Гистограмма: «сколько чего» (распределение)</div></div>
+      <div class="cmd"><code>sns.scatterplot(x, y)</code><div class="desc">Точки: связаны ли два признака</div></div>
+      <div class="cmd"><code>sns.heatmap(df.corr())</code><div class="desc">Тепловая карта связей всех признаков</div></div>
+      <div class="cmd"><code>sns.boxplot(x, y)</code><div class="desc">«Ящик»: разброс и выбросы</div></div>
+      <div class="cmd"><code>sns.barplot(x, y)</code><div class="desc">Столбики для сравнения категорий</div></div>
+      <div class="cmd"><code>sns.lineplot(x, y)</code><div class="desc">Линия: как меняется со временем</div></div>
+      <div class="cmd"><code>sns.pairplot(df)</code><div class="desc">Сетка всех scatter сразу одним взглядом</div></div>
+      <div class="cmd"><code>hue="Survived"</code><div class="desc">Раскрасить точки по третьему признаку</div></div>
+      <div class="cmd"><code>plt.title("Заголовок")</code><div class="desc">Подписать график сверху</div></div>
+      <div class="cmd"><code>plt.xlabel("Возраст")</code><div class="desc">Подписать ось X (и plt.ylabel для Y)</div></div>
+      <div class="cmd"><code>plt.legend()</code><div class="desc">Показать пояснение к цветам</div></div>
+      <div class="cmd"><code>plt.show()</code><div class="desc">Показать готовый график</div></div>
+      <div class="cmd"><code>plt.savefig("plot.png")</code><div class="desc">Сохранить график в файл</div></div>
+    </div>
+  </div>
+
+  <footer>
+    <span class="hint">Нажимай на вкладки сверху, чтобы переключаться между библиотеками →</span>
+  </footer>
+</div>
+
+<script>
+  const tabs = document.querySelectorAll('.tab');
+  const panels = document.querySelectorAll('.panel');
+  tabs.forEach(tab=>{
+    tab.addEventListener('click',()=>{
+      const lib = tab.dataset.lib;
+      tabs.forEach(t=>t.classList.remove('active'));
+      panels.forEach(p=>p.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById(lib).classList.add('active');
+    });
+  });
+  // стрелки клавиатуры для удобства показа с проектора
+  document.addEventListener('keydown',e=>{
+    const order=['pandas','numpy','matplotlib'];
+    const cur=document.querySelector('.tab.active').dataset.lib;
+    let i=order.indexOf(cur);
+    if(e.key==='ArrowRight') i=(i+1)%3;
+    else if(e.key==='ArrowLeft') i=(i+2)%3;
+    else return;
+    document.querySelector('.tab[data-lib="'+order[i]+'"]').click();
+  });
+</script>
+</body>
+</html>
