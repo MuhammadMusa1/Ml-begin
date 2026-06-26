@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KNN вживую — демонстрация</title>
+<style>
+  :root{
+    --bg:#1E1B4B; --bg2:#2E2A6B; --panel:#252160; --line:#3A3578;
+    --violet:#6D5DF6; --electric:#22D3EE; --gold:#FCD34D;
+    --blue:#3B82F6; --pink:#F472A6; --text:#EDECFB; --muted:#A7A3D8;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    min-height:100vh;padding:2vh 2vw}
+  .wrap{max-width:1400px;margin:0 auto}
+  .head{text-align:center;margin-bottom:1.5vh}
+  .head h1{font-size:clamp(1.6rem,3.5vw,2.6rem);font-weight:900;letter-spacing:-.5px}
+  .head h1 .a{color:var(--electric)}
+  .head p{color:var(--muted);font-size:clamp(.9rem,1.8vw,1.2rem);margin-top:.3rem}
+
+  .layout{display:flex;gap:1.5rem;align-items:flex-start;flex-wrap:wrap}
+  .canvas-wrap{flex:1;min-width:320px;background:var(--panel);border:1px solid var(--line);
+    border-radius:18px;padding:1rem;position:relative}
+  canvas{width:100%;height:auto;border-radius:12px;cursor:crosshair;display:block;background:#11102e}
+  .axis-x{text-align:center;color:var(--muted);font-size:.95rem;margin-top:.5rem;font-weight:600}
+  .axis-y{position:absolute;left:-6px;top:50%;transform:rotate(-90deg) translateX(50%);
+    transform-origin:left center;color:var(--muted);font-size:.95rem;font-weight:600;white-space:nowrap}
+
+  .controls{width:340px;display:flex;flex-direction:column;gap:1rem}
+  @media(max-width:900px){.controls{width:100%}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:1.2rem}
+  .card h3{font-size:1.1rem;margin-bottom:.8rem;color:#fff;border-left:3px solid var(--electric);padding-left:10px}
+
+  /* K slider */
+  .kval{font-size:2.4rem;font-weight:900;color:var(--electric);text-align:center;line-height:1}
+  .ksub{text-align:center;color:var(--muted);font-size:.9rem;margin-bottom:.8rem}
+  input[type=range]{width:100%;accent-color:var(--violet);height:8px;cursor:pointer}
+  .ktips{display:flex;justify-content:space-between;color:var(--muted);font-size:.8rem;margin-top:.3rem}
+  .kwarn{margin-top:.7rem;padding:.6rem .8rem;border-radius:8px;font-size:.85rem;display:none}
+  .kwarn.show{display:block}
+  .kwarn.odd{background:#0e3a2a;color:#C5F0DE;border-left:3px solid #34D399}
+  .kwarn.even{background:#3a2e0f;color:#F5E5BE;border-left:3px solid var(--gold)}
+
+  /* class picker */
+  .picker{display:flex;gap:.6rem}
+  .cls{flex:1;border:2px solid var(--line);border-radius:12px;padding:.8rem;cursor:pointer;
+    text-align:center;font-weight:700;transition:.15s;background:var(--bg2)}
+  .cls .dot{width:18px;height:18px;border-radius:50%;display:inline-block;margin-right:6px;vertical-align:middle}
+  .cls.active{transform:translateY(-2px)}
+  .cls.blue.active{border-color:var(--blue);background:rgba(59,130,246,.2)}
+  .cls.pink.active{border-color:var(--pink);background:rgba(244,114,166,.2)}
+
+  .btns{display:flex;flex-direction:column;gap:.6rem}
+  .btn{border:none;border-radius:10px;padding:.8rem;font-size:.95rem;font-weight:700;cursor:pointer;
+    color:#fff;transition:.15s}
+  .btn-primary{background:var(--violet)} .btn-primary:hover{background:#5848e0}
+  .btn-ghost{background:var(--bg2);border:1px solid var(--line);color:var(--text)}
+  .btn-ghost:hover{border-color:var(--violet)}
+  .btn-demo{background:var(--gold);color:#1E1B4B} .btn-demo:hover{filter:brightness(1.08)}
+
+  .hint{font-size:.85rem;color:var(--muted);line-height:1.5}
+  .hint b{color:var(--electric)}
+  .stat{display:flex;justify-content:space-between;font-size:.95rem;padding:.3rem 0;border-bottom:1px solid var(--line)}
+  .stat:last-child{border-bottom:none}
+  .stat span:last-child{font-weight:700;color:var(--text)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <h1>KNN <span class="a">вживую</span></h1>
+    <p>Ставь точки двух классов — алгоритм сам закрасит зоны. Двигай K — границы меняются на глазах.</p>
+  </div>
+
+  <div class="layout">
+    <div class="canvas-wrap">
+      <span class="axis-y">часов спорта 🏀</span>
+      <canvas id="cv" width="640" height="560"></canvas>
+      <div class="axis-x">часов игр 🎮 →</div>
+    </div>
+
+    <div class="controls">
+      <div class="card">
+        <h3>K — число соседей</h3>
+        <div class="kval" id="kval">3</div>
+        <div class="ksub">спрашиваем 3 ближайших</div>
+        <input type="range" id="kslider" min="1" max="15" value="3">
+        <div class="ktips"><span>1</span><span>8</span><span>15</span></div>
+        <div class="kwarn odd show" id="kwarn">✅ Нечётное K — ничьей не будет</div>
+      </div>
+
+      <div class="card">
+        <h3>Каким классом ставить точку</h3>
+        <div class="picker">
+          <div class="cls blue active" data-cls="0"><span class="dot" style="background:#3B82F6"></span>Спорт</div>
+          <div class="cls pink" data-cls="1"><span class="dot" style="background:#F472A6"></span>Игры</div>
+        </div>
+        <p class="hint" style="margin-top:.7rem">Кликни по полю, чтобы добавить точку выбранного класса. Фон сразу пересчитается.</p>
+      </div>
+
+      <div class="card">
+        <div class="stat"><span>Точек «Спорт»</span><span id="nBlue">0</span></div>
+        <div class="stat"><span>Точек «Игры»</span><span id="nPink">0</span></div>
+      </div>
+
+      <div class="btns">
+        <button class="btn btn-demo" id="demoBtn">🐧 Пример «Маша» из урока</button>
+        <button class="btn btn-ghost" id="undoBtn">↶ Убрать последнюю</button>
+        <button class="btn btn-ghost" id="clearBtn">🗑 Очистить всё</button>
+      </div>
+
+      <div class="card">
+        <p class="hint"><b>Как вести:</b> поставь по 3–4 точки каждого класса, покажи закрашенные зоны. Потом двигай K от 1 до 15 — на K=1 границы «рваные», на большом K — сглаживаются. Поставь точку на границе и меняй K — ответ переключается!</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const cv = document.getElementById('cv');
+const ctx = cv.getContext('2d');
+const W = cv.width, H = cv.height;
+const COL = [[59,130,246],[244,114,166]]; // blue, pink
+let points = [];        // {x,y,cls}
+let curCls = 0;
+let K = 3;
+const STEP = 16;        // размер ячейки фоновой сетки (крупнее = быстрее)
+
+function knnClass(px, py){
+  if(points.length === 0) return -1;
+  const k = Math.min(K, points.length);
+  const d = points.map(p => ({cls:p.cls, dist:(p.x-px)**2 + (p.y-py)**2}));
+  d.sort((a,b)=>a.dist-b.dist);
+  let votes=[0,0];
+  for(let i=0;i<k;i++) votes[d[i].cls]++;
+  if(votes[0]===votes[1]) return 2; // ничья
+  return votes[0]>votes[1] ? 0 : 1;
+}
+
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  // фон — закраска по решению KNN
+  if(points.length>0){
+    for(let gx=0; gx<W; gx+=STEP){
+      for(let gy=0; gy<H; gy+=STEP){
+        const c = knnClass(gx+STEP/2, gy+STEP/2);
+        if(c===2){ ctx.fillStyle='rgba(252,211,77,0.25)'; }
+        else if(c===0){ ctx.fillStyle='rgba(59,130,246,0.22)'; }
+        else { ctx.fillStyle='rgba(244,114,166,0.22)'; }
+        ctx.fillRect(gx,gy,STEP,STEP);
+      }
+    }
+  }
+  // сетка
+  ctx.strokeStyle='rgba(255,255,255,0.05)';
+  ctx.lineWidth=1;
+  for(let x=0;x<=W;x+=64){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let y=0;y<=H;y+=64){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  // точки
+  points.forEach(p=>{
+    const [r,g,b]=COL[p.cls];
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,9,0,Math.PI*2);
+    ctx.fillStyle=`rgb(${r},${g},${b})`;
+    ctx.fill();
+    ctx.lineWidth=2.5; ctx.strokeStyle='#fff'; ctx.stroke();
+  });
+  document.getElementById('nBlue').textContent = points.filter(p=>p.cls===0).length;
+  document.getElementById('nPink').textContent = points.filter(p=>p.cls===1).length;
+}
+
+cv.addEventListener('click', e=>{
+  const rect = cv.getBoundingClientRect();
+  const x = (e.clientX-rect.left) * (W/rect.width);
+  const y = (e.clientY-rect.top) * (H/rect.height);
+  points.push({x,y,cls:curCls});
+  draw();
+});
+
+// class picker
+document.querySelectorAll('.cls').forEach(el=>{
+  el.addEventListener('click',()=>{
+    document.querySelectorAll('.cls').forEach(x=>x.classList.remove('active'));
+    el.classList.add('active');
+    curCls = parseInt(el.dataset.cls);
+  });
+});
+
+// K slider
+const ksl = document.getElementById('kslider');
+ksl.addEventListener('input',()=>{
+  K = parseInt(ksl.value);
+  document.getElementById('kval').textContent = K;
+  document.getElementById('ksub').textContent = 'спрашиваем '+K+(K===1?' ближайшего':' ближайших');
+  const w = document.getElementById('kwarn');
+  if(K%2===1){ w.className='kwarn odd show'; w.textContent='✅ Нечётное K — ничьей не будет'; }
+  else { w.className='kwarn even show'; w.textContent='⚠️ Чётное K — возможна ничья (жёлтые зоны)'; }
+  draw();
+});
+
+document.getElementById('undoBtn').addEventListener('click',()=>{points.pop();draw();});
+document.getElementById('clearBtn').addEventListener('click',()=>{points=[];draw();});
+
+// демо «Маша»: спорт-кластер слева-сверху, игры справа-снизу
+document.getElementById('demoBtn').addEventListener('click',()=>{
+  // x = часы игр (горизонталь), y = часы спорта (вертикаль, инвертируем — больше спорта выше)
+  // спортсмены: мало игр, много спорта (левый верх)
+  // геймеры: много игр, мало спорта (правый низ)
+  points = [
+    {x:140,y:110,cls:0},{x:90,y:170,cls:0},{x:200,y:150,cls:0},
+    {x:120,y:240,cls:0},{x:230,y:90,cls:0},
+    {x:480,y:430,cls:1},{x:540,y:380,cls:1},{x:430,y:470,cls:1},
+    {x:500,y:300,cls:1},{x:560,y:450,cls:1},
+  ];
+  draw();
+});
+
+// старт с примером
+document.getElementById('demoBtn').click();
+</script>
+</body>
+</html>
