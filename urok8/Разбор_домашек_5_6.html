@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Разбор домашек · Уроки 5 и 6</title>
+<style>
+  :root{
+    --bg:#1E1B4B; --bg2:#2E2A6B; --panel:#252160; --line:#3A3578;
+    --violet:#6D5DF6; --electric:#22D3EE; --gold:#FCD34D; --green:#34D399; --pink:#F472A6;
+    --text:#EDECFB; --muted:#A7A3D8; --code:#C7E8F5; --ink:#1F2937;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#F3F2FB;color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.55;padding:0 0 60px}
+  .wrap{max-width:860px;margin:0 auto;padding:0 18px}
+  header{background:var(--bg);color:#fff;padding:32px 0 28px;margin-bottom:8px;border-radius:0 0 22px 22px}
+  header h1{font-size:26px;font-weight:800}
+  header p{color:#C7C4F0;margin-top:8px;font-size:15px}
+  .note{font-size:13px;color:var(--muted);margin:16px 0 6px}
+  .tabs{display:flex;gap:10px;margin:22px 0 18px}
+  .tab{flex:1;background:#fff;border:2px solid var(--line);color:var(--muted);
+    font-size:15px;font-weight:700;padding:12px;border-radius:12px;cursor:pointer;transition:.15s}
+  .tab.active{background:var(--violet);border-color:var(--violet);color:#fff}
+  .panel{display:none}
+  .panel.active{display:block;animation:fade .3s}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .task-box{background:#EDE9FE;border-left:4px solid var(--violet);border-radius:10px;padding:14px 18px;margin-bottom:22px}
+  .task-box .lbl{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--violet);display:block;margin-bottom:6px}
+  .step{background:#fff;border:1px solid #E5E3F5;border-radius:14px;padding:18px 20px;margin-bottom:16px;box-shadow:0 1px 3px rgba(30,27,75,.05)}
+  .step-head{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+  .step-num{background:var(--violet);color:#fff;width:30px;height:30px;border-radius:8px;
+    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;flex-shrink:0}
+  .step-title{font-size:17px;font-weight:700;color:var(--ink)}
+  pre{background:#11102e;color:var(--code);border-radius:10px;padding:13px 16px;overflow-x:auto;
+    font-family:"SF Mono",Consolas,Monaco,monospace;font-size:14px;line-height:1.5;margin:8px 0}
+  .out{background:#E1F5EE;border-left:4px solid var(--green);border-radius:8px;padding:10px 14px;margin-top:10px;font-size:14px;color:#0F6E56}
+  .out b{font-weight:700}
+  .tip{background:#FEF6E0;border-left:4px solid var(--gold);border-radius:8px;padding:10px 14px;margin-top:10px;font-size:14px;color:#7a5a06}
+  .answer{background:var(--bg);color:#EDECFB;border-radius:12px;padding:16px 18px;margin-top:10px;font-size:14px;line-height:1.6}
+  .answer b{color:var(--electric)}
+  .checklist{background:#fff;border:1px solid #E5E3F5;border-radius:14px;padding:18px 20px;margin-top:8px}
+  .checklist h3{font-size:16px;margin-bottom:10px;color:var(--violet)}
+  .checklist div{font-size:15px;margin:7px 0;padding-left:26px;position:relative}
+  .checklist div::before{content:"✅";position:absolute;left:0}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>Разбор домашних заданий</h1>
+    <p>Уроки 5 и 6 · KNN и честная проверка — сверь со своим решением</p>
+  </div>
+</header>
+
+<div class="wrap">
+  <p class="note">Работаем на «Титанике» — том же датасете, что на уроках. У тебя ответы могут чуть отличаться (зависит от разбиения), но логика та же.</p>
+
+  <div class="tabs">
+    <button class="tab active" data-p="hw5">ДЗ урока 5 — KNN</button>
+    <button class="tab" data-p="hw6">ДЗ урока 6 — Train/Test</button>
+  </div>
+
+  <!-- ===== HW5 ===== -->
+  <div class="panel active" id="hw5">
+    <div class="task-box">
+      <span class="lbl">Задание</span>
+      1) Найти лучший K (минимум 5 значений). 2) Предсказать своего пассажира. 3) Подумать: почему проверять на тех же данных — это «списывать»?
+    </div>
+
+    <div class="step">
+      <div class="step-head"><div class="step-num">1</div><div class="step-title">Перебор K — какой лучше</div></div>
+      <pre>for k in [1, 3, 5, 7, 9]:
+    m = KNeighborsClassifier(n_neighbors=k)
+    m.fit(X, y)
+    acc = accuracy_score(y, m.predict(X))
+    print(f"K={k}: {round(acc, 2)}")</pre>
+      <div class="out"><b>Примерный результат:</b> K=1 даёт самую высокую точность (~0.98), но это обманчиво — на уроке 6 поймём почему. Из честных вариантов обычно хорош K=5–9.</div>
+      <div class="tip">💡 Бери только нечётные K (1, 3, 5, 7, 9) — чтобы не было ничьей между классами.</div>
+    </div>
+
+    <div class="step">
+      <div class="step-head"><div class="step-num">2</div><div class="step-title">Предсказать своего пассажира</div></div>
+      <pre>new = pd.DataFrame([[1, 0, 25, 100]],
+        columns=["Pclass","Sex","Age","Fare"])
+new = scaler.transform(new)
+print(model.predict(new))   # 1 = выжил, 0 = нет</pre>
+      <div class="out"><b>Пример вывода:</b> для «1 класс, женщина, 25 лет, дорогой билет» модель обычно отвечает <b>Выжил</b>. Логично: женщины и 1 класс чаще выживали.</div>
+    </div>
+
+    <div class="step">
+      <div class="step-head"><div class="step-num">3</div><div class="step-title">Почему проверять на тех же данных — «списывать»?</div></div>
+      <div class="answer">
+        Модель эти данные <b>уже видела и запомнила</b>. Проверять на них — как решать контрольную,
+        подглядывая в ответы. Высокая точность тут не значит, что модель умная — она просто
+        «узнаёт знакомых». Честно — проверять на данных, которые модель <b>не видела</b>.
+        Это и есть тема урока 6.
+      </div>
+    </div>
+
+    <div class="checklist">
+      <h3>Что должно быть в твоей работе</h3>
+      <div>перебрал минимум 5 нечётных K и записал лучший</div>
+      <div>предсказал своего пассажира и объяснил результат</div>
+      <div>сформулировал, почему проверка на train — это «списывание»</div>
+    </div>
+  </div>
+
+  <!-- ===== HW6 ===== -->
+  <div class="panel" id="hw6">
+    <div class="task-box">
+      <span class="lbl">Задание</span>
+      1) Найти лучший K по ТЕСТУ. 2) Сравнить train и test при K=5. 3) Подумать: можно ли честно поделить 10 строк?
+    </div>
+
+    <div class="step">
+      <div class="step-head"><div class="step-num">1</div><div class="step-title">Лучший K — по тесту, не по train!</div></div>
+      <pre>for k in [1, 3, 5, 7, 9, 11]:
+    m = KNeighborsClassifier(n_neighbors=k)
+    m.fit(X_train, y_train)
+    acc = accuracy_score(y_test, m.predict(X_test))
+    print(f"K={k}: тест {round(acc, 2)}")</pre>
+      <div class="out"><b>Примерный результат:</b> лучший результат на тесте обычно у K около 7–11 (~0.80). Заметь: K=1 больше НЕ выигрывает — на тесте видно, что он переобучен.</div>
+    </div>
+
+    <div class="step">
+      <div class="step-head"><div class="step-num">2</div><div class="step-title">Train vs Test при K=5</div></div>
+      <div class="answer">
+        <b>Train: ≈ 0.86</b> · <b>Test: ≈ 0.78</b><br><br>
+        <b>Больше — train.</b> Почему? Обучающие данные модель видела и «помнит», поэтому
+        на них угадывает лучше. Test — новые данные, там честная оценка. Небольшой разрыв
+        (0.86 против 0.78) — это норма. А вот если бы было 0.99 против 0.65 — модель зазубрила.
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-head"><div class="step-num">3</div><div class="step-title">Можно ли честно поделить 10 строк?</div></div>
+      <div class="answer">
+        <b>Почти нет.</b> Если отдать 20% в тест — это всего 2 строки. По двум примерам
+        нельзя честно судить о модели: одна ошибка — и точность уже 50%. Данных слишком мало.
+        <br><br>Выход есть — <b>кросс-валидация</b> (по очереди тестируем на разных кусочках).
+        Это мы разберём позже.
+      </div>
+      <div class="tip">💡 Это была подводка к следующей теме — не переживай, если ответ был неочевиден.</div>
+    </div>
+
+    <div class="checklist">
+      <h3>Что должно быть в твоей работе</h3>
+      <div>искал лучший K именно по тесту (не по train)</div>
+      <div>записал обе точности при K=5 и объяснил, почему train больше</div>
+      <div>порассуждал про маленький датасет</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const tabs=document.querySelectorAll('.tab');
+  const panels=document.querySelectorAll('.panel');
+  tabs.forEach(t=>t.addEventListener('click',()=>{
+    tabs.forEach(x=>x.classList.remove('active'));
+    panels.forEach(p=>p.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById(t.dataset.p).classList.add('active');
+  }));
+</script>
+</body>
+</html>
