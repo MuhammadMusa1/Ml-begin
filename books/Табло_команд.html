@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Табло команд — ML курс</title>
+<style>
+  :root{
+    --bg:#1E1B4B; --bg2:#2E2A6B; --panel:#252160; --line:#3A3578;
+    --violet:#6D5DF6; --electric:#22D3EE; --gold:#FCD34D; --green:#34D399; --pink:#F472A6;
+    --text:#EDECFB; --muted:#A7A3D8;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    min-height:100vh;padding:2.5vh 2vw}
+  .wrap{max-width:1300px;margin:0 auto}
+  .head{text-align:center;margin-bottom:2vh}
+  .head h1{font-size:clamp(1.6rem,3.5vw,2.6rem);font-weight:900;letter-spacing:-.5px}
+  .head h1 .a{color:var(--electric)}
+  .head p{color:var(--muted);font-size:clamp(.85rem,1.6vw,1.1rem);margin-top:.3rem}
+
+  .teams{display:flex;gap:1.5rem;flex-wrap:wrap;margin-bottom:1.5vh}
+  .team{flex:1;min-width:300px;border-radius:20px;padding:2vh 1.5vw;text-align:center;
+    border:2px solid var(--line);transition:.2s;position:relative;overflow:hidden}
+  .team.blue{background:linear-gradient(160deg,#1e3a8a33,#2E2A6B)}
+  .team.pink{background:linear-gradient(160deg,#83184033,#2E2A6B)}
+  .team.leading{box-shadow:0 0 0 3px var(--gold),0 8px 30px rgba(252,211,77,.2)}
+  .team .crown{position:absolute;top:12px;right:16px;font-size:2rem;opacity:0;transition:.3s}
+  .team.leading .crown{opacity:1}
+  .team .emoji{font-size:clamp(2.5rem,6vw,4rem)}
+  .team .name{font-size:clamp(1.4rem,3vw,2.2rem);font-weight:900;margin:.3rem 0}
+  .team.blue .name{color:#60A5FA}
+  .team.pink .name{color:#F472A6}
+  .team .score{font-size:clamp(3.5rem,10vw,7rem);font-weight:900;line-height:1;color:#fff}
+  .team .plusrow{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-top:1.2vh}
+  .pbtn{border:none;border-radius:12px;padding:.7rem 1rem;font-size:1.1rem;font-weight:800;
+    cursor:pointer;transition:.15s;color:#fff}
+  .pbtn:active{transform:scale(.92)}
+  .pbtn.p1{background:var(--green)} .pbtn.p2{background:var(--violet)} .pbtn.p3{background:var(--gold);color:#1E1B4B}
+  .pbtn.minus{background:#7f1d1d}
+  .pbtn.custom{background:var(--bg);border:1px solid var(--line)}
+
+  .vs{align-self:center;font-size:clamp(1.5rem,3vw,2.5rem);font-weight:900;color:var(--gold);flex:0 0 auto}
+
+  .log-card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:1.5vh 1.5vw;margin-bottom:1.5vh}
+  .log-card h3{font-size:1.1rem;margin-bottom:.8rem;color:#fff;border-left:3px solid var(--electric);padding-left:10px;display:flex;justify-content:space-between;align-items:center}
+  .log-card h3 button{background:var(--bg2);border:1px solid var(--line);color:var(--muted);
+    border-radius:8px;padding:.3rem .8rem;font-size:.8rem;cursor:pointer}
+  .log{max-height:22vh;overflow-y:auto;font-size:.95rem}
+  .log-item{display:flex;justify-content:space-between;padding:.5rem .3rem;border-bottom:1px solid var(--line)}
+  .log-item:last-child{border-bottom:none}
+  .log-item .who{font-weight:700}
+  .log-item .who.blue{color:#60A5FA} .log-item .who.pink{color:#F472A6}
+  .log-item .pts{font-weight:800}
+  .log-item .pts.pos{color:var(--green)} .log-item .pts.neg{color:var(--pink)}
+  .log-empty{color:var(--muted);text-align:center;padding:1rem;font-style:italic}
+
+  .reasons{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:1.2vh 1.5vw}
+  .reasons h3{font-size:1rem;margin-bottom:.6rem;color:var(--electric)}
+  .reasons ul{margin-left:1.2rem;font-size:.9rem;color:var(--muted);line-height:1.6}
+  .reasons b{color:var(--text)}
+
+  .toolbar{display:flex;gap:.8rem;justify-content:center;margin-top:1.5vh;flex-wrap:wrap}
+  .tbtn{background:var(--bg2);border:1px solid var(--line);color:var(--text);
+    border-radius:10px;padding:.6rem 1.2rem;font-size:.9rem;font-weight:600;cursor:pointer}
+  .tbtn.danger{border-color:#7f1d1d;color:#fca5a5}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <h1>Табло команд <span class="a">ML-курса</span></h1>
+    <p>Очки копятся весь курс. Побеждает не тот, кто зазубрил — а тот, у кого честный результат!</p>
+  </div>
+
+  <div class="teams">
+    <div class="team blue" id="teamBlue">
+      <div class="crown">👑</div>
+      <div class="emoji">🧠</div>
+      <div class="name" id="nameBlue">Нейроны</div>
+      <div class="score" id="scoreBlue">0</div>
+      <div class="plusrow">
+        <button class="pbtn p1" onclick="add('blue',1,'+1 балл')">+1</button>
+        <button class="pbtn p2" onclick="add('blue',2,'+2 балла')">+2</button>
+        <button class="pbtn p3" onclick="add('blue',3,'+3 балла')">+3</button>
+        <button class="pbtn minus" onclick="add('blue',-1,'штраф')">−1</button>
+      </div>
+    </div>
+
+    <div class="vs">VS</div>
+
+    <div class="team pink" id="teamPink">
+      <div class="crown">👑</div>
+      <div class="emoji">🎮</div>
+      <div class="name" id="namePink">Пиксели</div>
+      <div class="score" id="scorePink">0</div>
+      <div class="plusrow">
+        <button class="pbtn p1" onclick="add('pink',1,'+1 балл')">+1</button>
+        <button class="pbtn p2" onclick="add('pink',2,'+2 балла')">+2</button>
+        <button class="pbtn p3" onclick="add('pink',3,'+3 балла')">+3</button>
+        <button class="pbtn minus" onclick="add('pink',-1,'штраф')">−1</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="log-card">
+    <h3>История очков <button onclick="undoLast()">↶ отменить последнее</button></h3>
+    <div class="log" id="log"><div class="log-empty">Пока пусто — начисляй очки кнопками выше</div></div>
+  </div>
+
+  <div class="reasons">
+    <h3>За что даём очки</h3>
+    <ul>
+      <li><b>+3</b> — победа в соревновании урока (лучший K, глубина дерева, меньший MAE на тесте)</li>
+      <li><b>+2</b> — хороший вопрос, замеченная ошибка, помощь товарищу, найденный инсайт</li>
+      <li><b>+1</b> — правильный ответ в тесте/Kahoot</li>
+      <li><b>+3</b> — честность: сами заметили, что «списали с train», и исправили</li>
+    </ul>
+  </div>
+
+  <div class="toolbar">
+    <button class="tbtn" onclick="renameTeams()">✏️ Переименовать команды</button>
+    <button class="tbtn danger" onclick="resetAll()">🔄 Сбросить счёт (новый курс)</button>
+  </div>
+</div>
+
+<script>
+// состояние храним в памяти + пробуем сохранить между занятиями через window.storage (если доступно)
+let state = { blue:0, pink:0, nameBlue:"Нейроны", namePink:"Пиксели", log:[] };
+
+async function load(){
+  try{
+    if(window.storage){
+      const r = await window.storage.get('scoreboard');
+      if(r && r.value){ state = JSON.parse(r.value); }
+    }
+  }catch(e){ /* нет хранилища — работаем в памяти */ }
+  render();
+}
+async function save(){
+  try{
+    if(window.storage){ await window.storage.set('scoreboard', JSON.stringify(state)); }
+  }catch(e){}
+}
+
+function add(team, pts, reason){
+  state[team] += pts;
+  if(state[team] < 0) state[team] = 0;
+  const name = team==='blue' ? state.nameBlue : state.namePink;
+  state.log.unshift({team, pts, reason, name, time:new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})});
+  if(state.log.length > 40) state.log.pop();
+  save(); render();
+}
+
+function undoLast(){
+  if(state.log.length===0) return;
+  const last = state.log.shift();
+  state[last.team] -= last.pts;
+  if(state[last.team] < 0) state[last.team] = 0;
+  save(); render();
+}
+
+function renameTeams(){
+  const b = prompt("Название синей команды:", state.nameBlue);
+  if(b!==null && b.trim()) state.nameBlue = b.trim();
+  const p = prompt("Название розовой команды:", state.namePink);
+  if(p!==null && p.trim()) state.namePink = p.trim();
+  save(); render();
+}
+
+function resetAll(){
+  if(confirm("Сбросить весь счёт и историю? (для нового курса)")){
+    state = { blue:0, pink:0, nameBlue:state.nameBlue, namePink:state.namePink, log:[] };
+    save(); render();
+  }
+}
+
+function render(){
+  document.getElementById('scoreBlue').textContent = state.blue;
+  document.getElementById('scorePink').textContent = state.pink;
+  document.getElementById('nameBlue').textContent = state.nameBlue;
+  document.getElementById('namePink').textContent = state.namePink;
+  // корона лидеру
+  document.getElementById('teamBlue').classList.toggle('leading', state.blue > state.pink);
+  document.getElementById('teamPink').classList.toggle('leading', state.pink > state.blue);
+  // лог
+  const log = document.getElementById('log');
+  if(state.log.length===0){
+    log.innerHTML = '<div class="log-empty">Пока пусто — начисляй очки кнопками выше</div>';
+  } else {
+    log.innerHTML = state.log.map(it=>{
+      const cls = it.team==='blue'?'blue':'pink';
+      const sign = it.pts>=0 ? 'pos':'neg';
+      const ptsStr = (it.pts>=0?'+':'') + it.pts;
+      return `<div class="log-item"><span class="who ${cls}">${it.name}</span>`+
+             `<span>${it.reason} · ${it.time}</span>`+
+             `<span class="pts ${sign}">${ptsStr}</span></div>`;
+    }).join('');
+  }
+}
+
+load();
+</script>
+</body>
+</html>

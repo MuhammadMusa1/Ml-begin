@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Дерево решений — демонстрация</title>
+<style>
+  :root{
+    --bg:#1E1B4B; --bg2:#2E2A6B; --panel:#252160; --line:#3A3578;
+    --violet:#6D5DF6; --electric:#22D3EE; --gold:#FCD34D;
+    --green:#34D399; --pink:#F472A6; --text:#EDECFB; --muted:#A7A3D8;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    min-height:100vh;padding:2vh 2vw}
+  .wrap{max-width:1400px;margin:0 auto}
+  .head{text-align:center;margin-bottom:1.5vh}
+  .head h1{font-size:clamp(1.6rem,3.5vw,2.6rem);font-weight:900;letter-spacing:-.5px}
+  .head h1 .a{color:var(--electric)}
+  .head p{color:var(--muted);font-size:clamp(.9rem,1.8vw,1.2rem);margin-top:.3rem}
+
+  .layout{display:flex;gap:1.5rem;align-items:flex-start;flex-wrap:wrap}
+  .tree-wrap{flex:1;min-width:340px;background:var(--panel);border:1px solid var(--line);
+    border-radius:18px;padding:1rem}
+  svg{width:100%;height:auto;display:block}
+  .controls{width:340px;display:flex;flex-direction:column;gap:1rem}
+  @media(max-width:900px){.controls{width:100%}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:1.2rem}
+  .card h3{font-size:1.1rem;margin-bottom:.8rem;color:#fff;border-left:3px solid var(--electric);padding-left:10px}
+
+  .dval{font-size:2.4rem;font-weight:900;color:var(--electric);text-align:center;line-height:1}
+  .dsub{text-align:center;color:var(--muted);font-size:.9rem;margin-bottom:.8rem}
+  input[type=range]{width:100%;accent-color:var(--violet);height:8px;cursor:pointer}
+  .dtips{display:flex;justify-content:space-between;color:var(--muted);font-size:.8rem;margin-top:.3rem}
+
+  .accuracy{display:flex;gap:.8rem}
+  .acc-box{flex:1;border-radius:12px;padding:.9rem;text-align:center}
+  .acc-box.train{background:var(--bg2);border:1px solid var(--line)}
+  .acc-box.test{background:var(--bg2);border:1px solid var(--line)}
+  .acc-box .lbl{font-size:.85rem;color:var(--muted);margin-bottom:.3rem}
+  .acc-box .val{font-size:1.8rem;font-weight:800}
+  .acc-box.train .val{color:var(--text)}
+  .acc-box.test .val{color:var(--electric)}
+  .verdict{margin-top:.9rem;padding:.7rem .9rem;border-radius:10px;font-size:.9rem;text-align:center;font-weight:600}
+  .verdict.good{background:#0e3a2a;color:#C5F0DE;border-left:3px solid var(--green)}
+  .verdict.over{background:#3d1730;color:#F5D6E3;border-left:3px solid var(--pink)}
+
+  .hint{font-size:.85rem;color:var(--muted);line-height:1.5}
+  .hint b{color:var(--electric)}
+  .legend{display:flex;gap:1rem;justify-content:center;margin-top:.6rem;font-size:.85rem}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .legend .dot{width:14px;height:14px;border-radius:4px;display:inline-block}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <h1>Дерево решений <span class="a">вживую</span></h1>
+    <p>Двигай глубину — смотри, как дерево растёт. Больше глубина = больше вопросов = риск «зазубрить».</p>
+  </div>
+
+  <div class="layout">
+    <div class="tree-wrap">
+      <svg id="tree" viewBox="0 0 800 520"></svg>
+      <div class="legend">
+        <span><span class="dot" style="background:#6D5DF6"></span> вопрос</span>
+        <span><span class="dot" style="background:#34D399"></span> выжил</span>
+        <span><span class="dot" style="background:#F472A6"></span> не выжил</span>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="card">
+        <h3>Глубина дерева (max_depth)</h3>
+        <div class="dval" id="dval">2</div>
+        <div class="dsub" id="dsub">дерево задаёт 2 вопроса подряд</div>
+        <input type="range" id="depth" min="1" max="5" value="2">
+        <div class="dtips"><span>1</span><span>3</span><span>5</span></div>
+      </div>
+
+      <div class="card">
+        <h3>Точность модели</h3>
+        <div class="accuracy">
+          <div class="acc-box train"><div class="lbl">TRAIN</div><div class="val" id="trainAcc">0.79</div></div>
+          <div class="acc-box test"><div class="lbl">TEST</div><div class="val" id="testAcc">0.77</div></div>
+        </div>
+        <div class="verdict good" id="verdict">✅ Близкие цифры — дерево поняло</div>
+      </div>
+
+      <div class="card">
+        <p class="hint"><b>Как вести:</b> начни с глубины 1 — дерево задаёт один вопрос, точность низкая. Увеличивай — дерево умнеет. Но дойди до 5: <b>train почти идеальный, а test падает</b> — это переобучение. Дерево зазубрило, а не поняло.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const svg = document.getElementById('tree');
+const NS = "http://www.w3.org/2000/svg";
+
+// имитация точности для разных глубин (реалистичные цифры на Titanic)
+const ACC = {
+  1: {train:0.68, test:0.66, v:"low"},
+  2: {train:0.79, test:0.77, v:"good"},
+  3: {train:0.83, test:0.78, v:"good"},
+  4: {train:0.88, test:0.75, v:"warn"},
+  5: {train:0.93, test:0.72, v:"over"},
+};
+
+// вопросы для узлов по уровням (осмысленные для Titanic)
+const QUESTIONS = [
+  "Пол = женский?",
+  ["Класс = 1 или 2?", "Возраст < 10?"],
+  ["Возраст < 40?", "Цена > 50?", "Класс = 3?", "Один?"],
+];
+const LEAVES = ["выжил","не выжил"];
+
+function rect(x,y,w,h,fill,stroke){
+  const r=document.createElementNS(NS,'rect');
+  r.setAttribute('x',x);r.setAttribute('y',y);r.setAttribute('width',w);r.setAttribute('height',h);
+  r.setAttribute('rx',10);r.setAttribute('fill',fill);
+  if(stroke){r.setAttribute('stroke',stroke);r.setAttribute('stroke-width',2);}
+  svg.appendChild(r);
+}
+function text(x,y,str,size,color,bold){
+  const t=document.createElementNS(NS,'text');
+  t.setAttribute('x',x);t.setAttribute('y',y);t.setAttribute('text-anchor','middle');
+  t.setAttribute('fill',color);t.setAttribute('font-size',size);
+  t.setAttribute('font-family','Arial');if(bold)t.setAttribute('font-weight','700');
+  t.textContent=str;svg.appendChild(t);
+}
+function line(x1,y1,x2,y2,color){
+  const l=document.createElementNS(NS,'line');
+  l.setAttribute('x1',x1);l.setAttribute('y1',y1);l.setAttribute('x2',x2);l.setAttribute('y2',y2);
+  l.setAttribute('stroke',color);l.setAttribute('stroke-width',2);svg.appendChild(l);
+}
+
+function drawTree(depth){
+  svg.innerHTML='';
+  const W=800, levelH=110, nodeW=130, nodeH=52;
+  // рекурсивно рисуем узлы
+  function node(level, index, cx, cy, maxDepth){
+    const isLeaf = level >= maxDepth;
+    if(isLeaf){
+      // лист: чередуем классы для наглядности
+      const survived = (index % 2 === 0);
+      const fill = survived ? "#0e3a2a" : "#3d1730";
+      const stroke = survived ? "#34D399" : "#F472A6";
+      const label = survived ? "выжил" : "не выжил";
+      const lblColor = survived ? "#6EE7B7" : "#F9A8C8";
+      rect(cx-nodeW/2, cy, nodeW, nodeH, fill, stroke);
+      text(cx, cy+nodeH/2+5, label, 15, lblColor, true);
+      return;
+    }
+    // узел-вопрос
+    let q = "вопрос";
+    if(level===0) q = QUESTIONS[0];
+    else if(QUESTIONS[level] && QUESTIONS[level][index]) q = QUESTIONS[level][index];
+    rect(cx-nodeW/2, cy, nodeW, nodeH, "#6D5DF6");
+    text(cx, cy+nodeH/2+5, q, 13, "#FFFFFF", true);
+    // дети
+    const childY = cy + levelH;
+    const spread = W / Math.pow(2, level+2);
+    const leftX = cx - spread, rightX = cx + spread;
+    line(cx-15, cy+nodeH, leftX+15, childY, "#22D3EE");
+    line(cx+15, cy+nodeH, rightX-15, childY, "#F472A6");
+    // подписи да/нет только на первом уровне (чтоб не загромождать)
+    if(level===0){
+      text((cx+leftX)/2-10, cy+levelH-8, "да", 12, "#22D3EE", true);
+      text((cx+rightX)/2+10, cy+levelH-8, "нет", 12, "#F472A6", true);
+    }
+    node(level+1, index*2, leftX, childY, maxDepth);
+    node(level+1, index*2+1, rightX, childY, maxDepth);
+  }
+  // подгоняем viewBox высоту под глубину
+  const totalH = 40 + (depth+1)*levelH;
+  svg.setAttribute('viewBox', `0 0 ${W} ${Math.max(320,totalH)}`);
+  node(0, 0, W/2, 20, depth);
+}
+
+function update(){
+  const d = parseInt(document.getElementById('depth').value);
+  document.getElementById('dval').textContent = d;
+  document.getElementById('dsub').textContent =
+    'дерево задаёт ' + d + (d===1?' вопрос':(d<5?' вопроса':' вопросов')) + ' подряд';
+  const a = ACC[d];
+  document.getElementById('trainAcc').textContent = a.train.toFixed(2);
+  document.getElementById('testAcc').textContent = a.test.toFixed(2);
+  const v = document.getElementById('verdict');
+  if(a.v==="over"){ v.className='verdict over'; v.textContent='⚠️ Train высокий, test падает — переобучение!'; }
+  else if(a.v==="warn"){ v.className='verdict over'; v.textContent='⚠️ Разрыв растёт — дерево начинает зубрить'; }
+  else if(a.v==="low"){ v.className='verdict good'; v.textContent='Дерево ещё простое — можно глубже'; }
+  else { v.className='verdict good'; v.textContent='✅ Близкие цифры — дерево поняло'; }
+  drawTree(d);
+}
+
+document.getElementById('depth').addEventListener('input', update);
+update();
+</script>
+</body>
+</html>

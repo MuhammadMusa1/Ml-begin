@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Как загрузить свой датасет в Google Colab</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: #f5f7fa;
+    color: #1a1a1a;
+    line-height: 1.7;
+    padding: 40px 20px;
+  }
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    overflow: hidden;
+  }
+  header {
+    background: linear-gradient(135deg, #4285F4 0%, #34A853 100%);
+    color: #fff;
+    padding: 50px 40px;
+    text-align: center;
+  }
+  header h1 { font-size: 32px; margin-bottom: 10px; }
+  header p { font-size: 18px; opacity: 0.95; }
+  .content { padding: 40px; }
+
+  h2 {
+    font-size: 24px;
+    color: #1a73e8;
+    margin: 40px 0 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e8f0fe;
+  }
+  h3 {
+    font-size: 19px;
+    color: #202124;
+    margin: 25px 0 12px;
+  }
+  p { margin-bottom: 12px; }
+
+  .goal-box {
+    background: #e8f0fe;
+    border-left: 4px solid #1a73e8;
+    padding: 20px 24px;
+    border-radius: 8px;
+    margin: 20px 0 30px;
+  }
+  .goal-box h3 { margin-top: 0; color: #1a73e8; }
+  .goal-box ul { padding-left: 20px; }
+
+  .method {
+    background: #fafbfc;
+    border: 1px solid #e0e4e9;
+    border-radius: 12px;
+    padding: 24px;
+    margin: 24px 0;
+  }
+  .method-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .badge {
+    display: inline-block;
+    background: #1a73e8;
+    color: #fff;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .badge-green { background: #34A853; }
+  .badge-orange { background: #FBBC04; color: #333; }
+  .badge-red { background: #EA4335; }
+
+  .use-case {
+    color: #5f6368;
+    font-style: italic;
+    margin-bottom: 14px;
+  }
+
+  pre {
+    background: #202124;
+    color: #e8eaed;
+    padding: 18px 20px;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-family: "Consolas", "Monaco", monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 12px 0;
+  }
+  code {
+    background: #f1f3f4;
+    color: #c5221f;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: "Consolas", "Monaco", monospace;
+    font-size: 13px;
+  }
+  pre code { background: none; color: inherit; padding: 0; }
+  .comment { color: #9aa0a6; }
+  .keyword { color: #8ab4f8; }
+  .string { color: #f28b82; }
+
+  .step {
+    background: #fff;
+    border: 1px solid #dadce0;
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 10px 0;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .step-num {
+    background: #1a73e8;
+    color: #fff;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    flex-shrink: 0;
+    font-size: 14px;
+  }
+
+  .warn {
+    background: #fef7e0;
+    border-left: 4px solid #fbbc04;
+    padding: 14px 18px;
+    border-radius: 6px;
+    margin: 14px 0;
+  }
+  .warn strong { color: #b06000; }
+
+  .success {
+    background: #e6f4ea;
+    border-left: 4px solid #34A853;
+    padding: 14px 18px;
+    border-radius: 6px;
+    margin: 14px 0;
+  }
+  .success strong { color: #137333; }
+
+  .danger {
+    background: #fce8e6;
+    border-left: 4px solid #ea4335;
+    padding: 14px 18px;
+    border-radius: 6px;
+    margin: 14px 0;
+  }
+  .danger strong { color: #a50e0e; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  th {
+    background: #1a73e8;
+    color: #fff;
+    text-align: left;
+    padding: 12px 16px;
+    font-size: 14px;
+  }
+  td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #e8eaed;
+    font-size: 14px;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) { background: #fafbfc; }
+
+  .checklist {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin: 20px 0;
+  }
+  .checklist ul { list-style: none; padding: 0; }
+  .checklist li {
+    padding: 8px 0 8px 32px;
+    position: relative;
+  }
+  .checklist li::before {
+    content: "✅";
+    position: absolute;
+    left: 0;
+  }
+
+  .final-box {
+    background: linear-gradient(135deg, #4285F4 0%, #34A853 100%);
+    color: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    text-align: center;
+    margin: 30px 0;
+  }
+  .final-box h3 { color: #fff; font-size: 22px; margin-bottom: 12px; }
+
+  footer {
+    background: #202124;
+    color: #9aa0a6;
+    text-align: center;
+    padding: 24px;
+    font-size: 13px;
+  }
+  footer strong { color: #fff; }
+
+  @media (max-width: 600px) {
+    .content { padding: 24px 20px; }
+    header { padding: 36px 24px; }
+    header h1 { font-size: 24px; }
+    pre { font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <h1>📥 Как загрузить свой датасет в Google Colab</h1>
+    <p>Пошаговая инструкция · Курс Machine Learning</p>
+  </header>
+
+  <div class="content">
+
+    <div class="goal-box">
+      <h3>🎯 Что ты научишься делать</h3>
+      <p>После этой инструкции ты сможешь <strong>тремя способами</strong> открыть свой датасет:</p>
+      <ul>
+        <li>📁 Загрузить файл с компьютера</li>
+        <li>🌐 Подключить датасет по ссылке (URL)</li>
+        <li>☁️ Подключить Google Drive</li>
+      </ul>
+      <p style="margin-top:12px;"><strong>👉 Этот навык нужен на каждом уроке до конца курса.</strong></p>
+    </div>
+
+    <h2>⚙️ Подготовка (сделай 1 раз)</h2>
+    <p>Открой https://colab.research.google.comGoogle Colab</a> → создай новый ноутбук → в первой ячейке напиши:</p>
+
+<pre><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</pre>
+
+    <div class="success">
+      <strong>Правило курса:</strong> без <code>pandas</code> ни один датасет не откроется. Эта строка всегда идёт первой.
+    </div>
+
+    <!-- СПОСОБ 1 -->
+    <div class="method">
+      <div class="method-title">
+        <span class="badge badge-green">Способ 1</span>
+        <span>📁 Загрузка файла с компьютера</span>
+      </div>
+      <p class="use-case">Используй, если у тебя есть файл <code>.csv</code> на компьютере.</p>
+
+      <div class="step"><div class="step-num">1</div><div>Вставь код в новую ячейку:</div></div>
+<pre><span class="keyword">from</span> google.colab <span class="keyword">import</span> files
+uploaded = files.upload()</pre>
+
+      <div class="step"><div class="step-num">2</div><div>Нажми кнопку <strong>«Выбрать файл»</strong> → выбери свой <code>.csv</code>.</div></div>
+
+      <div class="step"><div class="step-num">3</div><div>Открой файл в pandas:</div></div>
+<pre>df = pd.read_csv(<span class="string">"название_файла.csv"</span>)
+df.head()</pre>
+
+      <div class="warn">
+        <strong>⚠️ Частая ошибка:</strong> название файла должно быть <strong>точно таким же</strong>, как ты загрузил. Если файл называется <code>pokemon_data.csv</code> — пиши именно так, а не <code>pokemon.csv</code>.
+      </div>
+
+      <div class="success">
+        <strong>✅ Проверка успеха:</strong> если ты видишь таблицу с данными — всё сработало.
+      </div>
+    </div>
+
+    <!-- СПОСОБ 2 -->
+    <div class="method">
+      <div class="method-title">
+        <span class="badge">Способ 2</span>
+        <span>🌐 Загрузка по URL — самый быстрый</span>
+      </div>
+      <p class="use-case">Используй, если датасет лежит в интернете (GitHub, открытые источники).</p>
+
+      <div class="step"><div class="step-num">1</div><div>Найди прямую ссылку на файл <code>.csv</code> (заканчивается на <code>.csv</code>).</div></div>
+
+      <div class="step"><div class="step-num">2</div><div>Открой напрямую:</div></div>
+<pre>url = <span class="string">"https://raw.githubusercontent.com/datasciencedojo/datasets/master/titanic.csv"</span>
+df = pd.read_csv(url)
+df.head()</pre>
+
+      <div class="success">
+        <strong>✅ Готово!</strong> Данные уже в Colab, ничего скачивать не надо.
+      </div>
+
+      <h3>Как правильно взять ссылку с GitHub</h3>
+
+      <div class="danger">
+        <strong>❌ Так НЕ работает</strong> (это страница, а не файл):<br>
+        <code>https://github.com/user/repo/blob/main/data.csv</code>
+      </div>
+
+      <div class="success">
+        <strong>✅ Так работает</strong> (сырой файл):<br>
+        <code>https://raw.githubusercontent.com/user/repo/main/data.csv</code>
+      </div>
+
+      <p><strong>Правило:</strong> на GitHub нажми кнопку <strong>«Raw»</strong> → скопируй ссылку из адресной строки.</p>
+
+      <h3>Как взять ссылку с Kaggle</h3>
+      <p>Kaggle <strong>не даёт прямую ссылку</strong> на <code>.csv</code>. Есть два варианта:</p>
+      <ul style="padding-left: 24px;">
+        <li><strong>Простой:</strong> скачай <code>.csv</code> с Kaggle → загрузи через Способ 1.</li>
+        <li><strong>Продвинутый:</strong> используй Kaggle API (разберём позже отдельно).</li>
+      </ul>
+    </div>
+
+    <!-- СПОСОБ 3 -->
+    <div class="method">
+      <div class="method-title">
+        <span class="badge badge-orange">Способ 3</span>
+        <span>☁️ Через Google Drive</span>
+      </div>
+      <p class="use-case">Используй, если датасет большой или ты работаешь с ним долго.</p>
+
+      <div class="step"><div class="step-num">1</div><div>Подключи Google Drive:</div></div>
+<pre><span class="keyword">from</span> google.colab <span class="keyword">import</span> drive
+drive.mount(<span class="string">'/content/drive'</span>)</pre>
+
+      <div class="step"><div class="step-num">2</div><div>Colab попросит разрешение → нажми <strong>«Разрешить»</strong>.</div></div>
+
+      <div class="step"><div class="step-num">3</div><div>Загрузи файл в Google Drive (например, в папку <code>ML_course</code>) и открой его:</div></div>
+<pre>df = pd.read_csv(<span class="string">'/content/drive/MyDrive/ML_course/mydata.csv'</span>)
+df.head()</pre>
+
+      <div class="success">
+        <strong>✅ Плюс:</strong> файл больше не нужно загружать каждый раз.
+      </div>
+    </div>
+
+    <h2>🔍 Как проверить, что датасет загрузился</h2>
+    <p>Всегда после загрузки выполняй эти <strong>4 команды</strong> — это правило курса:</p>
+
+<pre>df.shape       <span class="comment"># сколько строк и столбцов</span>
+df.head()      <span class="comment"># первые 5 строк</span>
+df.info()      <span class="comment"># типы данных</span>
+df.describe()  <span class="comment"># статистика</span></pre>
+
+    <div class="warn">
+      Если хоть одна команда выдаёт ошибку — датасет загружен неправильно. Начни заново.
+    </div>
+
+    <h2>❌ Топ-5 ошибок учеников</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Ошибка</th>
+          <th>Причина</th>
+          <th>Решение</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>FileNotFoundError</code></td>
+          <td>Неверное имя файла</td>
+          <td>Проверь имя буква-в-букву</td>
+        </tr>
+        <tr>
+          <td><code>UnicodeDecodeError</code></td>
+          <td>Кодировка файла</td>
+          <td><code>pd.read_csv(file, encoding='cp1251')</code></td>
+        </tr>
+        <tr>
+          <td>Данные в один столбец</td>
+          <td>Неверный разделитель</td>
+          <td><code>pd.read_csv(file, sep=';')</code></td>
+        </tr>
+        <tr>
+          <td><code>HTTPError 404</code></td>
+          <td>Ссылка не прямая</td>
+          <td>Используй raw-ссылку</td>
+        </tr>
+        <tr>
+          <td>Пустой <code>df.head()</code></td>
+          <td>Файл пустой или не тот</td>
+          <td>Открой в Excel и проверь</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>🎯 Домашнее задание</h2>
+
+    <div class="checklist">
+      <p><strong>Загрузи свой датасет любым из трёх способов и пришли в Classroom:</strong></p>
+      <ul>
+        <li>Скриншот <code>df.head()</code></li>
+        <li>Скриншот <code>df.info()</code></li>
+        <li>Одно предложение: <em>«О чём этот датасет?»</em></li>
+      </ul>
+    </div>
+
+    <div class="warn">
+      <strong>📌 Важно:</strong> датасет останется с тобой <strong>до конца курса</strong>. Выбирай тему, которая тебе действительно интересна — игры, музыка, спорт, аниме, кино, соцсети, техника.
+    </div>
+
+    <h2>💡 Совет преподавателя</h2>
+    <p>Не пытайся запомнить все три способа сразу. <strong>Запомни один — но хорошо.</strong></p>
+    <ul style="padding-left: 24px;">
+      <li>🌐 <strong>Способ 2 (URL)</strong> — если работаешь дома и датасет в интернете.</li>
+      <li>☁️ <strong>Способ 3 (Drive)</strong> — если работаешь долго с одним датасетом.</li>
+      <li>📁 <strong>Способ 1 (загрузка)</strong> — если это одноразовая задача.</li>
+    </ul>
+
+    <div class="final-box">
+      <h3>🚀 Если ты дошёл до этого места</h3>
+      <p>Ты уже умеешь то, что делают дата-сайентисты каждый день.<br>Осталось только применить это к <strong>своему проекту.</strong></p>
+    </div>
+
+  </div>
+
+  <footer>
+    <strong>Machine Learning для подростков</strong><br>
+   
+  </footer>
+
+</div>
+
+</body>
+</html>
