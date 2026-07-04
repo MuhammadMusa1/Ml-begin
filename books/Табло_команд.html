@@ -60,6 +60,11 @@
   .reasons h3{font-size:1rem;margin-bottom:.6rem;color:var(--electric)}
   .reasons ul{margin-left:1.2rem;font-size:.9rem;color:var(--muted);line-height:1.6}
   .reasons b{color:var(--text)}
+  .rules-grid{display:flex;gap:1.5rem;flex-wrap:wrap}
+  .rules-grid .reasons{flex:1;min-width:300px}
+  .rules-grid .reasons h3{color:var(--gold)}
+  .save-note{text-align:center;color:var(--muted);font-size:.82rem;margin-top:.8rem;font-style:italic}
+  .tbtn.save{border-color:var(--electric);color:var(--electric)}
 
   .toolbar{display:flex;gap:.8rem;justify-content:center;margin-top:1.5vh;flex-wrap:wrap}
   .tbtn{background:var(--bg2);border:1px solid var(--line);color:var(--text);
@@ -109,20 +114,36 @@
     <div class="log" id="log"><div class="log-empty">Пока пусто — начисляй очки кнопками выше</div></div>
   </div>
 
-  <div class="reasons">
-    <h3>За что даём очки</h3>
-    <ul>
-      <li><b>+3</b> — победа в соревновании урока (лучший K, глубина дерева, меньший MAE на тесте)</li>
-      <li><b>+2</b> — хороший вопрос, замеченная ошибка, помощь товарищу, найденный инсайт</li>
-      <li><b>+1</b> — правильный ответ в тесте/Kahoot</li>
-      <li><b>+3</b> — честность: сами заметили, что «списали с train», и исправили</li>
-    </ul>
+  <div class="rules-grid">
+    <div class="reasons">
+      <h3>📋 Правила игры</h3>
+      <ul>
+        <li>Две команды соревнуются <b>весь курс</b> — очки копятся от урока к уроку.</li>
+        <li>Очки зарабатываются знаниями и командной работой, а не спорами.</li>
+        <li>Модели сравниваем по <b>тесту, а не train</b> — побеждает тот, кто честно, а не «списал с ответов».</li>
+        <li>Помог товарищу разобраться — тоже очки: <b>+2</b>.</li>
+        <li>В конце курса команда-победитель получает звание <b>«ML-мастера» 🏆</b>.</li>
+      </ul>
+    </div>
+    <div class="reasons">
+      <h3>💯 За что даём очки</h3>
+      <ul>
+        <li><b>+3</b> — победа в соревновании урока (лучший K, глубина дерева, меньший MAE)</li>
+        <li><b>+2</b> — хороший вопрос, замеченная ошибка, помощь товарищу, инсайт</li>
+        <li><b>+1</b> — правильный ответ в тесте/Kahoot</li>
+        <li><b>+3</b> — честность: сами заметили, что «списали с train», и исправили</li>
+      </ul>
+    </div>
   </div>
 
   <div class="toolbar">
     <button class="tbtn" onclick="renameTeams()">✏️ Переименовать команды</button>
+    <button class="tbtn save" onclick="exportScore()">💾 Сохранить в файл</button>
+    <button class="tbtn save" onclick="document.getElementById('importFile').click()">📂 Загрузить из файла</button>
+    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importScore(event)">
     <button class="tbtn danger" onclick="resetAll()">🔄 Сбросить счёт (новый курс)</button>
   </div>
+  <p class="save-note" id="saveNote">Очки сохраняются автоматически между занятиями. «Сохранить в файл» — запасная копия для переноса на другой компьютер.</p>
 </div>
 
 <script>
@@ -133,15 +154,65 @@ async function load(){
   try{
     if(window.storage){
       const r = await window.storage.get('scoreboard');
-      if(r && r.value){ state = JSON.parse(r.value); }
+      if(r && r.value){ state = JSON.parse(r.value); render(); return; }
     }
-  }catch(e){ /* нет хранилища — работаем в памяти */ }
+  }catch(e){ /* нет хранилища */ }
+  // запасной вариант: резервная копия в странице
+  try{
+    if(window.__scoreboardBackup){ state = JSON.parse(window.__scoreboardBackup); }
+  }catch(e){}
   render();
 }
 async function save(){
+  const json = JSON.stringify(state);
   try{
-    if(window.storage){ await window.storage.set('scoreboard', JSON.stringify(state)); }
+    if(window.storage){ await window.storage.set('scoreboard', json); }
   }catch(e){}
+  // резервная копия в самой странице (переживёт перерисовку, но не закрытие вкладки)
+  window.__scoreboardBackup = json;
+}
+
+// сохранить счёт в файл (.json) — надёжный перенос между компьютерами
+function exportScore(){
+  const json = JSON.stringify(state, null, 2);
+  const blob = new Blob([json], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const date = new Date().toISOString().slice(0,10);
+  a.href = url;
+  a.download = `табло_очков_${date}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  flashNote("✅ Файл со счётом сохранён — положи его рядом с табло");
+}
+
+// загрузить счёт из файла
+function importScore(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e=>{
+    try{
+      const loaded = JSON.parse(e.target.result);
+      if(typeof loaded.blue === 'number' && typeof loaded.pink === 'number'){
+        state = loaded;
+        save(); render();
+        flashNote("✅ Счёт загружен из файла");
+      } else {
+        flashNote("⚠️ Файл не похож на табло очков");
+      }
+    }catch(err){ flashNote("⚠️ Не удалось прочитать файл"); }
+  };
+  reader.readAsText(file);
+  event.target.value = "";  // сброс, чтобы можно было загрузить тот же файл повторно
+}
+
+function flashNote(msg){
+  const n = document.getElementById('saveNote');
+  const old = n.textContent;
+  n.textContent = msg;
+  n.style.color = "#34D399";
+  setTimeout(()=>{ n.textContent = old; n.style.color = ""; }, 2500);
 }
 
 function add(team, pts, reason){
