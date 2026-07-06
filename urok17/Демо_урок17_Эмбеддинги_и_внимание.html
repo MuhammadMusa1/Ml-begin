@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Демо · Эмбеддинги и внимание</title>
+<style>
+  :root{--bg:#17132E;--card:#241E42;--card2:#2C2552;--violet:#8B7DF5;--violetd:#5B4FC4;
+    --cyan:#27D3EE;--teal:#2DD4BF;--lav:#D9D4F2;--muted:#9E96C8;--warn:#FF7A8A;--green:#6EE7B7;--white:#fff;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--lav);font-family:"Segoe UI",Calibri,system-ui,sans-serif;padding:24px;line-height:1.5}
+  .wrap{max-width:820px;margin:0 auto}
+  h1{color:var(--white);font-size:26px;margin:0 0 4px}
+  .kick{color:var(--cyan);font-weight:700;letter-spacing:2px;font-size:13px;text-transform:uppercase}
+  .sub{color:var(--muted);margin:6px 0 16px}
+  .tabs{display:flex;gap:8px;margin-bottom:14px}
+  .tab{background:var(--card2);border:none;border-radius:10px;padding:10px 16px;color:var(--lav);cursor:pointer;font-weight:600;font-size:15px}
+  .tab.sel{background:var(--violetd);color:#fff}
+  .panel{background:var(--card);border-radius:16px;padding:18px}
+  #map{position:relative;height:440px;background:#0E0B22;border-radius:12px;overflow:hidden}
+  .word{position:absolute;transform:translate(-50%,-50%);background:var(--card2);color:var(--lav);
+    padding:5px 10px;border-radius:20px;font-size:13px;cursor:pointer;white-space:nowrap;border:2px solid transparent;transition:.15s}
+  .word:hover{border-color:var(--violet)}
+  .word.sel{background:var(--cyan);color:var(--bg);font-weight:700;border-color:var(--white)}
+  .word.near{background:var(--violet);color:#fff}
+  .info{margin-top:12px;font-size:15px;color:var(--lav)}
+  .info b{color:var(--cyan)}
+  /* attention */
+  .sent{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+  .tokbtn{background:var(--card2);border:2px solid transparent;border-radius:10px;padding:10px 12px;color:var(--lav);cursor:pointer;font-size:16px;transition:.15s}
+  .tokbtn:hover{border-color:var(--violet)}
+  .tokbtn.active{border-color:var(--cyan);color:var(--white);font-weight:700}
+  .picker{margin-bottom:10px}
+  select{padding:9px;border-radius:8px;background:var(--card2);color:var(--lav);border:1px solid var(--violetd);font-size:14px}
+  .note{background:var(--card2);border-radius:12px;padding:14px;font-size:14px;margin-top:16px}
+  .note b{color:var(--teal)}
+  .hidden{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="kick">Урок 17 · интерактивное демо</div>
+  <h1>🔤 Эмбеддинги и внимание</h1>
+  <p class="sub">Как модель «понимает» слова: близкие по смыслу — рядом в пространстве, а внимание решает, на какие слова смотреть.</p>
+
+  <div class="tabs">
+    <button class="tab sel" data-tab="emb">Эмбеддинги</button>
+    <button class="tab" data-tab="att">Внимание</button>
+  </div>
+
+  <!-- Вкладка эмбеддингов -->
+  <div class="panel" id="tab-emb">
+    <div id="map"></div>
+    <div class="info" id="eminfo">Кликни на слово — увидишь ближайшие по смыслу.</div>
+    <div class="note"><b>Идея:</b> каждое слово — это точка (вектор чисел). Близкие по смыслу слова оказываются рядом. Так модель «понимает», что «король» ближе к «королеве», чем к «банану».</div>
+  </div>
+
+  <!-- Вкладка внимания -->
+  <div class="panel hidden" id="tab-att">
+    <div class="picker">
+      <label>Предложение: </label>
+      <select id="sentsel"></select>
+    </div>
+    <p style="color:var(--muted);font-size:14px;margin:4px 0">Кликни на слово — цветом покажется, на какие слова оно «смотрит» (ярче = сильнее внимание).</p>
+    <div class="sent" id="sent"></div>
+    <div class="info" id="attinfo">Кликни на слово.</div>
+    <div class="note"><b>Идея:</b> чтобы понять слово (например «она»), модель смотрит на все слова и решает, какие важнее. Именно так она связывает местоимение с нужным словом за много слов.</div>
+  </div>
+</div>
+
+<script>
+// ---------- ЭМБЕДДИНГИ ----------
+const words=[
+  ['король',120,90],['королева',180,75],['принц',150,145],['трон',95,130],
+  ['кошка',520,90],['собака',565,115],['лев',580,70],['хвост',530,155],
+  ['банан',110,340],['яблоко',80,305],['пицца',150,370],['вкусно',115,395],
+  ['радость',330,80],['грусть',370,120],['злость',300,135],['любовь',345,55],
+  ['компьютер',520,330],['робот',565,300],['код',585,355],['интернет',530,390],
+  ['учитель',300,330],['урок',345,360],['книга',275,305],['экзамен',320,395],
+];
+const map=document.getElementById('map'), eminfo=document.getElementById('eminfo');
+const els={};
+words.forEach(([w,x,y])=>{
+  const d=document.createElement('div'); d.className='word'; d.textContent=w;
+  d.style.left=x+'px'; d.style.top=y+'px';
+  d.onclick=()=>selectWord(w);
+  map.appendChild(d); els[w]=d;
+});
+function selectWord(w){
+  const [,,]=[]; const me=words.find(a=>a[0]===w);
+  const dists=words.filter(a=>a[0]!==w).map(a=>[a[0],Math.hypot(a[1]-me[1],a[2]-me[2])]).sort((a,b)=>a[1]-b[1]);
+  const near=dists.slice(0,3).map(a=>a[0]);
+  words.forEach(([x])=>{els[x].className='word';});
+  els[w].classList.add('sel');
+  near.forEach(n=>els[n].classList.add('near'));
+  eminfo.innerHTML=`Ближайшие к <b>«${w}»</b>: ${near.join(', ')}. Они рядом, потому что близки по смыслу.`;
+}
+
+// ---------- ВНИМАНИЕ ----------
+// курируемые предложения с матрицей внимания (иллюстративно)
+const sentences=[
+  {text:'Кошка не перешла улицу потому что она устала',
+   tokens:['Кошка','не','перешла','улицу','потому','что','она','устала'],
+   // для каждого слова — веса внимания на все слова
+   attn:{
+     'она':[0.62,0.02,0.05,0.05,0.03,0.03,0.08,0.12],
+     'устала':[0.45,0.03,0.06,0.04,0.03,0.03,0.30,0.06],
+     'перешла':[0.40,0.10,0.10,0.30,0.02,0.02,0.03,0.03],
+   }},
+  {text:'Мальчик бросил мяч и он улетел далеко',
+   tokens:['Мальчик','бросил','мяч','и','он','улетел','далеко'],
+   attn:{
+     'он':[0.15,0.05,0.60,0.02,0.05,0.08,0.05],
+     'улетел':[0.05,0.10,0.55,0.02,0.20,0.05,0.03],
+   }},
+];
+const sentsel=document.getElementById('sentsel'), sentEl=document.getElementById('sent'), attinfo=document.getElementById('attinfo');
+sentences.forEach((s,i)=>{const o=document.createElement('option');o.value=i;o.textContent=s.text;sentsel.appendChild(o);});
+let curSent=0;
+function renderSent(){
+  const s=sentences[curSent]; sentEl.innerHTML=''; attinfo.textContent='Кликни на слово.';
+  s.tokens.forEach((tk,idx)=>{
+    const b=document.createElement('button'); b.className='tokbtn'; b.textContent=tk;
+    b.onclick=()=>showAttn(idx,b);
+    sentEl.appendChild(b);
+  });
+}
+function showAttn(idx,btn){
+  const s=sentences[curSent]; const word=s.tokens[idx];
+  const weights=s.attn[word];
+  const btns=[...sentEl.children];
+  btns.forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  if(!weights){
+    btns.forEach(b=>b.style.background='var(--card2)');
+    attinfo.innerHTML=`Для «${word}» в этом примере внимание не задано — попробуй «она»/«он» или другое выделенное слово.`;
+    return;
+  }
+  let best=0;for(let i=1;i<weights.length;i++)if(weights[i]>weights[best])best=i;
+  btns.forEach((b,i)=>{
+    const wgt=weights[i];
+    b.style.background=`rgba(39,211,238,${0.12+wgt})`;
+    b.style.color = wgt>0.4 ? 'var(--bg)' : 'var(--lav)';
+  });
+  btn.style.background='var(--violet)'; btn.style.color='#fff';
+  attinfo.innerHTML=`Слово <b>«${word}»</b> сильнее всего смотрит на <b>«${s.tokens[best]}»</b>.`;
+}
+sentsel.onchange=()=>{curSent=+sentsel.value;renderSent();};
+
+// ---------- tabs ----------
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('sel'));t.classList.add('sel');
+  const which=t.dataset.tab;
+  document.getElementById('tab-emb').classList.toggle('hidden',which!=='emb');
+  document.getElementById('tab-att').classList.toggle('hidden',which!=='att');
+});
+
+selectWord('король'); renderSent();
+</script>
+</body>
+</html>

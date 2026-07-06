@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Демо · Конструктор Gradio</title>
+<style>
+  :root{--bg:#17132E;--card:#241E42;--card2:#2C2552;--violet:#8B7DF5;--violetd:#5B4FC4;
+    --cyan:#27D3EE;--teal:#2DD4BF;--lav:#D9D4F2;--muted:#9E96C8;--warn:#FF7A8A;--green:#6EE7B7;--white:#fff;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--lav);font-family:"Segoe UI",Calibri,system-ui,sans-serif;padding:24px;line-height:1.5}
+  .wrap{max-width:900px;margin:0 auto}
+  h1{color:var(--white);font-size:26px;margin:0 0 4px}
+  .kick{color:var(--cyan);font-weight:700;letter-spacing:2px;font-size:13px;text-transform:uppercase}
+  .sub{color:var(--muted);margin:6px 0 18px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:740px){.grid{grid-template-columns:1fr}}
+  .panel{background:var(--card);border-radius:16px;padding:18px}
+  label{display:block;font-weight:600;color:var(--white);margin:12px 0 6px;font-size:14px}
+  label:first-child{margin-top:0}
+  input[type=text],select{width:100%;padding:10px;border-radius:8px;background:var(--card2);color:var(--lav);border:1px solid var(--violetd);font-size:14px}
+  .seg{display:flex;gap:6px;flex-wrap:wrap}
+  .seg button{flex:1;min-width:70px;background:var(--card2);border:2px solid transparent;border-radius:8px;padding:9px;color:var(--lav);cursor:pointer;font-size:13px}
+  .seg button.sel{border-color:var(--cyan);background:#0E3540;color:var(--white)}
+  /* preview */
+  .prev{background:#faf9ff;border-radius:14px;padding:16px;color:#1c1830}
+  .prev .ttl{font-weight:800;font-size:17px;color:#241E42;margin-bottom:12px}
+  .prev .lbl{font-size:12px;color:#6b6580;margin:8px 0 4px;font-weight:600}
+  .prev .box{background:#fff;border:1px solid #d9d6f0;border-radius:8px;padding:12px;font-size:14px;color:#555}
+  .prev .drop{border:2px dashed #b9b3e0;text-align:center;padding:22px;color:#8a83b5}
+  .prev .run{background:#5B4FC4;color:#fff;border:none;border-radius:8px;padding:9px 16px;margin-top:12px;font-weight:600;font-size:14px;cursor:default}
+  .prev .out{background:#eef6f0;border:1px solid #b8e0c6;color:#2f7a4d;border-radius:8px;padding:12px;font-weight:600}
+  pre{background:#0E0B22;border-radius:12px;padding:14px;overflow:auto;font-size:13px;color:var(--lav);font-family:Consolas,monospace;line-height:1.5}
+  .k{color:#c792ea}.s{color:#c3e88d}.f{color:#82aaff}
+  .btn{background:var(--violetd);color:#fff;border:none;border-radius:10px;padding:9px 14px;font-weight:600;cursor:pointer;font-size:13px;margin-top:10px}
+  .btn:hover{background:var(--violet)}
+  .note{background:var(--card2);border-radius:12px;padding:14px;font-size:14px;margin-top:16px}
+  .note b{color:var(--teal)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="kick">Урок 20 · интерактивное демо</div>
+  <h1>🚀 Собери своё Gradio-приложение</h1>
+  <p class="sub">Выбери, что приложение принимает и что возвращает — увидишь макет интерфейса и готовый код <code>app.py</code> для публикации на Spaces.</p>
+
+  <div class="grid">
+    <div class="panel">
+      <label>Название приложения</label>
+      <input type="text" id="title" value="Мой классификатор">
+
+      <label>Что приложение ПРИНИМАЕТ (вход)</label>
+      <div class="seg" id="inseg">
+        <button data-v="text" class="sel">Текст</button>
+        <button data-v="image">Картинку</button>
+        <button data-v="number">Число</button>
+      </div>
+
+      <label>Что приложение ВОЗВРАЩАЕТ (выход)</label>
+      <div class="seg" id="outseg">
+        <button data-v="label" class="sel">Метку класса</button>
+        <button data-v="text">Текст</button>
+        <button data-v="number">Число</button>
+      </div>
+
+      <button class="btn" id="copy">📋 Скопировать код app.py</button>
+    </div>
+
+    <div class="panel">
+      <div class="prev" id="prev"></div>
+    </div>
+  </div>
+
+  <div style="margin-top:18px">
+    <div class="kick" style="margin-bottom:8px">Код app.py</div>
+    <pre id="code"></pre>
+  </div>
+
+  <div class="note">
+    <b>Как опубликовать:</b> сохрани этот код в файл <b>app.py</b>, добавь <b>requirements.txt</b> со строкой <code>gradio</code>, создай Space на huggingface.co (SDK: Gradio) и загрузи оба файла — получишь постоянную ссылку.
+  </div>
+</div>
+
+<script>
+const state={title:'Мой классификатор', input:'text', output:'label'};
+const inMap={text:'gr.Textbox()',image:'gr.Image()',number:'gr.Number()'};
+const outMap={label:'gr.Label()',text:'gr.Textbox()',number:'gr.Number()'};
+
+function preview(){
+  const inHtml={
+    text:'<div class="lbl">Ввод (текст)</div><div class="box">Напиши что-нибудь…</div>',
+    image:'<div class="lbl">Ввод (картинка)</div><div class="box drop">🖼️ Перетащи картинку сюда</div>',
+    number:'<div class="lbl">Ввод (число)</div><div class="box">0</div>',
+  }[state.input];
+  const outHtml={
+    label:'<div class="lbl">Результат</div><div class="out">класс: 92%</div>',
+    text:'<div class="lbl">Результат</div><div class="out">ответ модели…</div>',
+    number:'<div class="lbl">Результат</div><div class="out">42</div>',
+  }[state.output];
+  document.getElementById('prev').innerHTML=
+    `<div class="ttl">${state.title||'Без названия'}</div>${inHtml}<button class="run">Запустить</button><div style="height:10px"></div>${outHtml}`;
+}
+function genCode(){
+  const c=`<span class="k">import</span> gradio <span class="k">as</span> gr
+
+<span class="k">def</span> <span class="f">predict</span>(x):
+    <span class="c"># твоя модель здесь</span>
+    <span class="k">return</span> <span class="s">"результат"</span>
+
+gr.Interface(
+    fn=predict,
+    inputs=${inMap[state.input]},
+    outputs=${outMap[state.output]},
+    title=<span class="s">"${state.title.replace(/"/g,'\\"')}"</span>
+).launch()`;
+  document.getElementById('code').innerHTML=c;
+}
+function update(){preview();genCode();}
+
+document.getElementById('title').addEventListener('input',e=>{state.title=e.target.value;update();});
+function seg(id,key){
+  document.querySelectorAll('#'+id+' button').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('#'+id+' button').forEach(x=>x.classList.remove('sel'));
+    b.classList.add('sel'); state[key]=b.dataset.v; update();
+  }));
+}
+seg('inseg','input'); seg('outseg','output');
+document.getElementById('copy').addEventListener('click',()=>{
+  const txt=document.getElementById('code').textContent;
+  navigator.clipboard&&navigator.clipboard.writeText(txt);
+  const b=document.getElementById('copy'); b.textContent='✓ Скопировано'; setTimeout(()=>b.textContent='📋 Скопировать код app.py',1500);
+});
+update();
+</script>
+</body>
+</html>

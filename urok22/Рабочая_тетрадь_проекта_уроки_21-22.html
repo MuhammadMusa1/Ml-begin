@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Рабочая тетрадь проекта · Уроки 21–22</title>
+<style>
+  :root{--bg:#17132E;--card:#241E42;--card2:#2C2552;--violet:#8B7DF5;--violetd:#5B4FC4;
+    --cyan:#27D3EE;--teal:#2DD4BF;--lav:#D9D4F2;--muted:#9E96C8;--warn:#FF7A8A;--green:#6EE7B7;--white:#fff;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--lav);font-family:"Segoe UI",Calibri,system-ui,sans-serif;padding:24px;line-height:1.55}
+  .wrap{max-width:900px;margin:0 auto}
+  h1{color:var(--white);font-size:30px;margin:0 0 4px}
+  h2{color:var(--white);font-size:22px;margin:30px 0 4px}
+  .kick{color:var(--cyan);font-weight:700;letter-spacing:2px;font-size:13px;text-transform:uppercase}
+  .sub{color:var(--muted);margin:6px 0 18px}
+  .meta{display:flex;gap:22px;flex-wrap:wrap;background:var(--card2);border-radius:12px;padding:12px 16px;font-size:14px;margin-bottom:8px}
+  .meta b{color:var(--white)}
+  .phase{color:var(--teal);font-weight:700;font-size:13px;letter-spacing:1px;text-transform:uppercase;margin-top:26px}
+  .task{background:var(--card);border-radius:14px;padding:16px 18px;margin:12px 0;display:flex;gap:14px;align-items:flex-start}
+  .task input[type=checkbox]{width:20px;height:20px;accent-color:var(--cyan);margin-top:3px;flex-shrink:0;cursor:pointer}
+  .task .body{flex:1}
+  .lvl{display:inline-block;font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px;margin-right:8px;text-transform:uppercase;letter-spacing:.5px}
+  .lvl.base{background:#1E3A34;color:var(--green)}
+  .lvl.adv{background:#3A2352;color:var(--violet)}
+  code{background:#0E0B22;color:var(--cyan);padding:1px 6px;border-radius:5px;font-size:13px}
+  .answerline{border-bottom:1px dashed var(--muted);min-height:26px;margin-top:8px}
+  .goal{background:var(--card2);border-radius:12px;padding:14px 16px;margin:10px 0}
+  .goal b{color:var(--teal)}
+  table{width:100%;border-collapse:collapse;margin-top:10px;font-size:14px}
+  th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--card2)}
+  th{color:var(--cyan);font-size:13px;text-transform:uppercase;letter-spacing:.5px}
+  td.pts{color:var(--teal);font-weight:700;white-space:nowrap}
+  .print{background:transparent;border:1.5px solid var(--violetd);color:var(--lav);border-radius:10px;padding:9px 16px;cursor:pointer;font-size:14px}
+  .print:hover{border-color:var(--cyan);color:var(--white)}
+  .fieldbox{background:var(--card);border-radius:14px;padding:16px 18px;margin:12px 0}
+  .fieldbox label{display:block;color:var(--white);font-weight:600;font-size:14px;margin-top:10px}
+  .fieldbox label:first-child{margin-top:0}
+  @media print{body{background:#fff;color:#111}.wrap{max-width:100%}h1,h2,.meta b{color:#111}
+    .task,.goal,.meta,.fieldbox{background:#f4f3fa;border:1px solid #ddd}code{background:#eee;color:#333}
+    .print{display:none}.kick,.phase{color:#5B4FC4}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="kick">Фаза 6 · Финальный проект</div>
+  <h1>Рабочая тетрадь проекта · Уроки 21–22</h1>
+  <p class="sub">Питч и старт · Модель и интерфейс</p>
+
+  <div class="meta">
+    <span><b>Имя:</b> ______________________</span>
+    <span><b>Дата:</b> ____________</span>
+    <span><b>Формат:</b> Google Colab + Gradio</span>
+  </div>
+  <div style="margin-top:8px"><button class="print" onclick="window.print()">🖨 Печать / PDF</button></div>
+
+  <div class="goal">
+    <b>Цель.</b> Пройти путь финального проекта от идеи до готового приложения: задача → данные → модель в Pipeline → улучшение → интерфейс → README и презентация.
+  </div>
+
+  <!-- Урок 21 -->
+  <div class="phase">Часть A · Питч и старт (урок 21)</div>
+
+  <div class="fieldbox">
+    <label>Моя задача (что предсказываю):</label><div class="answerline"></div>
+    <label>Признаки (по чему предсказываю):</label><div class="answerline"></div>
+    <label>Тип задачи (классификация / регрессия):</label><div class="answerline"></div>
+    <label>Главная метрика:</label><div class="answerline"></div>
+    <label>Источник данных:</label><div class="answerline"></div>
+  </div>
+
+  <div class="task"><input type="checkbox"><div class="body">
+    <span class="lvl base">старт</span>
+    <span>Сформулировал реализуемую задачу (можно через демо-конструктор идеи к уроку 21).</span>
+  </div></div>
+  <div class="task"><input type="checkbox"><div class="body">
+    <span class="lvl base">старт</span>
+    <span>Загрузил данные и разделил на train/test.</span>
+  </div></div>
+  <div class="task"><input type="checkbox"><div class="body">
+    <span class="lvl base">старт</span>
+    <span>Построил baseline (простую модель для сравнения).</span>
+  </div></div>
+  <div class="task"><input type="checkbox"><div class="body">
+    <span class="lvl base">старт</span>
+    <span>Собрал первичную модель в <code>Pipeline</code> (стандарт курса).</span>
+    <div class="answerline"></div>
+  </div></div>
+
+  <!-- Урок 22 -->
+  <div class="phase">Часть B · Модель и интерфейс (урок 22)</div>
+
+  <div class="task"><input type="checkbox"><div class="body">
+    <span class="lvl adv">развитие</span>
+    <span>Улучшил модель (другие модели / AutoML / признаки / <code>GridSearchCV</code>).</span>
+    <div class="answerline"></div>
+  </div></div>
+  <div class="task"><input type="checkbox"><div class="body">
+    <span class="lvl adv">развитие</span>
+    <span>Честно оценил: метрика под задачу + сравнение с baseline + кросс-валидация.</span>
+    <div class="answerline"></div>
+  </div></div>
+  <div class="task"><input type="checkbox"><div class="body">
+    <span class="lvl adv">развитие</span>
+    <span>Обернул модель в веб-интерфейс Gradio и проверил на новых данных.</span>
+  </div></div>
+  <div class="task"><input type="checkbox"><div class="body">
+    <span class="lvl adv">развитие</span>
+    <span>Заполнил README и собрал 3–5 слайдов (можно через демо-генератор к уроку 22).</span>
+  </div></div>
+
+  <h2>Рубрика финального проекта (20 баллов)</h2>
+  <table>
+    <tr><th>Критерий</th><th>Баллы</th></tr>
+    <tr><td>Корректная постановка задачи</td><td class="pts">0–2</td></tr>
+    <tr><td>End-to-End Pipeline</td><td class="pts">0–3</td></tr>
+    <tr><td>Baseline Model</td><td class="pts">0–2</td></tr>
+    <tr><td>Качество модели</td><td class="pts">0–3</td></tr>
+    <tr><td>Использование Pipeline</td><td class="pts">0–2</td></tr>
+    <tr><td>Наличие веб-интерфейса</td><td class="pts">0–3</td></tr>
+    <tr><td>README и документация</td><td class="pts">0–2</td></tr>
+    <tr><td>Защита проекта</td><td class="pts">0–3</td></tr>
+  </table>
+  <p class="sub" style="margin-top:10px">18–20 — отлично · 15–17 — хорошо · 12–14 — зачёт · менее 12 — доработать</p>
+
+  <h2>Мой чек-лист к репетиции (урок 23)</h2>
+  <div class="task"><input type="checkbox"><div class="body">Задача сформулирована и реализуема</div></div>
+  <div class="task"><input type="checkbox"><div class="body">Есть baseline и модель в Pipeline</div></div>
+  <div class="task"><input type="checkbox"><div class="body">Модель честно оценена нужной метрикой</div></div>
+  <div class="task"><input type="checkbox"><div class="body">Работает веб-интерфейс (Gradio)</div></div>
+  <div class="task"><input type="checkbox"><div class="body">Готов README</div></div>
+  <div class="task"><input type="checkbox"><div class="body">Готовы 3–5 слайдов и рассказ на 5 минут</div></div>
+
+  <div class="goal" style="margin-top:20px">
+    <b>Дальше:</b> урок 23 — репетиция и финальный деплой; урок 24 — Demo Day (защита проекта перед родителями). Твой проект готов для портфолио! 🎉
+  </div>
+</div>
+</body>
+</html>

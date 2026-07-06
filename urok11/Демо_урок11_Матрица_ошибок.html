@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Демо · Матрица ошибок и метрики</title>
+<style>
+  :root{--bg:#17132E;--card:#241E42;--card2:#2C2552;--violet:#8B7DF5;--violetd:#5B4FC4;
+    --cyan:#27D3EE;--teal:#2DD4BF;--lav:#D9D4F2;--muted:#9E96C8;--warn:#FF7A8A;--green:#6EE7B7;--white:#fff;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--lav);font-family:"Segoe UI",Calibri,system-ui,sans-serif;padding:24px;line-height:1.5}
+  .wrap{max-width:940px;margin:0 auto}
+  h1{color:var(--white);font-size:27px;margin:0 0 4px}
+  .kick{color:var(--cyan);font-weight:700;letter-spacing:2px;font-size:13px;text-transform:uppercase}
+  .sub{color:var(--muted);margin:6px 0 20px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:800px){.grid{grid-template-columns:1fr}}
+  .panel{background:var(--card);border-radius:16px;padding:18px}
+  .cm{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+  .cell{border-radius:10px;padding:14px;text-align:center;border:2px solid transparent}
+  .cell .n{font-size:34px;font-weight:800}
+  .cell .t{font-size:13px;color:var(--muted);margin-top:2px}
+  .tp{border-color:var(--green)} .tn{border-color:var(--green)}
+  .fp{border-color:var(--warn)} .fn{border-color:var(--warn)}
+  .cell{background:var(--card2)}
+  label{display:block;font-weight:600;color:var(--white);margin:6px 0 6px;font-size:15px}
+  input[type=range]{width:100%;accent-color:var(--cyan)}
+  .val{color:var(--cyan);font-weight:700}
+  .metrics{display:flex;gap:10px;margin-top:8px}
+  .met{flex:1;background:var(--card2);border-radius:12px;padding:12px;text-align:center}
+  .met .big{font-size:28px;font-weight:800}
+  .met .lbl{font-size:12px;color:var(--muted)}
+  .btn{background:var(--violetd);color:#fff;border:none;border-radius:10px;padding:10px 14px;font-weight:600;cursor:pointer;font-size:14px;margin-top:12px;width:100%}
+  .btn:hover{background:var(--violet)}
+  .btn.ghost{background:transparent;border:1.5px solid var(--warn);color:var(--warn)}
+  .btn.ghost:hover{background:rgba(255,122,138,.12)}
+  .note{background:var(--card2);border-radius:12px;padding:14px;font-size:14px;margin-top:14px}
+  .note b{color:var(--teal)} .note .w{color:var(--warn);font-weight:700}
+  .bar{height:12px;border-radius:6px;background:#0E0B22;margin-top:6px;overflow:hidden}
+  .bar>div{height:100%;border-radius:6px;transition:.3s}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="kick">Урок 11 · интерактивное демо</div>
+  <h1>📊 Матрица ошибок: precision и recall наглядно</h1>
+  <p class="sub">Двигай порог решения — смотри, как меняются матрица ошибок и метрики. Ниже порог → ловим больше, но чаще ошибаемся.</p>
+
+  <div class="grid">
+    <div class="panel">
+      <label>Порог решения: <span class="val" id="thrlab">0.50</span></label>
+      <input type="range" id="thr" min="5" max="95" value="50">
+      <div class="cm">
+        <div class="cell tp"><div class="n" id="tp" style="color:var(--green)">–</div><div class="t">TP · верно «выжил»</div></div>
+        <div class="cell fp"><div class="n" id="fp" style="color:var(--warn)">–</div><div class="t">FP · ложная тревога</div></div>
+        <div class="cell fn"><div class="n" id="fn" style="color:var(--warn)">–</div><div class="t">FN · пропуск</div></div>
+        <div class="cell tn"><div class="n" id="tn" style="color:var(--green)">–</div><div class="t">TN · верно «погиб»</div></div>
+      </div>
+      <button class="btn ghost" id="dumb">🤖 «Всегда предсказывать большинство» (99% и бесполезно)</button>
+    </div>
+
+    <div class="panel">
+      <div class="metrics">
+        <div class="met"><div class="big" id="acc" style="color:var(--lav)">–</div><div class="lbl">Accuracy</div></div>
+        <div class="met"><div class="big" id="prec" style="color:var(--violet)">–</div><div class="lbl">Precision</div></div>
+        <div class="met"><div class="big" id="rec" style="color:var(--cyan)">–</div><div class="lbl">Recall</div></div>
+      </div>
+      <div style="margin-top:16px">
+        <div style="font-size:13px;color:var(--muted)">Precision — из названных «выжил» сколько верно</div>
+        <div class="bar"><div id="pbar" style="background:var(--violet);width:0%"></div></div>
+      </div>
+      <div style="margin-top:12px">
+        <div style="font-size:13px;color:var(--muted)">Recall — из всех выживших скольких поймали</div>
+        <div class="bar"><div id="rbar" style="background:var(--cyan);width:0%"></div></div>
+      </div>
+      <div class="note" id="msg"></div>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>Идея урока:</b> одной accuracy мало. Матрица ошибок показывает <b>два разных вида ошибок</b> — ложную тревогу (FP) и пропуск (FN). Что беречь — precision или recall — зависит от задачи.
+  </div>
+</div>
+
+<script>
+function rng(s){return()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296;}}
+const R=rng(7);
+// synthetic: 120 примеров, вероятность "выжил" + истинная метка (с шумом)
+const data=[];
+for(let i=0;i<120;i++){
+  const cls=R()<0.42?1:0;                          // 42% выживших (несбаланс)
+  // вероятность зависит от класса + шум -> модель неидеальна
+  let base=cls?0.65:0.35;
+  let p=Math.max(0.02,Math.min(0.98, base+(R()-0.5)*0.55));
+  data.push({p, y:cls});
+}
+const el=id=>document.getElementById(id);
+function compute(thr, forceDumb){
+  let tp=0,fp=0,fn=0,tn=0;
+  for(const d of data){
+    const pred = forceDumb ? 0 : (d.p>=thr?1:0);   // dumb: всегда 0 (большинство)
+    if(pred===1&&d.y===1)tp++;
+    else if(pred===1&&d.y===0)fp++;
+    else if(pred===0&&d.y===1)fn++;
+    else tn++;
+  }
+  return {tp,fp,fn,tn};
+}
+function render(thr, forceDumb){
+  const {tp,fp,fn,tn}=compute(thr,forceDumb);
+  el('tp').textContent=tp; el('fp').textContent=fp; el('fn').textContent=fn; el('tn').textContent=tn;
+  const acc=(tp+tn)/(tp+fp+fn+tn);
+  const prec=(tp+fp)?tp/(tp+fp):0;
+  const rec=(tp+fn)?tp/(tp+fn):0;
+  el('acc').textContent=(acc*100).toFixed(0)+'%';
+  el('prec').textContent=(tp+fp)?(prec*100).toFixed(0)+'%':'—';
+  el('rec').textContent=(rec*100).toFixed(0)+'%';
+  el('pbar').style.width=(prec*100)+'%';
+  el('rbar').style.width=(rec*100)+'%';
+  const m=el('msg');
+  if(forceDumb){
+    m.innerHTML='<span class="w">Accuracy '+(acc*100).toFixed(0)+'%, а recall 0%!</span> Модель никого не поймала — она всем говорит «погиб». Вот почему <b>accuracy обманывает</b>.';
+  } else if(thr<0.4){
+    m.innerHTML='<b>Низкий порог:</b> ловим почти всех выживших (высокий recall), но много ложных тревог (precision падает).';
+  } else if(thr>0.6){
+    m.innerHTML='<b>Высокий порог:</b> почти не ошибаемся в «выжил» (высокий precision), но многих пропускаем (recall падает).';
+  } else {
+    m.innerHTML='<b>Средний порог:</b> баланс между precision и recall.';
+  }
+}
+el('thr').addEventListener('input',()=>{
+  const thr=+el('thr').value/100;
+  el('thrlab').textContent=thr.toFixed(2);
+  render(thr,false);
+});
+el('dumb').addEventListener('click',()=>{ render(+el('thr').value/100, true); });
+render(0.5,false);
+</script>
+</body>
+</html>

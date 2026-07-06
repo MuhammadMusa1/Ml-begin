@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Демо · Случайный лес</title>
+<style>
+  :root{
+    --bg:#17132E; --card:#241E42; --card2:#2C2552;
+    --violet:#8B7DF5; --violetd:#5B4FC4; --cyan:#27D3EE; --teal:#2DD4BF;
+    --lav:#D9D4F2; --muted:#9E96C8; --warn:#FF7A8A; --green:#6EE7B7; --white:#fff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--lav);
+    font-family:"Segoe UI",Calibri,system-ui,sans-serif;padding:24px;line-height:1.5}
+  .wrap{max-width:1080px;margin:0 auto}
+  h1{color:var(--white);font-size:30px;margin:0 0 4px}
+  .kick{color:var(--cyan);font-weight:700;letter-spacing:2px;font-size:13px;text-transform:uppercase}
+  .sub{color:var(--muted);margin:6px 0 22px}
+  .grid{display:grid;grid-template-columns:1.3fr 1fr;gap:20px}
+  @media(max-width:820px){.grid{grid-template-columns:1fr}}
+  .panel{background:var(--card);border-radius:16px;padding:18px}
+  canvas{width:100%;height:auto;border-radius:12px;background:#0E0B22;display:block}
+  .controls{background:var(--card2);border-radius:16px;padding:18px;margin-top:0}
+  label{display:block;font-weight:600;color:var(--white);margin:14px 0 6px;font-size:15px}
+  input[type=range]{width:100%;accent-color:var(--cyan)}
+  .val{color:var(--cyan);font-weight:700}
+  .stats{display:flex;gap:12px;margin-top:16px}
+  .stat{flex:1;background:var(--card);border-radius:12px;padding:12px;text-align:center}
+  .stat .big{font-size:30px;font-weight:800}
+  .stat .lbl{font-size:12px;color:var(--muted);margin-top:2px}
+  .btn{background:var(--violetd);color:#fff;border:none;border-radius:10px;
+    padding:11px 16px;font-size:15px;font-weight:600;cursor:pointer;margin-top:16px;width:100%}
+  .btn:hover{background:var(--violet)}
+  .note{background:var(--card2);border-radius:12px;padding:14px;margin-top:18px;font-size:14px}
+  .note b{color:var(--teal)}
+  .legend{display:flex;gap:16px;font-size:13px;margin-top:10px;color:var(--muted)}
+  .dot{display:inline-block;width:11px;height:11px;border-radius:50%;vertical-align:-1px;margin-right:5px}
+  .warn{color:var(--warn);font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="kick">Урок 9 · интерактивное демо</div>
+  <h1>🌲 Случайный лес: почему много деревьев умнее одного</h1>
+  <p class="sub">Двигай ползунок числа деревьев и смотри, как «рваная» граница одного дерева превращается в плавную границу леса.</p>
+
+  <div class="grid">
+    <div class="panel">
+      <canvas id="cv" width="560" height="560"></canvas>
+      <div class="legend">
+        <span><span class="dot" style="background:#27D3EE"></span>класс A</span>
+        <span><span class="dot" style="background:#FF7A8A"></span>класс B</span>
+        <span>фон — уверенность голосования леса</span>
+      </div>
+    </div>
+
+    <div class="controls">
+      <label>Деревьев в лесу: <span class="val" id="nlab">1</span></label>
+      <input type="range" id="ntrees" min="1" max="120" value="1">
+
+      <label>Глубина каждого дерева: <span class="val" id="dlab">6</span></label>
+      <input type="range" id="depth" min="1" max="10" value="6">
+
+      <div class="stats">
+        <div class="stat"><div class="big" id="accTrain" style="color:var(--violet)">—</div><div class="lbl">точность на TRAIN</div></div>
+        <div class="stat"><div class="big" id="accTest" style="color:var(--cyan)">—</div><div class="lbl">точность на TEST</div></div>
+      </div>
+
+      <button class="btn" id="regen">🎲 Новые данные</button>
+
+      <div class="note" id="msg">
+        <b>1 дерево:</b> граница «рваная», модель переобучилась — на TRAIN почти идеально, на TEST хуже.
+      </div>
+      <div class="note">
+        Каждое дерево учится на <b>своей случайной выборке</b> и голосует. Разные ошибки деревьев гасят друг друга — граница становится плавной, а точность на TEST растёт и выходит на <b>плато</b>.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ---------- utils ----------
+function rng(seed){let s=seed>>>0;return()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296;}}
+let R=rng(Date.now());
+
+// ---------- dataset: two interleaving blobs with overlap (needs a tree) ----------
+let TRAIN=[], TEST=[];
+function makeData(){
+  const gen=(n)=>{
+    const pts=[];
+    for(let i=0;i<n;i++){
+      const cls=i%2;
+      // two rotated clusters that partly overlap -> single deep tree overfits
+      let ang=(cls?0.6:2.4), cx=cls?0.62:0.38, cy=cls?0.40:0.60;
+      const r=0.20*Math.sqrt(R()), t=R()*Math.PI*2;
+      let x=cx+r*Math.cos(t)*1.6, y=cy+r*Math.sin(t)*0.7;
+      // rotate a bit around center
+      const dx=x-0.5,dy=y-0.5;
+      x=0.5+dx*Math.cos(ang)-dy*Math.sin(ang);
+      y=0.5+dx*Math.sin(ang)+dy*Math.cos(ang);
+      // label noise so perfect separation impossible
+      let label=cls;
+      if(R()<0.08) label=1-label;
+      pts.push({x:Math.min(0.98,Math.max(0.02,x)),y:Math.min(0.98,Math.max(0.02,y)),c:label});
+    }
+    return pts;
+  };
+  TRAIN=gen(160); TEST=gen(120);
+}
+
+// ---------- tiny CART tree (Gini, 2 features) ----------
+function gini(counts,total){if(total===0)return 0;const p0=counts[0]/total,p1=counts[1]/total;return 1-p0*p0-p1*p1;}
+function buildTree(data,depth,maxDepth){
+  const n=data.length;const cnt=[0,0];data.forEach(d=>cnt[d.c]++);
+  const majority=cnt[1]>=cnt[0]?1:0;
+  if(depth>=maxDepth||n<6||cnt[0]===0||cnt[1]===0)return{leaf:true,c:majority};
+  let best=null;
+  const feats=['x','y']; // random feature subset: pick 1 of 2 (like RF)
+  const useFeat=R()<0.5?['x','y']:[R()<0.5?'x':'y'];
+  for(const f of useFeat){
+    const vals=data.map(d=>d[f]).sort((a,b)=>a-b);
+    for(let i=4;i<n-4;i+=3){
+      const thr=(vals[i]+vals[i-1])/2;
+      const L=[0,0],Rc=[0,0];let nl=0,nr=0;
+      for(const d of data){if(d[f]<thr){L[d.c]++;nl++;}else{Rc[d.c]++;nr++;}}
+      if(nl<3||nr<3)continue;
+      const imp=(nl*gini(L,nl)+nr*gini(Rc,nr))/n;
+      if(!best||imp<best.imp)best={imp,f,thr};
+    }
+  }
+  if(!best)return{leaf:true,c:majority};
+  const left=[],right=[];
+  for(const d of data){(d[best.f]<best.thr?left:right).push(d);}
+  return{leaf:false,f:best.f,thr:best.thr,
+    L:buildTree(left,depth+1,maxDepth),Rt:buildTree(right,depth+1,maxDepth)};
+}
+function predictTree(t,p){while(!t.leaf){t=(p[t.f]<t.thr)?t.L:t.Rt;}return t.c;}
+
+// bootstrap sample
+function bootstrap(data){const out=[];for(let i=0;i<data.length;i++)out.push(data[(R()*data.length)|0]);return out;}
+
+// ---------- forest ----------
+const MAXT=120;
+let forest=[];
+function trainForest(maxDepth){
+  forest=[];
+  for(let i=0;i<MAXT;i++)forest.push(buildTree(bootstrap(TRAIN),0,maxDepth));
+}
+function forestProb(p,k){let s=0;for(let i=0;i<k;i++)s+=predictTree(forest[i],p);return s/k;}
+function accuracy(set,k){let ok=0;for(const d of set){const pr=forestProb(d,k)>=0.5?1:0;if(pr===d.c)ok++;}return ok/set.length;}
+
+// ---------- draw ----------
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+const SZ=cv.width, G=70;
+function draw(k){
+  const cell=SZ/G;
+  for(let i=0;i<G;i++)for(let j=0;j<G;j++){
+    const x=(i+0.5)/G,y=(j+0.5)/G;
+    const p=forestProb({x,y},k); // 0..1 toward class B(1)
+    // blend cyan(A) <-> warn(B)
+    const A=[39,211,238],B=[255,122,138];
+    const t=p;
+    const r=Math.round(A[0]*(1-t)+B[0]*t),g=Math.round(A[1]*(1-t)+B[1]*t),b=Math.round(A[2]*(1-t)+B[2]*t);
+    const alpha=0.16+0.22*Math.abs(p-0.5)*2;
+    ctx.fillStyle=`rgba(${r},${g},${b},${alpha})`;
+    ctx.fillRect(i*cell,j*cell,cell+1,cell+1);
+  }
+  // points (train)
+  for(const d of TRAIN){
+    ctx.beginPath();
+    ctx.arc(d.x*SZ,d.y*SZ,4.5,0,7);
+    ctx.fillStyle=d.c? '#FF7A8A':'#27D3EE';
+    ctx.fill();ctx.lineWidth=1.2;ctx.strokeStyle='rgba(14,11,34,.8)';ctx.stroke();
+  }
+}
+
+// ---------- wiring ----------
+const nEl=document.getElementById('ntrees'),dEl=document.getElementById('depth');
+const nlab=document.getElementById('nlab'),dlab=document.getElementById('dlab');
+const accTrain=document.getElementById('accTrain'),accTest=document.getElementById('accTest');
+const msg=document.getElementById('msg');
+function refresh(retrain){
+  const k=+nEl.value, md=+dEl.value;
+  nlab.textContent=k; dlab.textContent=md;
+  if(retrain){R=rng((Math.random()*1e9)|0); trainForest(md);}
+  draw(k);
+  const at=accuracy(TRAIN,k), av=accuracy(TEST,k);
+  accTrain.textContent=(at*100).toFixed(0)+'%';
+  accTest.textContent=(av*100).toFixed(0)+'%';
+  if(k===1) msg.innerHTML='<b>1 дерево:</b> граница «рваная», часто переобучается — на TRAIN почти идеально, на TEST заметно хуже.';
+  else if(k<10) msg.innerHTML='<b>'+k+' деревьев:</b> голоса начинают усредняться, граница глаже, разрыв train/test сокращается.';
+  else msg.innerHTML='<b>'+k+' деревьев:</b> граница плавная и устойчивая. Точность на TEST вышла на <b>плато</b> — больше деревьев почти не помогает.';
+}
+nEl.addEventListener('input',()=>refresh(false));
+let curDepth=+dEl.value;
+dEl.addEventListener('input',()=>{trainForest(+dEl.value);draw(+nEl.value);refresh(false);});
+document.getElementById('regen').addEventListener('click',()=>{makeData();refresh(true);});
+
+// init
+makeData();trainForest(+dEl.value);refresh(false);
+</script>
+</body>
+</html>

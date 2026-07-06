@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Демо · Аугментация данных</title>
+<style>
+  :root{--bg:#17132E;--card:#241E42;--card2:#2C2552;--violet:#8B7DF5;--violetd:#5B4FC4;
+    --cyan:#27D3EE;--teal:#2DD4BF;--lav:#D9D4F2;--muted:#9E96C8;--warn:#FF7A8A;--green:#6EE7B7;--white:#fff;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--lav);font-family:"Segoe UI",Calibri,system-ui,sans-serif;padding:24px;line-height:1.5}
+  .wrap{max-width:940px;margin:0 auto}
+  h1{color:var(--white);font-size:26px;margin:0 0 4px}
+  .kick{color:var(--cyan);font-weight:700;letter-spacing:2px;font-size:13px;text-transform:uppercase}
+  .sub{color:var(--muted);margin:6px 0 20px}
+  .panel{background:var(--card);border-radius:16px;padding:18px}
+  .top{display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap}
+  .cbox{text-align:center}
+  .cbox .lbl{font-size:13px;color:var(--muted);margin-bottom:6px}
+  canvas{border-radius:10px;display:block;background:#0E0B22}
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px}
+  @media(max-width:640px){.grid{grid-template-columns:repeat(2,1fr)}}
+  .aug{text-align:center}
+  .aug canvas{width:100%;height:auto}
+  .aug .t{font-size:11px;color:var(--muted);margin-top:4px}
+  .btns{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+  .btn{background:var(--violetd);color:#fff;border:none;border-radius:10px;padding:10px 16px;font-weight:600;cursor:pointer;font-size:14px}
+  .btn:hover{background:var(--violet)}
+  .btn.ghost{background:transparent;border:1.5px solid var(--muted);color:var(--lav)}
+  .note{background:var(--card2);border-radius:12px;padding:14px;font-size:14px;margin-top:16px}
+  .note b{color:var(--teal)}
+  input[type=file]{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="kick">Урок 16 · интерактивное демо</div>
+  <h1>🔄 Аугментация: из одного фото — много</h1>
+  <p class="sub">Одно изображение можно повернуть, отразить, приблизить, изменить яркость — и получить десятки разных примеров для обучения.</p>
+
+  <div class="panel">
+    <div class="top">
+      <div class="cbox">
+        <div class="lbl">Исходное изображение</div>
+        <canvas id="src" width="180" height="180"></canvas>
+      </div>
+      <div style="flex:1;min-width:200px">
+        <div class="note" style="margin-top:0">
+          Модель, обученная на этих вариантах, не запоминает конкретное фото, а учит <b>сам объект</b> — под любым углом и освещением. Именно так из 20 фото получаются сотни примеров.
+        </div>
+        <div class="btns">
+          <button class="btn" id="more">🔄 Новые варианты</button>
+          <button class="btn ghost" id="upload">📷 Своё фото</button>
+          <input type="file" id="file" accept="image/*">
+        </div>
+      </div>
+    </div>
+
+    <div class="grid" id="grid"></div>
+  </div>
+
+  <div class="note">
+    <b>Важно:</b> аугментация не заменяет хорошие данные — она их «размножает». Но если все твои фото сняты на одном фоне, даже аугментация не спасёт: модель выучит фон, а не предмет.
+  </div>
+</div>
+
+<script>
+const src=document.getElementById('src'), sctx=src.getContext('2d');
+let baseImg=null;
+
+// нарисовать образец-«фото»: простой пейзаж (небо, солнце, холм, дерево)
+function drawSample(){
+  const g=sctx.createLinearGradient(0,0,0,180);
+  g.addColorStop(0,'#5B4FC4'); g.addColorStop(1,'#27D3EE');
+  sctx.fillStyle=g; sctx.fillRect(0,0,180,180);
+  // солнце
+  sctx.fillStyle='#FFD36E'; sctx.beginPath(); sctx.arc(50,45,22,0,7); sctx.fill();
+  // холм
+  sctx.fillStyle='#2DD4BF'; sctx.beginPath(); sctx.moveTo(0,180); sctx.quadraticCurveTo(90,100,180,180); sctx.fill();
+  // дерево
+  sctx.fillStyle='#6B4A2B'; sctx.fillRect(120,120,10,35);
+  sctx.fillStyle='#3AA76D'; sctx.beginPath(); sctx.arc(125,115,22,0,7); sctx.fill();
+  baseImg=null;   // рисуем процедурно
+}
+function paintBase(ctx,w,h){
+  if(baseImg){ctx.drawImage(baseImg,0,0,w,h);}
+  else{ctx.drawImage(src,0,0,w,h);}
+}
+
+// применить случайную аугментацию к маленькому canvas
+function augment(canvas, params){
+  const ctx=canvas.getContext('2d'); const S=canvas.width;
+  ctx.save();
+  ctx.fillStyle='#0E0B22'; ctx.fillRect(0,0,S,S);
+  ctx.filter=`brightness(${params.bright})`;
+  ctx.translate(S/2+params.tx, S/2+params.ty);
+  ctx.rotate(params.rot);
+  ctx.scale(params.flip*params.zoom, params.zoom);
+  ctx.translate(-S/2,-S/2);
+  paintBase(ctx,S,S);
+  ctx.restore();
+}
+function rnd(a,b){return a+Math.random()*(b-a);}
+function randParams(kind){
+  const p={bright:1,tx:0,ty:0,rot:0,flip:1,zoom:1,name:''};
+  if(kind==='flip'){p.flip=-1;p.name='отражение';}
+  else if(kind==='rot'){p.rot=rnd(-0.4,0.4);p.name='поворот';}
+  else if(kind==='zoom'){p.zoom=rnd(1.1,1.5);p.name='приближение';}
+  else if(kind==='bright'){p.bright=rnd(0.5,1.6).toFixed(2);p.name='яркость';}
+  else if(kind==='shift'){p.tx=rnd(-25,25);p.ty=rnd(-25,25);p.name='сдвиг';}
+  else { // mix
+    p.flip=Math.random()<0.5?-1:1; p.rot=rnd(-0.3,0.3); p.zoom=rnd(1,1.3);
+    p.bright=rnd(0.7,1.4).toFixed(2); p.tx=rnd(-15,15); p.ty=rnd(-15,15); p.name='всё сразу';
+  }
+  return p;
+}
+const kinds=['flip','rot','zoom','bright','shift','mix','mix','mix'];
+function render(){
+  const grid=document.getElementById('grid'); grid.innerHTML='';
+  kinds.forEach(k=>{
+    const wrap=document.createElement('div'); wrap.className='aug';
+    const cv=document.createElement('canvas'); cv.width=140; cv.height=140;
+    const p=randParams(k); augment(cv,p);
+    const t=document.createElement('div'); t.className='t'; t.textContent=p.name;
+    wrap.appendChild(cv); wrap.appendChild(t); grid.appendChild(wrap);
+  });
+}
+document.getElementById('more').addEventListener('click',render);
+document.getElementById('upload').addEventListener('click',()=>document.getElementById('file').click());
+document.getElementById('file').addEventListener('change',e=>{
+  const f=e.target.files[0]; if(!f)return;
+  const img=new Image(); img.onload=()=>{
+    sctx.fillStyle='#0E0B22'; sctx.fillRect(0,0,180,180);
+    // вписать с сохранением пропорций
+    const s=Math.min(180/img.width,180/img.height); const w=img.width*s,h=img.height*s;
+    sctx.drawImage(img,(180-w)/2,(180-h)/2,w,h);
+    baseImg=null; render();
+  };
+  img.src=URL.createObjectURL(f);
+});
+
+drawSample(); render();
+</script>
+</body>
+</html>

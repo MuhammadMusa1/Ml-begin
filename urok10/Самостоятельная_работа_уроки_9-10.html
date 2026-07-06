@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Самостоятельная работа · Уроки 9–10</title>
+<style>
+  :root{
+    --bg:#17132E; --card:#241E42; --card2:#2C2552;
+    --violet:#8B7DF5; --violetd:#5B4FC4; --cyan:#27D3EE; --teal:#2DD4BF;
+    --lav:#D9D4F2; --muted:#9E96C8; --warn:#FF7A8A; --green:#6EE7B7; --white:#fff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--lav);
+    font-family:"Segoe UI",Calibri,system-ui,sans-serif;padding:24px;line-height:1.55}
+  .wrap{max-width:900px;margin:0 auto}
+  h1{color:var(--white);font-size:30px;margin:0 0 4px}
+  h2{color:var(--white);font-size:22px;margin:30px 0 4px}
+  .kick{color:var(--cyan);font-weight:700;letter-spacing:2px;font-size:13px;text-transform:uppercase}
+  .sub{color:var(--muted);margin:6px 0 18px}
+  .meta{display:flex;gap:22px;flex-wrap:wrap;background:var(--card2);border-radius:12px;padding:12px 16px;font-size:14px;margin-bottom:8px}
+  .meta b{color:var(--white)}
+  .phase{color:var(--teal);font-weight:700;font-size:13px;letter-spacing:1px;text-transform:uppercase;margin-top:26px}
+  .task{background:var(--card);border-radius:14px;padding:16px 18px;margin:12px 0;display:flex;gap:14px;align-items:flex-start}
+  .task input[type=checkbox]{width:20px;height:20px;accent-color:var(--cyan);margin-top:3px;flex-shrink:0;cursor:pointer}
+  .task .body{flex:1}
+  .lvl{display:inline-block;font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px;margin-right:8px;text-transform:uppercase;letter-spacing:.5px}
+  .lvl.base{background:#1E3A34;color:var(--green)}
+  .lvl.adv{background:#3A2352;color:var(--violet)}
+  .task .txt{color:var(--lav)}
+  code{background:#0E0B22;color:var(--cyan);padding:1px 6px;border-radius:5px;font-size:13px}
+  details{margin-top:8px}
+  summary{cursor:pointer;color:var(--muted);font-size:13px;font-weight:600}
+  summary:hover{color:var(--cyan)}
+  .hint{background:var(--card2);border-radius:8px;padding:10px 12px;margin-top:8px;font-size:14px}
+  .answerline{border-bottom:1px dashed var(--muted);min-height:26px;margin-top:8px}
+  table{width:100%;border-collapse:collapse;margin-top:10px;font-size:14px}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--card2)}
+  th{color:var(--cyan);font-size:13px;text-transform:uppercase;letter-spacing:.5px}
+  td.pts{color:var(--teal);font-weight:700;white-space:nowrap}
+  .quiz{background:var(--card);border-radius:14px;padding:18px;margin-top:14px}
+  .q{margin-bottom:18px}
+  .q p{font-weight:600;color:var(--white);margin:0 0 8px}
+  .opt{display:block;background:var(--card2);border-radius:8px;padding:10px 12px;margin:6px 0;cursor:pointer;transition:.15s;border:2px solid transparent}
+  .opt:hover{border-color:var(--violetd)}
+  .opt.correct{border-color:var(--green);background:#1E3A34}
+  .opt.wrong{border-color:var(--warn);background:#3A1E28}
+  .qbtn{background:var(--violetd);color:#fff;border:none;border-radius:10px;padding:11px 18px;font-weight:600;cursor:pointer;font-size:15px}
+  .qbtn:hover{background:var(--violet)}
+  #score{margin-top:14px;font-size:18px;font-weight:700;color:var(--teal)}
+  .toolbar{display:flex;gap:10px;margin-top:8px}
+  .print{background:transparent;border:1.5px solid var(--violetd);color:var(--lav);border-radius:10px;padding:9px 16px;cursor:pointer;font-size:14px}
+  .print:hover{border-color:var(--cyan);color:var(--white)}
+  .goal{background:var(--card2);border-radius:12px;padding:14px 16px;margin:10px 0}
+  .goal b{color:var(--teal)}
+  @media print{
+    body{background:#fff;color:#111}
+    .wrap{max-width:100%}
+    h1,h2,.meta b,.q p{color:#111}
+    .task,.card,.quiz,.goal,.meta{background:#f4f3fa;border:1px solid #ddd}
+    .opt{background:#fff;border:1px solid #ccc}
+    .toolbar,.qbtn,#score{display:none}
+    code{background:#eee;color:#333}
+    .kick,.phase{color:#5B4FC4}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="kick">Фаза 2 · Классические алгоритмы</div>
+  <h1>Самостоятельная работа · Уроки 9–10</h1>
+  <p class="sub">Случайный лес · Pipeline · кросс-валидация</p>
+
+  <div class="meta">
+    <span><b>Имя:</b> ______________________</span>
+    <span><b>Дата:</b> ____________</span>
+    <span><b>Формат:</b> Google Colab</span>
+    <span><b>Макс. балл:</b> 10</span>
+  </div>
+  <div class="toolbar">
+    <button class="print" onclick="window.print()">🖨 Печать / PDF</button>
+  </div>
+
+  <div class="goal">
+    <b>Цель работы.</b> Показать, что ты умеешь: построить случайный лес, честно оценить модель через кросс-валидацию,
+    собрать всю подготовку данных и модель в единый <code>Pipeline</code> и объяснить свои результаты словами.
+    <br><br>
+    <b>Датасет:</b> Titanic (<code>seaborn.load_dataset('titanic')</code>) или свой датасет с числовыми и категориальными признаками.
+  </div>
+
+  <!-- ================= PART A ================= -->
+  <div class="phase">Часть A · Случайный лес (урок 9)</div>
+
+  <div class="task"><input type="checkbox">
+    <div class="body"><span class="lvl base">базовый</span>
+      <span class="txt">Обучи <code>DecisionTreeClassifier</code> и <code>RandomForestClassifier</code> на одних данных. Выведи точность на <b>train</b> и на <b>test</b> для обеих моделей.</span>
+      <details><summary>Подсказка</summary><div class="hint">Не забудь <code>random_state=42</code> и одно и то же <code>train_test_split</code>. Сравнивай модели только по <b>test</b>.</div></details>
+      <div class="answerline"></div>
+    </div>
+  </div>
+
+  <div class="task"><input type="checkbox">
+    <div class="body"><span class="lvl base">базовый</span>
+      <span class="txt">Построй столбчатую диаграмму важности признаков (<code>feature_importances_</code>). Выпиши <b>топ-3</b> самых важных признака.</span>
+      <div class="answerline"></div><div class="answerline"></div>
+    </div>
+  </div>
+
+  <div class="task"><input type="checkbox">
+    <div class="body"><span class="lvl base">базовый</span>
+      <span class="txt">Ответь письменно (2–3 предложения): <i>почему лес обычно точнее одного дерева?</i> Используй слова «разнообразие» и «голосование».</span>
+      <div class="answerline"></div><div class="answerline"></div>
+    </div>
+  </div>
+
+  <div class="task"><input type="checkbox">
+    <div class="body"><span class="lvl adv">продвинутый</span>
+      <span class="txt">Построй график зависимости точности на test от числа деревьев (<code>n_estimators</code> = 1, 5, 10, 50, 100, 300). Отметь, где начинается «плато».</span>
+      <details><summary>Подсказка</summary><div class="hint">Обучи модель в цикле по списку значений <code>n_estimators</code>, сохраняй accuracy в список и построй <code>plt.plot(...)</code>.</div></details>
+      <div class="answerline"></div>
+    </div>
+  </div>
+
+  <div class="task"><input type="checkbox">
+    <div class="body"><span class="lvl adv">продвинутый</span>
+      <span class="txt">Проверь ловушку: назови признак с высокой важностью и объясни, <b>почему это ещё не значит, что он — причина</b> результата.</span>
+      <div class="answerline"></div><div class="answerline"></div>
+    </div>
+  </div>
+
+  <!-- ================= PART B ================= -->
+  <div class="phase">Часть B · Pipeline и кросс-валидация (урок 10)</div>
+
+  <div class="task"><input type="checkbox">
+    <div class="body"><span class="lvl base">базовый</span>
+      <span class="txt">Собери <code>ColumnTransformer</code>: для числовых признаков — заполнение пропусков + масштабирование; для категориальных — заполнение + <code>OneHotEncoder</code>.</span>
+      <details><summary>Подсказка</summary><div class="hint">Раздели признаки на два списка: <code>num_features</code> и <code>cat_features</code>. Для каждого — свой мини-<code>Pipeline</code>.</div></details>
+      <div class="answerline"></div>
+    </div>
+  </div>
+
+  <div class="task"><input type="checkbox">
+    <div class="body"><span class="lvl base">базовый</span>
+      <span class="txt">Собери полный <code>Pipeline</code>: <code>ColumnTransformer</code> → модель. Обучи и получи точность на test. В коде <b>не должно быть</b> ручных <code>fillna</code>/<code>get_dummies</code>.</span>
+      <div class="answerline"></div>
+    </div>
+  </div>
+
+  <div class="task"><input type="checkbox">
+    <div class="body"><span class="lvl base">базовый</span>
+      <span class="txt">Оцени модель через <code>cross_val_score(..., cv=5)</code>. Выведи результат как <b>среднее ± разброс</b>.</span>
+      <div class="answerline"></div>
+    </div>
+  </div>
+
+  <div class="task"><input type="checkbox">
+    <div class="body"><span class="lvl base">базовый</span>
+      <span class="txt">Ответь письменно: <i>как Pipeline защищает от утечки данных (data leakage)?</i></span>
+      <div class="answerline"></div><div class="answerline"></div>
+    </div>
+  </div>
+
+  <div class="task"><input type="checkbox">
+    <div class="body"><span class="lvl adv">продвинутый</span>
+      <span class="txt"><b>Синтез-задание.</b> Собери <code>RandomForestClassifier</code> <u>внутри</u> Pipeline, подбери параметры через <code>GridSearchCV</code> (cv=5) и запиши лучший результат.</span>
+      <details><summary>Подсказка</summary><div class="hint">К параметрам шага обращайся через <code>имя_шага__параметр</code>, например <code>forest__n_estimators</code>.</div></details>
+      <div class="answerline"></div>
+    </div>
+  </div>
+
+  <!-- ================= RUBRIC ================= -->
+  <h2>Критерии оценки (10 баллов)</h2>
+  <table>
+    <tr><th>Критерий</th><th>Баллы</th></tr>
+    <tr><td>Постановка: понятно, что предсказываем и какие признаки</td><td class="pts">0–2</td></tr>
+    <tr><td>Случайный лес обучен, сравнение с деревом на test</td><td class="pts">0–2</td></tr>
+    <tr><td>Модель собрана как <code>Pipeline</code> (без ручной подготовки)</td><td class="pts">0–2</td></tr>
+    <tr><td>Честная оценка через кросс-валидацию (mean ± std)</td><td class="pts">0–2</td></tr>
+    <tr><td>Интерпретация: важность признаков + вывод словами</td><td class="pts">0–2</td></tr>
+  </table>
+  <p class="sub" style="margin-top:10px">9–10 — отлично · 7–8 — хорошо · 5–6 — зачёт · менее 5 — доработать</p>
+
+  <!-- ================= SELF CHECK QUIZ ================= -->
+  <h2>Проверь себя</h2>
+  <p class="sub">5 вопросов на понимание. Ответь до сдачи работы.</p>
+  <div class="quiz" id="quiz">
+    <div class="q" data-correct="1">
+      <p>1. Почему случайный лес обычно точнее одного дерева?</p>
+      <label class="opt">Потому что деревья глубже</label>
+      <label class="opt">Разные деревья ошибаются по-разному, и голосование гасит случайные ошибки</label>
+      <label class="opt">Потому что лес использует больше данных</label>
+    </div>
+    <div class="q" data-correct="2">
+      <p>2. Что показывает <code>feature_importances_</code>?</p>
+      <label class="opt">Какой признак является причиной результата</label>
+      <label class="opt">Точность модели по каждому признаку</label>
+      <label class="opt">Насколько часто и полезно модель использовала признак (но не причину!)</label>
+    </div>
+    <div class="q" data-correct="0">
+      <p>3. Зачем нужен <code>Pipeline</code>?</p>
+      <label class="opt">Чтобы собрать подготовку и модель вместе и не допустить утечки данных</label>
+      <label class="opt">Чтобы ускорить обучение модели</label>
+      <label class="opt">Чтобы не писать <code>import</code></label>
+    </div>
+    <div class="q" data-correct="1">
+      <p>4. Почему одна проверка на test ненадёжна?</p>
+      <label class="opt">Test всегда меньше train</label>
+      <label class="opt">Результат зависит от того, как «повезло» с конкретным разбиением</label>
+      <label class="opt">Одна проверка считается дольше</label>
+    </div>
+    <div class="q" data-correct="2">
+      <p>5. Что такое утечка данных (data leakage)?</p>
+      <label class="opt">Когда данных слишком много</label>
+      <label class="opt">Когда пропущены значения в датасете</label>
+      <label class="opt">Когда в подготовку «протекает» информация из теста, и оценка становится нечестной</label>
+    </div>
+    <button class="qbtn" onclick="checkQuiz()">Проверить ответы</button>
+    <div id="score"></div>
+  </div>
+</div>
+
+<script>
+document.querySelectorAll('.q').forEach(q=>{
+  q.querySelectorAll('.opt').forEach((opt,i)=>{
+    opt.addEventListener('click',()=>{
+      q.querySelectorAll('.opt').forEach(o=>o.dataset.sel='');
+      opt.dataset.sel='1'; q.dataset.pick=i;
+    });
+  });
+});
+function checkQuiz(){
+  let correct=0,total=0;
+  document.querySelectorAll('.q').forEach(q=>{
+    total++;
+    const ans=+q.dataset.correct, pick=q.dataset.pick;
+    q.querySelectorAll('.opt').forEach(o=>o.classList.remove('correct','wrong'));
+    const opts=q.querySelectorAll('.opt');
+    opts[ans].classList.add('correct');
+    if(pick!==undefined){
+      if(+pick===ans) correct++;
+      else opts[+pick].classList.add('wrong');
+    }
+  });
+  const s=document.getElementById('score');
+  s.textContent='Результат: '+correct+' из '+total+(correct===total?' — отлично! 🎉':'');
+}
+</script>
+</body>
+</html>

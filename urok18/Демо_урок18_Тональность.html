@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Демо · Анализ тональности</title>
+<style>
+  :root{--bg:#17132E;--card:#241E42;--card2:#2C2552;--violet:#8B7DF5;--violetd:#5B4FC4;
+    --cyan:#27D3EE;--teal:#2DD4BF;--lav:#D9D4F2;--muted:#9E96C8;--warn:#FF7A8A;--green:#6EE7B7;--white:#fff;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--lav);font-family:"Segoe UI",Calibri,system-ui,sans-serif;padding:24px;line-height:1.5}
+  .wrap{max-width:780px;margin:0 auto}
+  h1{color:var(--white);font-size:26px;margin:0 0 4px}
+  .kick{color:var(--cyan);font-weight:700;letter-spacing:2px;font-size:13px;text-transform:uppercase}
+  .sub{color:var(--muted);margin:6px 0 18px}
+  .panel{background:var(--card);border-radius:16px;padding:18px}
+  textarea{width:100%;min-height:80px;background:#0E0B22;color:var(--lav);border:1px solid var(--violetd);
+    border-radius:10px;padding:12px;font-size:16px;font-family:inherit;resize:vertical}
+  .examples{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+  .ex{background:var(--card2);border:none;border-radius:20px;padding:7px 12px;color:var(--lav);cursor:pointer;font-size:13px}
+  .ex:hover{background:var(--violetd);color:#fff}
+  .verdict{display:flex;align-items:center;gap:16px;margin-top:16px}
+  .badge{font-size:22px;font-weight:800;padding:10px 20px;border-radius:12px}
+  .bar{flex:1;height:16px;background:#0E0B22;border-radius:8px;overflow:hidden;position:relative}
+  .bar>div{height:100%;transition:.3s}
+  .hl{margin-top:16px;font-size:17px;line-height:2}
+  .hl .pos{background:rgba(110,231,183,.25);color:var(--green);padding:2px 6px;border-radius:6px;font-weight:600}
+  .hl .neg{background:rgba(255,122,138,.22);color:var(--warn);padding:2px 6px;border-radius:6px;font-weight:600}
+  .hl .flip{outline:2px dashed var(--cyan)}
+  .note{background:var(--card2);border-radius:12px;padding:14px;font-size:14px;margin-top:16px}
+  .note b{color:var(--teal)} .note .w{color:var(--warn);font-weight:700}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="kick">Урок 18 · интерактивное демо</div>
+  <h1>💬 Анализ тональности отзыва</h1>
+  <p class="sub">Введи отзыв — простой классификатор по словам определит настроение. И покажет, где такой метод ошибается.</p>
+
+  <div class="panel">
+    <textarea id="inp" placeholder="Напиши отзыв…">Отличный сервис, быстро и вежливо, очень советую!</textarea>
+    <div class="examples" id="ex"></div>
+
+    <div class="verdict">
+      <div class="badge" id="badge">—</div>
+      <div class="bar"><div id="bar"></div></div>
+    </div>
+    <div class="hl" id="hl"></div>
+
+    <div class="note" id="warnnote" style="display:none"></div>
+  </div>
+
+  <div class="note">
+    <b>Как это работает:</b> у классификатора есть словарь позитивных и негативных слов. Он считает, каких больше. Слово <b>«не»</b> перед оценкой переворачивает её. <span class="w">Но сарказм и сложные фразы он не понимает</span> — настоящие LLM справляются лучше, но и их ответ нужно проверять.
+  </div>
+</div>
+
+<script>
+const POS=['отличный','отлично','супер','класс','классно','советую','нравится','понравилось','быстро','вежливо','вежливый','хорошо','хороший','прекрасно','замечательно','любовь','люблю','лучший','довольна','доволен','порадовал','спасибо','удобно','качественно'];
+const NEG=['ужасно','ужасный','плохо','плохой','долго','грубо','грубый','обман','отвратительно','кошмар','разочарован','разочарование','медленно','дорого','сломалось','хамство','never','никогда','зря','жаль','отстой'];
+const NEGATORS=['не','ни','без'];
+
+const inp=document.getElementById('inp'), hl=document.getElementById('hl'),
+      badge=document.getElementById('badge'), bar=document.getElementById('bar'), warnnote=document.getElementById('warnnote');
+
+const examples=[
+  'Отличный сервис, быстро и вежливо, очень советую!',
+  'Ужасно, ждал долго, никто не помог. Не приду больше.',
+  'Ну очень «порадовал» этот сервис… спасибо, что испортили день.',
+  'Не плохо, но и не отлично.',
+];
+const exBox=document.getElementById('ex');
+examples.forEach(t=>{const b=document.createElement('button');b.className='ex';b.textContent=t.slice(0,28)+(t.length>28?'…':'');b.onclick=()=>{inp.value=t;analyze();};exBox.appendChild(b);});
+
+function analyze(){
+  const raw=inp.value;
+  const tokens=raw.split(/(\s+|[.,!?;:«»"()])/).filter(t=>t.length);
+  let score=0; let out='';
+  let prevNegator=false;
+  const wordsSeq=[];
+  tokens.forEach(t=>{
+    const clean=t.toLowerCase().replace(/[.,!?;:«»"()]/g,'');
+    if(!clean.trim()){out+=t;return;}
+    let cls=''; let flip=false;
+    let isPos=POS.includes(clean), isNeg=NEG.includes(clean);
+    if(isPos||isNeg){
+      if(prevNegator){flip=true; [isPos,isNeg]=[isNeg,isPos];}
+      if(isPos){score+=1;cls='pos';}
+      else{score-=1;cls='neg';}
+    }
+    if(cls) out+=`<span class="${cls}${flip?' flip':''}">${t}</span>`;
+    else out+=t;
+    prevNegator=NEGATORS.includes(clean);
+  });
+  hl.innerHTML=out;
+
+  let label,color;
+  if(score>0){label='ПОЗИТИВ';color='var(--green)';}
+  else if(score<0){label='НЕГАТИВ';color='var(--warn)';}
+  else{label='НЕЙТРАЛЬНО';color='var(--muted)';}
+  badge.textContent=label; badge.style.background='rgba(255,255,255,.06)'; badge.style.color=color;
+  // bar: map score to -5..5
+  const pct=Math.max(-5,Math.min(5,score))/5;   // -1..1
+  bar.style.width=Math.abs(pct)*50+50+'%';
+  bar.style.marginLeft=pct<0?0:'auto';
+  bar.style.background=color;
+
+  // sarcasm heuristic: кавычки вокруг позитивного слова или "спасибо, что"
+  const sarcasm=/«[^»]*»|"[^"]*"/.test(raw) && POS.some(w=>raw.toLowerCase().includes(w))
+               || /спасибо,?\s*что/i.test(raw);
+  if(sarcasm){
+    warnnote.style.display='block';
+    warnnote.innerHTML='<span class="w">⚠ Возможен сарказм!</span> Тут есть позитивные слова в кавычках или ироничная фраза. Классификатор по словам, скорее всего, ошибётся — это как раз тот случай, где нужен человек или умная модель.';
+  } else warnnote.style.display='none';
+}
+inp.addEventListener('input',analyze);
+analyze();
+</script>
+</body>
+</html>

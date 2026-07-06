@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Демо · Нейросеть учится</title>
+<style>
+  :root{--bg:#17132E;--card:#241E42;--card2:#2C2552;--violet:#8B7DF5;--violetd:#5B4FC4;
+    --cyan:#27D3EE;--teal:#2DD4BF;--lav:#D9D4F2;--muted:#9E96C8;--warn:#FF7A8A;--green:#6EE7B7;--white:#fff;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--lav);font-family:"Segoe UI",Calibri,system-ui,sans-serif;padding:24px;line-height:1.5}
+  .wrap{max-width:1000px;margin:0 auto}
+  h1{color:var(--white);font-size:26px;margin:0 0 4px}
+  .kick{color:var(--cyan);font-weight:700;letter-spacing:2px;font-size:13px;text-transform:uppercase}
+  .sub{color:var(--muted);margin:6px 0 20px}
+  .grid{display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:start}
+  @media(max-width:760px){.grid{grid-template-columns:1fr}}
+  .panel{background:var(--card);border-radius:16px;padding:18px}
+  canvas{border-radius:12px;background:#0E0B22;display:block}
+  label{display:block;font-weight:600;color:var(--white);margin:12px 0 6px;font-size:15px}
+  input[type=range]{width:100%;accent-color:var(--cyan)}
+  .val{color:var(--cyan);font-weight:700}
+  select{width:100%;padding:9px;border-radius:8px;background:var(--card2);color:var(--lav);border:1px solid var(--violetd);font-size:14px}
+  .btns{display:flex;gap:10px;margin-top:14px}
+  .btn{flex:1;background:var(--violetd);color:#fff;border:none;border-radius:10px;padding:11px;font-weight:600;cursor:pointer;font-size:14px}
+  .btn:hover{background:var(--violet)}
+  .btn.ghost{background:transparent;border:1.5px solid var(--muted);color:var(--lav)}
+  .stats{display:flex;gap:12px;margin-top:14px}
+  .stat{flex:1;background:var(--card2);border-radius:12px;padding:10px;text-align:center}
+  .stat .big{font-size:26px;font-weight:800}
+  .stat .lbl{font-size:11px;color:var(--muted)}
+  .legend{display:flex;gap:16px;font-size:13px;color:var(--muted);margin-top:10px}
+  .dot{display:inline-block;width:11px;height:11px;border-radius:50%;vertical-align:-1px;margin-right:5px}
+  .note{background:var(--card2);border-radius:12px;padding:14px;font-size:14px;margin-top:16px}
+  .note b{color:var(--teal)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="kick">Урок 13 · интерактивное демо</div>
+  <h1>🧠 Нейросеть учится на твоих глазах</h1>
+  <p class="sub">Нажми «Обучать» и смотри, как граница между классами постепенно «прорастает» — сеть подкручивает веса по эпохам.</p>
+
+  <div class="grid">
+    <div class="panel">
+      <canvas id="cv" width="420" height="420"></canvas>
+      <div class="legend">
+        <span><span class="dot" style="background:#27D3EE"></span>класс A</span>
+        <span><span class="dot" style="background:#FF7A8A"></span>класс B</span>
+        <span>фон — что «думает» сеть</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <label>Данные</label>
+      <select id="dataset">
+        <option value="moons">Две луны</option>
+        <option value="circles">Круг в круге</option>
+        <option value="blobs">Два облака</option>
+      </select>
+
+      <label>Нейронов в скрытом слое: <span class="val" id="hlab">6</span></label>
+      <input type="range" id="hidden" min="1" max="16" value="6">
+
+      <div class="btns">
+        <button class="btn" id="run">▶ Обучать</button>
+        <button class="btn ghost" id="reset">Сброс</button>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><div class="big" id="epoch" style="color:var(--violet)">0</div><div class="lbl">эпоха</div></div>
+        <div class="stat"><div class="big" id="acc" style="color:var(--cyan)">–</div><div class="lbl">точность</div></div>
+      </div>
+
+      <div class="note" id="msg">
+        В начале веса случайные — сеть отвечает почти наугад. Нажми «Обучать».
+      </div>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>Что происходит:</b> сеть много раз смотрит на данные (эпохи), сравнивает свой ответ с правильным и чуть-чуть подкручивает веса. Попробуй <b>1 нейрон</b> — граница будет прямой линией. Добавь нейронов — граница станет гибкой и обогнёт сложные формы.
+  </div>
+</div>
+
+<script>
+function rnd(){return Math.random()*2-1;}
+// ---- datasets in [-1,1] ----
+function makeData(kind){
+  const pts=[],n=120;
+  for(let i=0;i<n;i++){
+    let x,y,c;
+    if(kind==='moons'){
+      const t=Math.random()*Math.PI, r=0.6+ (Math.random()-0.5)*0.2;
+      if(i%2===0){x=r*Math.cos(t)-0.3; y=r*Math.sin(t)-0.15; c=0;}
+      else {x=r*Math.cos(t)+0.3; y=-r*Math.sin(t)+0.15; c=1;}
+    } else if(kind==='circles'){
+      const t=Math.random()*Math.PI*2, r=(i%2===0)?0.3:0.75;
+      x=r*Math.cos(t)+ (Math.random()-0.5)*0.12; y=r*Math.sin(t)+(Math.random()-0.5)*0.12; c=i%2;
+    } else {
+      const cx=(i%2===0)?-0.4:0.4;
+      x=cx+(Math.random()-0.5)*0.6; y=(Math.random()-0.5)*1.2; c=i%2;
+    }
+    pts.push({x,y,c});
+  }
+  return pts;
+}
+
+// ---- 1-hidden-layer MLP (2 -> H -> 1), manual backprop ----
+let H=6, W1,b1,W2,b2, data, epoch=0, timer=null;
+function initNet(h){
+  H=h;
+  W1=Array.from({length:2},()=>Array.from({length:H},()=>rnd()));
+  b1=Array.from({length:H},()=>0);
+  W2=Array.from({length:H},()=>rnd());
+  b2=0; epoch=0;
+}
+function tanh(x){return Math.tanh(x);}
+function sig(x){return 1/(1+Math.exp(-x));}
+function fwd(x0,x1){
+  const a1=new Array(H), z1=new Array(H);
+  for(let j=0;j<H;j++){z1[j]=x0*W1[0][j]+x1*W1[1][j]+b1[j];a1[j]=tanh(z1[j]);}
+  let z2=b2;for(let j=0;j<H;j++)z2+=a1[j]*W2[j];
+  return {y:sig(z2),a1};
+}
+function step(lr){
+  const n=data.length;
+  const gW1=[new Array(H).fill(0),new Array(H).fill(0)];
+  const gb1=new Array(H).fill(0), gW2=new Array(H).fill(0); let gb2=0;
+  for(const d of data){
+    const a1=new Array(H);
+    for(let j=0;j<H;j++)a1[j]=tanh(d.x*W1[0][j]+d.y*W1[1][j]+b1[j]);
+    let z2=b2;for(let j=0;j<H;j++)z2+=a1[j]*W2[j];
+    const yhat=sig(z2);
+    const dz2=(yhat-d.c);                 // BCE + sigmoid derivative
+    for(let j=0;j<H;j++){
+      gW2[j]+=dz2*a1[j];
+      const da1=dz2*W2[j];
+      const dz1=da1*(1-a1[j]*a1[j]);       // tanh'
+      gW1[0][j]+=dz1*d.x; gW1[1][j]+=dz1*d.y; gb1[j]+=dz1;
+    }
+    gb2+=dz2;
+  }
+  for(let j=0;j<H;j++){
+    W2[j]-=lr*gW2[j]/n;
+    W1[0][j]-=lr*gW1[0][j]/n; W1[1][j]-=lr*gW1[1][j]/n; b1[j]-=lr*gb1[j]/n;
+  }
+  b2-=lr*gb2/n;
+  epoch++;
+}
+function accuracy(){let ok=0;for(const d of data){if((fwd(d.x,d.y).y>=0.5?1:0)===d.c)ok++;}return ok/data.length;}
+
+// ---- draw ----
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),SZ=420;
+function toPix(v){return (v+1.4)/2.8*SZ;}   // map [-1.4,1.4] -> [0,SZ]
+function draw(){
+  const G=56,cell=SZ/G;
+  for(let i=0;i<G;i++)for(let j=0;j<G;j++){
+    const x=(i+0.5)/G*2.8-1.4, y=(j+0.5)/G*2.8-1.4;
+    const p=fwd(x,y).y;
+    const A=[39,211,238],B=[255,122,138];
+    const r=Math.round(A[0]*(1-p)+B[0]*p),g=Math.round(A[1]*(1-p)+B[1]*p),b=Math.round(A[2]*(1-p)+B[2]*p);
+    ctx.fillStyle=`rgba(${r},${g},${b},${0.12+0.25*Math.abs(p-0.5)*2})`;
+    ctx.fillRect(i*cell,j*cell,cell+1,cell+1);
+  }
+  for(const d of data){
+    ctx.beginPath();ctx.arc(toPix(d.x),toPix(d.y),4.5,0,7);
+    ctx.fillStyle=d.c?'#FF7A8A':'#27D3EE';ctx.fill();
+    ctx.lineWidth=1.2;ctx.strokeStyle='rgba(14,11,34,.8)';ctx.stroke();
+  }
+}
+
+const hEl=document.getElementById('hidden'),hlab=document.getElementById('hlab');
+const epEl=document.getElementById('epoch'),accEl=document.getElementById('acc'),msg=document.getElementById('msg'),runBtn=document.getElementById('run');
+function refresh(){epEl.textContent=epoch;const a=accuracy();accEl.textContent=(a*100).toFixed(0)+'%';draw();
+  if(epoch===0)msg.innerHTML='Веса случайные — сеть отвечает почти наугад. Нажми «Обучать».';
+  else if(a<0.75)msg.innerHTML='Сеть подкручивает веса… граница только начинает формироваться.';
+  else if(H===1)msg.innerHTML='<b>1 нейрон</b> умеет только прямую линию — сложные формы ему не под силу.';
+  else msg.innerHTML='<b>Отлично!</b> Граница обогнула классы. Больше нейронов — гибче граница.';
+}
+function resetAll(){clearInterval(timer);timer=null;runBtn.textContent='▶ Обучать';data=makeData(document.getElementById('dataset').value);initNet(+hEl.value);refresh();}
+runBtn.addEventListener('click',()=>{
+  if(timer){clearInterval(timer);timer=null;runBtn.textContent='▶ Обучать';return;}
+  runBtn.textContent='⏸ Пауза';
+  timer=setInterval(()=>{for(let k=0;k<5;k++)step(1.2);refresh();if(epoch>=600){clearInterval(timer);timer=null;runBtn.textContent='▶ Обучать';}},40);
+});
+document.getElementById('reset').addEventListener('click',resetAll);
+hEl.addEventListener('input',()=>{hlab.textContent=hEl.value;resetAll();});
+document.getElementById('dataset').addEventListener('change',resetAll);
+resetAll();
+</script>
+</body>
+</html>

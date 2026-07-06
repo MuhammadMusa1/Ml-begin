@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Демо · Кросс-валидация</title>
+<style>
+  :root{
+    --bg:#17132E; --card:#241E42; --card2:#2C2552;
+    --violet:#8B7DF5; --violetd:#5B4FC4; --cyan:#27D3EE; --teal:#2DD4BF;
+    --lav:#D9D4F2; --muted:#9E96C8; --warn:#FF7A8A; --green:#6EE7B7; --white:#fff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--lav);
+    font-family:"Segoe UI",Calibri,system-ui,sans-serif;padding:24px;line-height:1.5}
+  .wrap{max-width:940px;margin:0 auto}
+  h1{color:var(--white);font-size:28px;margin:0 0 4px}
+  .kick{color:var(--cyan);font-weight:700;letter-spacing:2px;font-size:13px;text-transform:uppercase}
+  .sub{color:var(--muted);margin:6px 0 22px}
+  .panel{background:var(--card);border-radius:16px;padding:20px;margin-bottom:18px}
+  .row{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+  label{font-weight:600;color:var(--white);font-size:15px}
+  input[type=range]{accent-color:var(--cyan);width:220px;vertical-align:middle}
+  .val{color:var(--cyan);font-weight:700}
+  .btn{background:var(--violetd);color:#fff;border:none;border-radius:10px;
+    padding:11px 18px;font-size:15px;font-weight:600;cursor:pointer}
+  .btn:hover{background:var(--violet)}
+  .btn.ghost{background:transparent;border:1.5px solid var(--violetd);color:var(--lav)}
+  .btn.ghost:hover{border-color:var(--cyan);color:var(--white)}
+  #strip{display:flex;gap:3px;margin:8px 0 4px;flex-wrap:nowrap;overflow:hidden}
+  .cell{flex:1;height:38px;border-radius:5px;transition:.25s;position:relative}
+  .foldrow{display:flex;gap:3px;margin-bottom:14px}
+  .flabel{flex:1;text-align:center;font-size:11px;color:var(--muted)}
+  .bars{display:flex;gap:10px;align-items:flex-end;height:150px;margin-top:8px}
+  .bar{flex:1;background:var(--violetd);border-radius:6px 6px 0 0;position:relative;transition:.4s;min-height:2px}
+  .bar.active{background:var(--cyan)}
+  .bar span{position:absolute;top:-22px;left:0;right:0;text-align:center;font-size:13px;font-weight:700;color:var(--lav)}
+  .bar small{position:absolute;bottom:-20px;left:0;right:0;text-align:center;font-size:11px;color:var(--muted)}
+  .result{background:var(--card2);border-radius:12px;padding:16px;margin-top:26px;text-align:center}
+  .result .big{font-size:34px;font-weight:800;color:var(--teal)}
+  .legend{display:flex;gap:16px;font-size:13px;color:var(--muted);margin-top:8px}
+  .dot{display:inline-block;width:11px;height:11px;border-radius:3px;vertical-align:-1px;margin-right:5px}
+  .note{background:var(--card2);border-radius:12px;padding:14px;font-size:14px;margin-top:16px}
+  .note b{color:var(--teal)} .note .w{color:var(--warn);font-weight:600}
+  .single{font-size:22px;font-weight:800;color:var(--warn)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="kick">Урок 10 · интерактивное демо</div>
+  <h1>🔁 Кросс-валидация: 5 проверок честнее одной</h1>
+  <p class="sub">Данные делятся на k частей. По очереди каждая часть становится тестом, остальные — обучением. В конце — среднее и разброс.</p>
+
+  <div class="panel">
+    <div class="row" style="margin-bottom:14px">
+      <label>Число частей (фолдов) k = <span class="val" id="klab">5</span></label>
+      <input type="range" id="k" min="2" max="8" value="5">
+      <button class="btn" id="run">▶ Запустить кросс-валидацию</button>
+      <button class="btn ghost" id="single">🎲 Одна случайная проверка</button>
+    </div>
+
+    <div id="strip"></div>
+    <div class="foldrow" id="foldrow"></div>
+    <div class="legend">
+      <span><span class="dot" style="background:#27D3EE"></span>класс A</span>
+      <span><span class="dot" style="background:#FF7A8A"></span>класс B</span>
+      <span><span class="dot" style="background:#FBBF24"></span>текущий тест-фолд</span>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div style="color:var(--white);font-weight:600;margin-bottom:6px">Точность на каждом фолде</div>
+    <div class="bars" id="bars"></div>
+    <div class="result" id="result">Нажми «Запустить», чтобы увидеть, как модель проверяется на всех частях по очереди.</div>
+  </div>
+
+  <div class="note" id="single-note" style="display:none">
+    <b>Одна проверка:</b> результат <span class="single" id="single-val">—</span> — и он <span class="w">прыгает</span> при каждом новом разбиении. Одной проверке могло просто «повезти». Кросс-валидация даёт устойчивое среднее.
+  </div>
+
+  <div class="note">
+    <b>Вывод:</b> одна проверка = одна контрольная (мог списать, мог заболеть). k проверок = честная оценка. Большой разброс (±) означает: модели пока нельзя слепо доверять.
+  </div>
+</div>
+
+<script>
+function rng(seed){let s=seed>>>0;return()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296;}}
+let R=rng(2024);
+
+// dataset: feature x in [0,1], label ~ x>0.5 with noise
+const N=40;
+let data=[];
+function makeData(){
+  data=[];
+  for(let i=0;i<N;i++){
+    const x=R();
+    let c=x>0.5?1:0;
+    if(R()<0.18) c=1-c;       // label noise -> accuracy < 100%
+    data.push({x,c});
+  }
+  // fixed shuffle for stable fold layout
+  for(let i=data.length-1;i>0;i--){const j=(R()*(i+1))|0;[data[i],data[j]]=[data[j],data[i]];}
+}
+makeData();
+
+// threshold classifier: pick best threshold on train, eval on test
+function trainEval(train,test){
+  let bestThr=0.5,bestAcc=-1;
+  for(let t=0.05;t<0.95;t+=0.05){
+    let ok=0;for(const d of train){const p=d.x>t?1:0;if(p===d.c)ok++;}
+    const a=ok/train.length;
+    if(a>bestAcc){bestAcc=a;bestThr=t;}
+  }
+  let ok=0;for(const d of test){const p=d.x>bestThr?1:0;if(p===d.c)ok++;}
+  return ok/test.length;
+}
+
+function foldsOf(k){
+  const folds=[];const per=Math.floor(N/k);
+  let idx=0;
+  for(let f=0;f<k;f++){
+    const size=(f<k-1)?per:(N-idx);
+    folds.push([idx,idx+size]);idx+=size;
+  }
+  return folds;
+}
+
+const stripEl=document.getElementById('strip'),foldrowEl=document.getElementById('foldrow');
+const barsEl=document.getElementById('bars'),resultEl=document.getElementById('result');
+const kEl=document.getElementById('k'),klab=document.getElementById('klab');
+
+function renderStrip(k,testFold){
+  const folds=foldsOf(k);
+  stripEl.innerHTML='';foldrowEl.innerHTML='';
+  data.forEach((d,i)=>{
+    const cell=document.createElement('div');cell.className='cell';
+    const inTest=testFold!=null && i>=folds[testFold][0] && i<folds[testFold][1];
+    cell.style.background=inTest?'#FBBF24':(d.c?'#FF7A8A':'#27D3EE');
+    cell.style.opacity=inTest?1:(testFold!=null?0.35:0.9);
+    stripEl.appendChild(cell);
+  });
+  folds.forEach((f,i)=>{
+    const l=document.createElement('div');l.className='flabel';
+    l.style.flex=(f[1]-f[0]);
+    l.textContent='фолд '+(i+1);
+    foldrowEl.appendChild(l);
+  });
+}
+function renderBars(scores,k,active){
+  barsEl.innerHTML='';
+  for(let i=0;i<k;i++){
+    const b=document.createElement('div');b.className='bar'+(i===active?' active':'');
+    const s=scores[i];
+    b.style.height=(s!=null? (12+s*128):2)+'px';
+    b.innerHTML=(s!=null?'<span>'+(s*100).toFixed(0)+'%</span>':'')+'<small>ф.'+(i+1)+'</small>';
+    barsEl.appendChild(b);
+  }
+}
+
+let timer=null;
+function run(){
+  clearInterval(timer);
+  const k=+kEl.value;
+  const folds=foldsOf(k);
+  const scores=new Array(k).fill(null);
+  renderBars(scores,k,-1);
+  let f=0;
+  timer=setInterval(()=>{
+    if(f>=k){
+      clearInterval(timer);
+      const vals=scores;const mean=vals.reduce((a,b)=>a+b,0)/k;
+      const std=Math.sqrt(vals.reduce((a,b)=>a+(b-mean)**2,0)/k);
+      resultEl.innerHTML='Среднее по '+k+' фолдам: <span class="big">'+(mean*100).toFixed(1)+'% ± '+(std*100).toFixed(1)+'%</span>';
+      renderStrip(k,null);renderBars(scores,k,-1);
+      return;
+    }
+    const [a,b]=folds[f];
+    const test=data.slice(a,b);
+    const train=data.slice(0,a).concat(data.slice(b));
+    scores[f]=trainEval(train,test);
+    renderStrip(k,f);renderBars(scores,k,f);
+    resultEl.innerHTML='Фолд '+(f+1)+' из '+k+' — тест на жёлтой части, обучение на остальных…';
+    f++;
+  },700);
+}
+
+function singleSplit(){
+  clearInterval(timer);
+  // random 80/20 split -> one wobbly number
+  R=rng((Math.random()*1e9)|0);
+  const idx=[...Array(N).keys()];
+  for(let i=idx.length-1;i>0;i--){const j=(R()*(i+1))|0;[idx[i],idx[j]]=[idx[j],idx[i]];}
+  const cut=Math.floor(N*0.8);
+  const train=idx.slice(0,cut).map(i=>data[i]);
+  const test=idx.slice(cut).map(i=>data[i]);
+  const a=trainEval(train,test);
+  document.getElementById('single-note').style.display='block';
+  document.getElementById('single-val').textContent=(a*100).toFixed(0)+'%';
+}
+
+kEl.addEventListener('input',()=>{klab.textContent=kEl.value;clearInterval(timer);renderStrip(+kEl.value,null);renderBars([], +kEl.value,-1);resultEl.innerHTML='Нажми «Запустить», чтобы проверить модель на всех '+kEl.value+' частях по очереди.';});
+document.getElementById('run').addEventListener('click',run);
+document.getElementById('single').addEventListener('click',singleSplit);
+
+// init
+renderStrip(5,null);renderBars([],5,-1);
+</script>
+</body>
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Демо · Свёртка-фильтр</title>
+<style>
+  :root{--bg:#17132E;--card:#241E42;--card2:#2C2552;--violet:#8B7DF5;--violetd:#5B4FC4;
+    --cyan:#27D3EE;--teal:#2DD4BF;--lav:#D9D4F2;--muted:#9E96C8;--warn:#FF7A8A;--green:#6EE7B7;--white:#fff;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--lav);font-family:"Segoe UI",Calibri,system-ui,sans-serif;padding:24px;line-height:1.5}
+  .wrap{max-width:940px;margin:0 auto}
+  h1{color:var(--white);font-size:26px;margin:0 0 4px}
+  .kick{color:var(--cyan);font-weight:700;letter-spacing:2px;font-size:13px;text-transform:uppercase}
+  .sub{color:var(--muted);margin:6px 0 20px}
+  .canvases{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start}
+  .cbox{text-align:center}
+  .cbox .lbl{font-size:13px;color:var(--muted);margin-bottom:6px}
+  canvas{border-radius:10px;background:#0E0B22;display:block;image-rendering:pixelated}
+  .panel{background:var(--card);border-radius:16px;padding:18px;margin-top:0}
+  .filters{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 4px}
+  .fbtn{background:var(--card2);border:2px solid transparent;border-radius:10px;padding:8px 12px;color:var(--lav);cursor:pointer;font-size:13px;font-weight:600}
+  .fbtn:hover{border-color:var(--violetd)}
+  .fbtn.sel{border-color:var(--cyan);background:#0E3540;color:var(--white)}
+  .btns{display:flex;gap:10px;margin-top:12px}
+  .btn{background:var(--violetd);color:#fff;border:none;border-radius:10px;padding:10px 14px;font-weight:600;cursor:pointer;font-size:14px}
+  .btn:hover{background:var(--violet)}
+  .btn.ghost{background:transparent;border:1.5px solid var(--muted);color:var(--lav)}
+  .kernel{display:inline-grid;grid-template-columns:repeat(3,34px);gap:3px;margin-top:6px}
+  .kernel div{width:34px;height:34px;display:flex;align-items:center;justify-content:center;background:var(--card2);border-radius:5px;font-size:13px;font-weight:700;color:var(--cyan)}
+  .note{background:var(--card2);border-radius:12px;padding:14px;font-size:14px;margin-top:16px}
+  .note b{color:var(--teal)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="kick">Урок 15 · интерактивное демо</div>
+  <h1>🔎 Свёртка: фильтр скользит и находит узоры</h1>
+  <p class="sub">Нарисуй что-нибудь слева, выбери фильтр — и посмотри, как окно 3×3 скользит по картинке и строит карту признаков.</p>
+
+  <div class="panel">
+    <div class="canvases">
+      <div class="cbox">
+        <div class="lbl">Картинка (рисуй мышкой)</div>
+        <canvas id="src" width="320" height="320"></canvas>
+      </div>
+      <div class="cbox">
+        <div class="lbl">Карта признаков (что нашёл фильтр)</div>
+        <canvas id="dst" width="320" height="320"></canvas>
+      </div>
+      <div class="cbox">
+        <div class="lbl">Фильтр 3×3</div>
+        <div class="kernel" id="kernel"></div>
+      </div>
+    </div>
+
+    <div class="filters" id="filters"></div>
+    <div class="btns">
+      <button class="btn" id="scan">▶ Показать, как скользит окно</button>
+      <button class="btn ghost" id="clear">Очистить</button>
+      <button class="btn ghost" id="sample">Пример</button>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>Что происходит:</b> фильтр — маленькая матрица чисел. Он встаёт в каждую точку картинки, перемножает свои числа с пикселями под ним и складывает. Фильтр «края» ярко реагирует там, где яркость резко меняется — на границах. <b>Разные фильтры ищут разные узоры.</b>
+  </div>
+</div>
+
+<script>
+const N=40, CELL=8;            // сетка 40x40, показываем клетками 8px
+const src=document.getElementById('src'), sctx=src.getContext('2d');
+const dst=document.getElementById('dst'), dctx=dst.getContext('2d');
+let grid=new Float32Array(N*N);   // 0..1
+
+const FILTERS={
+  'Края':      [[-1,-1,-1],[-1,8,-1],[-1,-1,-1]],
+  'Резкость':  [[0,-1,0],[-1,5,-1],[0,-1,0]],
+  'Размытие':  [[1/9,1/9,1/9],[1/9,1/9,1/9],[1/9,1/9,1/9]],
+  'Верт. края':[[-1,0,1],[-2,0,2],[-1,0,1]],
+  'Гориз. края':[[-1,-2,-1],[0,0,0],[1,2,1]],
+};
+let current='Края';
+
+function drawSrc(){
+  sctx.fillStyle='#0E0B22'; sctx.fillRect(0,0,320,320);
+  for(let y=0;y<N;y++)for(let x=0;x<N;x++){
+    const v=grid[y*N+x]; if(v<=0)continue;
+    const c=Math.round(v*255);
+    sctx.fillStyle=`rgb(${c},${c},${c})`;
+    sctx.fillRect(x*CELL,y*CELL,CELL,CELL);
+  }
+}
+function conv(){
+  const K=FILTERS[current];
+  const out=new Float32Array(N*N);
+  for(let y=1;y<N-1;y++)for(let x=1;x<N-1;x++){
+    let s=0;
+    for(let ky=-1;ky<=1;ky++)for(let kx=-1;kx<=1;kx++)
+      s+=grid[(y+ky)*N+(x+kx)]*K[ky+1][kx+1];
+    out[y*N+x]=s;
+  }
+  return out;
+}
+function drawDst(out,scanY,scanX){
+  dctx.fillStyle='#0E0B22'; dctx.fillRect(0,0,320,320);
+  for(let y=0;y<N;y++)for(let x=0;x<N;x++){
+    if(scanY!==undefined && (y*N+x)>(scanY*N+scanX))continue;   // при скане рисуем только пройденное
+    const v=Math.abs(out[y*N+x]);
+    const c=Math.min(255,Math.round(v*255));
+    dctx.fillStyle=`rgb(${Math.round(c*0.15)},${c},${Math.round(c*1.0)})`; // cyan-ish
+    dctx.fillRect(x*CELL,y*CELL,CELL,CELL);
+  }
+  if(scanY!==undefined){
+    // подсветка окна на СХОДНОЙ картинке
+    drawSrc();
+    sctx.strokeStyle='#27D3EE'; sctx.lineWidth=2;
+    sctx.strokeRect((scanX-1)*CELL,(scanY-1)*CELL,CELL*3,CELL*3);
+  }
+}
+function apply(){ drawSrc(); drawDst(conv()); }
+
+// ---- drawing ----
+let drawing=false;
+function cell(e){const r=src.getBoundingClientRect();const t=e.touches?e.touches[0]:e;
+  return {x:Math.floor((t.clientX-r.left)*N/r.width), y:Math.floor((t.clientY-r.top)*N/r.height)};}
+function paint(e){const {x,y}=cell(e);
+  for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const nx=x+dx,ny=y+dy;
+    if(nx>=0&&nx<N&&ny>=0&&ny<N)grid[ny*N+nx]=Math.min(1,grid[ny*N+nx]+(dx===0&&dy===0?1:0.6));}
+  apply();e.preventDefault();}
+src.addEventListener('mousedown',e=>{drawing=true;paint(e);});
+src.addEventListener('mousemove',e=>{if(drawing)paint(e);});
+window.addEventListener('mouseup',()=>drawing=false);
+src.addEventListener('touchstart',e=>{drawing=true;paint(e);});
+src.addEventListener('touchmove',e=>{if(drawing)paint(e);});
+src.addEventListener('touchend',()=>drawing=false);
+
+// ---- kernel display ----
+function showKernel(){const box=document.getElementById('kernel');box.innerHTML='';
+  const K=FILTERS[current];for(const row of K)for(const v of row){const d=document.createElement('div');
+    d.textContent=Number.isInteger(v)?v:v.toFixed(2);box.appendChild(d);}}
+
+// ---- filter buttons ----
+const fbox=document.getElementById('filters');
+Object.keys(FILTERS).forEach(name=>{const b=document.createElement('button');b.className='fbtn'+(name===current?' sel':'');
+  b.textContent=name;b.onclick=()=>{current=name;fbox.querySelectorAll('.fbtn').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');showKernel();apply();};
+  fbox.appendChild(b);});
+
+// ---- scan animation ----
+let timer=null;
+document.getElementById('scan').addEventListener('click',()=>{
+  clearInterval(timer);const out=conv();let y=1,x=1;
+  timer=setInterval(()=>{
+    drawDst(out,y,x);
+    x++; if(x>=N-1){x=1;y++;} if(y>=N-1){clearInterval(timer);apply();}
+  },12);
+});
+document.getElementById('clear').addEventListener('click',()=>{grid=new Float32Array(N*N);apply();});
+
+// ---- default sample: a cross/shape ----
+function sample(){
+  grid=new Float32Array(N*N);
+  for(let y=12;y<28;y++)for(let x=12;x<28;x++)grid[y*N+x]=1;       // квадрат
+  for(let y=6;y<34;y++)grid[y*N+20]=1;                              // вертикаль
+  apply();
+}
+document.getElementById('sample').addEventListener('click',sample);
+
+showKernel(); sample();
+</script>
+</body>
+</html>

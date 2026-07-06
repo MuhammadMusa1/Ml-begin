@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Самостоятельная работа · Уроки 11–12</title>
+<style>
+  :root{--bg:#17132E;--card:#241E42;--card2:#2C2552;--violet:#8B7DF5;--violetd:#5B4FC4;
+    --cyan:#27D3EE;--teal:#2DD4BF;--lav:#D9D4F2;--muted:#9E96C8;--warn:#FF7A8A;--green:#6EE7B7;--white:#fff;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--lav);font-family:"Segoe UI",Calibri,system-ui,sans-serif;padding:24px;line-height:1.55}
+  .wrap{max-width:900px;margin:0 auto}
+  h1{color:var(--white);font-size:30px;margin:0 0 4px}
+  h2{color:var(--white);font-size:22px;margin:30px 0 4px}
+  .kick{color:var(--cyan);font-weight:700;letter-spacing:2px;font-size:13px;text-transform:uppercase}
+  .sub{color:var(--muted);margin:6px 0 18px}
+  .meta{display:flex;gap:22px;flex-wrap:wrap;background:var(--card2);border-radius:12px;padding:12px 16px;font-size:14px;margin-bottom:8px}
+  .meta b{color:var(--white)}
+  .phase{color:var(--teal);font-weight:700;font-size:13px;letter-spacing:1px;text-transform:uppercase;margin-top:26px}
+  .task{background:var(--card);border-radius:14px;padding:16px 18px;margin:12px 0;display:flex;gap:14px;align-items:flex-start}
+  .task input[type=checkbox]{width:20px;height:20px;accent-color:var(--cyan);margin-top:3px;flex-shrink:0;cursor:pointer}
+  .task .body{flex:1}
+  .lvl{display:inline-block;font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px;margin-right:8px;text-transform:uppercase;letter-spacing:.5px}
+  .lvl.base{background:#1E3A34;color:var(--green)}
+  .lvl.adv{background:#3A2352;color:var(--violet)}
+  code{background:#0E0B22;color:var(--cyan);padding:1px 6px;border-radius:5px;font-size:13px}
+  details{margin-top:8px}
+  summary{cursor:pointer;color:var(--muted);font-size:13px;font-weight:600}
+  summary:hover{color:var(--cyan)}
+  .hint{background:var(--card2);border-radius:8px;padding:10px 12px;margin-top:8px;font-size:14px}
+  .answerline{border-bottom:1px dashed var(--muted);min-height:26px;margin-top:8px}
+  table{width:100%;border-collapse:collapse;margin-top:10px;font-size:14px}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--card2)}
+  th{color:var(--cyan);font-size:13px;text-transform:uppercase;letter-spacing:.5px}
+  td.pts{color:var(--teal);font-weight:700;white-space:nowrap}
+  .goal{background:var(--card2);border-radius:12px;padding:14px 16px;margin:10px 0}
+  .goal b{color:var(--teal)}
+  .quiz{background:var(--card);border-radius:14px;padding:18px;margin-top:14px}
+  .q{margin-bottom:18px}.q p{font-weight:600;color:var(--white);margin:0 0 8px}
+  .opt{display:block;background:var(--card2);border-radius:8px;padding:10px 12px;margin:6px 0;cursor:pointer;border:2px solid transparent}
+  .opt:hover{border-color:var(--violetd)}
+  .opt.correct{border-color:var(--green);background:#1E3A34}
+  .opt.wrong{border-color:var(--warn);background:#3A1E28}
+  .qbtn{background:var(--violetd);color:#fff;border:none;border-radius:10px;padding:11px 18px;font-weight:600;cursor:pointer;font-size:15px}
+  .qbtn:hover{background:var(--violet)}
+  #score{margin-top:14px;font-size:18px;font-weight:700;color:var(--teal)}
+  .print{background:transparent;border:1.5px solid var(--violetd);color:var(--lav);border-radius:10px;padding:9px 16px;cursor:pointer;font-size:14px}
+  .print:hover{border-color:var(--cyan);color:var(--white)}
+  @media print{body{background:#fff;color:#111}.wrap{max-width:100%}h1,h2,.meta b,.q p{color:#111}
+    .task,.quiz,.goal,.meta{background:#f4f3fa;border:1px solid #ddd}.opt{background:#fff;border:1px solid #ccc}
+    .qbtn,#score,.print{display:none}code{background:#eee;color:#333}.kick,.phase{color:#5B4FC4}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="kick">Фаза 2 · Контрольная точка</div>
+  <h1>Самостоятельная работа · Уроки 11–12</h1>
+  <p class="sub">Метрики и confusion matrix · Мини-проект «Предсказатель»</p>
+
+  <div class="meta">
+    <span><b>Имя:</b> ______________________</span>
+    <span><b>Дата:</b> ____________</span>
+    <span><b>Формат:</b> Google Colab</span>
+  </div>
+  <div style="margin-top:8px"><button class="print" onclick="window.print()">🖨 Печать / PDF</button></div>
+
+  <div class="goal">
+    <b>Цель.</b> Научиться оценивать модель честно (не только accuracy) и собрать собственный мини-проект
+    с обязательным <code>Pipeline</code>, сравнением с baseline и правильной метрикой.
+  </div>
+
+  <!-- ============ Часть A · Урок 11 ============ -->
+  <div class="phase">Часть A · Метрики (урок 11)</div>
+
+  <div class="task"><input type="checkbox"><div class="body">
+    <span class="lvl base">базовый</span>
+    <span>Обучи модель (лес в Pipeline) на Titanic и построй <code>confusion_matrix</code> с помощью <code>ConfusionMatrixDisplay</code>.</span>
+    <div class="answerline"></div>
+  </div></div>
+
+  <div class="task"><input type="checkbox"><div class="body">
+    <span class="lvl base">базовый</span>
+    <span>Выведи <code>classification_report</code>. Выпиши precision и recall для класса «выжил».</span>
+    <div class="answerline"></div>
+  </div></div>
+
+  <div class="task"><input type="checkbox"><div class="body">
+    <span class="lvl base">базовый</span>
+    <span>Собери «тупой» <code>DummyClassifier(strategy='most_frequent')</code> и покажи, что его accuracy не нулевая, а recall = 0.</span>
+    <details><summary>Подсказка</summary><div class="hint">Это демонстрация «99% и бесполезно»: высокая accuracy при бесполезной модели.</div></details>
+    <div class="answerline"></div>
+  </div></div>
+
+  <div class="task"><input type="checkbox"><div class="body">
+    <span class="lvl base">базовый</span>
+    <span>Ответь письменно: <i>чем precision отличается от recall?</i> Приведи пример задачи, где важнее recall.</span>
+    <div class="answerline"></div><div class="answerline"></div>
+  </div></div>
+
+  <div class="task"><input type="checkbox"><div class="body">
+    <span class="lvl adv">продвинутый</span>
+    <span>Через <code>predict_proba</code> меняй порог решения (0.3 / 0.5 / 0.7) и запиши, как меняются precision и recall.</span>
+    <div class="answerline"></div>
+  </div></div>
+
+  <!-- ============ Часть B · Урок 12 (проект) ============ -->
+  <div class="phase">Часть B · Мини-проект «Предсказатель» (урок 12, оценивается)</div>
+  <p class="sub">Пройди все 6 шагов на своём датасете (или Titanic). Отмечай выполненное.</p>
+
+  <div class="task"><input type="checkbox"><div class="body">
+    <span>1️⃣ <b>Задача</b> — опиши словами: что предсказываешь, признаки, главная метрика.</span>
+    <div class="answerline"></div>
+  </div></div>
+  <div class="task"><input type="checkbox"><div class="body">
+    <span>2️⃣ <b>Данные</b> — загрузи, посмотри, раздели на train/test.</span>
+  </div></div>
+  <div class="task"><input type="checkbox"><div class="body">
+    <span>3️⃣ <b>Baseline</b> — простая модель для сравнения (её надо обыграть).</span>
+  </div></div>
+  <div class="task"><input type="checkbox"><div class="body">
+    <span>4️⃣ <b>Pipeline</b> — <code>ColumnTransformer</code> + модель (обязательно!).</span>
+  </div></div>
+  <div class="task"><input type="checkbox"><div class="body">
+    <span>5️⃣ <b>Оценка</b> — метрика с урока 11 + сравнение с baseline + кросс-валидация.</span>
+  </div></div>
+  <div class="task"><input type="checkbox"><div class="body">
+    <span>6️⃣ <b>Вывод</b> — обыграл ли baseline? какая метрика главная? где ошибается? что улучшить?</span>
+    <div class="answerline"></div><div class="answerline"></div>
+  </div></div>
+  <div class="task"><input type="checkbox"><div class="body">
+    <span>🖥 <b>3 слайда</b> для защиты: задача → данные → результат → вывод. Речь на 2–3 минуты.</span>
+  </div></div>
+
+  <h2>Рубрика мини-проекта (10 баллов)</h2>
+  <table>
+    <tr><th>Критерий</th><th>Баллы</th></tr>
+    <tr><td>Постановка задачи</td><td class="pts">0–2</td></tr>
+    <tr><td>Использование ML (Pipeline + baseline)</td><td class="pts">0–3</td></tr>
+    <tr><td>Визуализация</td><td class="pts">0–2</td></tr>
+    <tr><td>Интерпретация результата (метрика + вывод)</td><td class="pts">0–3</td></tr>
+  </table>
+  <p class="sub" style="margin-top:10px">9–10 — отлично · 7–8 — хорошо · 5–6 — зачёт · менее 5 — доработать</p>
+
+  <h2>Проверь себя</h2>
+  <p class="sub">5 вопросов на понимание.</p>
+  <div class="quiz" id="quiz">
+    <div class="q" data-correct="2"><p>1. Модель всегда говорит «здоров», больных 1%. Её accuracy…</p>
+      <label class="opt">низкая, потому что она ошибается</label>
+      <label class="opt">невозможно посчитать</label>
+      <label class="opt">высокая (~99%), но модель бесполезна</label></div>
+    <div class="q" data-correct="0"><p>2. Precision — это…</p>
+      <label class="opt">из названных «да» сколько реально «да»</label>
+      <label class="opt">из всех «да» скольких нашли</label>
+      <label class="opt">доля верных ответов вообще</label></div>
+    <div class="q" data-correct="1"><p>3. Для детектора болезни важнее…</p>
+      <label class="opt">precision (не поднимать ложную тревогу)</label>
+      <label class="opt">recall (не пропустить больного)</label>
+      <label class="opt">только accuracy</label></div>
+    <div class="q" data-correct="2"><p>4. Если понизить порог решения, то обычно…</p>
+      <label class="opt">и precision, и recall растут</label>
+      <label class="opt">ничего не меняется</label>
+      <label class="opt">recall растёт, precision падает</label></div>
+    <div class="q" data-correct="0"><p>5. Что обязательно в мини-проекте?</p>
+      <label class="opt">baseline, Pipeline и честная метрика</label>
+      <label class="opt">нейросеть</label>
+      <label class="opt">минимум 1000 строк кода</label></div>
+    <button class="qbtn" onclick="checkQuiz()">Проверить ответы</button>
+    <div id="score"></div>
+  </div>
+</div>
+
+<script>
+document.querySelectorAll('.q').forEach(q=>{
+  q.querySelectorAll('.opt').forEach((opt,i)=>opt.addEventListener('click',()=>{
+    q.querySelectorAll('.opt').forEach(o=>o.dataset.sel='');opt.dataset.sel='1';q.dataset.pick=i;}));
+});
+function checkQuiz(){
+  let ok=0,total=0;
+  document.querySelectorAll('.q').forEach(q=>{
+    total++;const ans=+q.dataset.correct,pick=q.dataset.pick;
+    const opts=q.querySelectorAll('.opt');
+    opts.forEach(o=>o.classList.remove('correct','wrong'));
+    opts[ans].classList.add('correct');
+    if(pick!==undefined){if(+pick===ans)ok++;else opts[+pick].classList.add('wrong');}
+  });
+  document.getElementById('score').textContent='Результат: '+ok+' из '+total+(ok===total?' — отлично! 🎉':'');
+}
+</script>
+</body>
+</html>

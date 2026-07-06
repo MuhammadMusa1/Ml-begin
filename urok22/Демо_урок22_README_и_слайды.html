@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Демо · Генератор README и слайдов</title>
+<style>
+  :root{--bg:#17132E;--card:#241E42;--card2:#2C2552;--violet:#8B7DF5;--violetd:#5B4FC4;
+    --cyan:#27D3EE;--teal:#2DD4BF;--lav:#D9D4F2;--muted:#9E96C8;--warn:#FF7A8A;--green:#6EE7B7;--white:#fff;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--lav);font-family:"Segoe UI",Calibri,system-ui,sans-serif;padding:24px;line-height:1.5}
+  .wrap{max-width:920px;margin:0 auto}
+  h1{color:var(--white);font-size:26px;margin:0 0 4px}
+  .kick{color:var(--cyan);font-weight:700;letter-spacing:2px;font-size:13px;text-transform:uppercase}
+  .sub{color:var(--muted);margin:6px 0 18px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:760px){.grid{grid-template-columns:1fr}}
+  .panel{background:var(--card);border-radius:16px;padding:18px}
+  label{display:block;font-weight:600;color:var(--white);margin:12px 0 5px;font-size:13px}
+  label:first-child{margin-top:0}
+  input,textarea{width:100%;padding:9px;border-radius:8px;background:var(--card2);color:var(--lav);border:1px solid var(--violetd);font-size:13px;font-family:inherit}
+  textarea{resize:vertical;min-height:44px}
+  .tabs{display:flex;gap:8px;margin-bottom:10px}
+  .tab{background:var(--card2);border:none;border-radius:8px;padding:8px 14px;color:var(--lav);cursor:pointer;font-weight:600;font-size:14px}
+  .tab.sel{background:var(--violetd);color:#fff}
+  pre{background:#0E0B22;border-radius:12px;padding:14px;overflow:auto;font-size:13px;color:var(--lav);white-space:pre-wrap;font-family:Consolas,monospace;line-height:1.55;min-height:340px}
+  .btn{background:var(--violetd);color:#fff;border:none;border-radius:10px;padding:9px 14px;font-weight:600;cursor:pointer;font-size:13px;margin-top:10px}
+  .btn:hover{background:var(--violet)}
+  .note{background:var(--card2);border-radius:12px;padding:14px;font-size:14px;margin-top:16px}
+  .note b{color:var(--teal)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="kick">Урок 22 · интерактивное демо</div>
+  <h1>📝 Генератор README и структуры презентации</h1>
+  <p class="sub">Заполни поля про свой проект — получишь готовый README.md и план из 5 слайдов, которые можно скопировать.</p>
+
+  <div class="grid">
+    <div class="panel">
+      <label>Название проекта</label>
+      <input id="f_name" value="Детектор настроения отзывов">
+      <label>Задача (что и зачем предсказываешь)</label>
+      <textarea id="f_task">Определяю тональность отзыва: позитив или негатив.</textarea>
+      <label>Данные (источник, размер, признаки)</label>
+      <textarea id="f_data">500 отзывов, собранных вручную; признак — текст отзыва.</textarea>
+      <label>Модель (какая, в Pipeline)</label>
+      <textarea id="f_model">Логистическая регрессия в Pipeline с векторизацией текста.</textarea>
+      <label>Метрика и результат</label>
+      <input id="f_metric" value="F1 = 0.88 (baseline 0.60)">
+      <label>Ссылка на приложение / Colab</label>
+      <input id="f_link" value="https://huggingface.co/spaces/...">
+    </div>
+
+    <div class="panel">
+      <div class="tabs">
+        <button class="tab sel" data-t="readme">README.md</button>
+        <button class="tab" data-t="slides">Слайды</button>
+      </div>
+      <pre id="out"></pre>
+      <button class="btn" id="copy">📋 Скопировать</button>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>Совет по презентации:</b> рассказывай историю «задача → данные → результат», а не показывай код. На слайде с демо — скриншот или ссылка на работающее приложение. Говори так, чтобы понял даже тот, кто не знает ML.
+  </div>
+</div>
+
+<script>
+const F=id=>document.getElementById('f_'+id).value.trim();
+let tab='readme';
+function readme(){
+  return `# ${F('name')||'Название проекта'}
+
+## Задача
+${F('task')||'...'}
+
+## Данные
+${F('data')||'...'}
+
+## Модель
+${F('model')||'...'}
+Сравнение с baseline обязательно (стандарт курса — Pipeline).
+
+## Результаты
+${F('metric')||'...'}
+Где модель ошибается — коротко описать.
+
+## Как запустить
+${F('link')||'ссылка на Colab / приложение'}
+
+## Автор
+Финальный проект курса Machine Learning.`;
+}
+function slides(){
+  return `Слайд 1 — Задача
+  • ${F('task')||'что и зачем предсказываем'}
+
+Слайд 2 — Данные
+  • ${F('data')||'источник, размер, признаки'}
+
+Слайд 3 — Модель и метрика
+  • ${F('model')||'какая модель, в Pipeline'}
+  • Результат: ${F('metric')||'метрика vs baseline'}
+
+Слайд 4 — Демо
+  • Скриншот интерфейса
+  • Ссылка: ${F('link')||'...'}
+
+Слайд 5 — Выводы
+  • Что получилось
+  • Где модель ошибается
+  • Что можно улучшить дальше`;
+}
+function render(){document.getElementById('out').textContent = tab==='readme'?readme():slides();}
+document.querySelectorAll('input,textarea').forEach(el=>el.addEventListener('input',render));
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('sel'));t.classList.add('sel');tab=t.dataset.t;render();});
+document.getElementById('copy').addEventListener('click',()=>{
+  const txt=document.getElementById('out').textContent;
+  navigator.clipboard&&navigator.clipboard.writeText(txt);
+  const b=document.getElementById('copy');b.textContent='✓ Скопировано';setTimeout(()=>b.textContent='📋 Скопировать',1500);
+});
+render();
+</script>
+</body>
+</html>
