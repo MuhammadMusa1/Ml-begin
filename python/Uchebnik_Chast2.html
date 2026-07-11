@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Учебник Python · Часть 2 · Структуры и функции</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+  :root{
+    --blue:#0050C8; --blue-soft:#91BEEB; --blue-wash:#EAF1FB;
+    --sand:#FFCDAA; --sand-wash:#FFF3E9; --ink:#1A2333; --muted:#5B6472;
+    --line:#E2E8F2; --green:#1E8449; --green-wash:#E9F5EE;
+    --red:#C0392B; --red-wash:#FBEDEB; --page:#FFFFFF;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#D8DEE9;font-family:'Manrope',sans-serif;color:var(--ink);padding:28px 14px;line-height:1.55;}
+  .page{background:var(--page);width:820px;max-width:100%;margin:0 auto 26px;box-shadow:0 12px 40px rgba(26,35,51,.16);border-radius:4px;overflow:hidden;}
+
+  .cover{min-height:1000px;position:relative;overflow:hidden;background:linear-gradient(160deg,#0050C8 0%,#0A61E0 55%,#1E74F0 100%);color:#fff;}
+  .cover-inner{padding:70px 56px;position:relative;z-index:2;display:flex;flex-direction:column;min-height:1000px;}
+  .cover .kicker{font-size:14px;letter-spacing:.24em;text-transform:uppercase;font-weight:700;opacity:.9;}
+  .cover h1{font-size:50px;font-weight:800;line-height:1.05;margin-top:20px;letter-spacing:-.02em;}
+  .cover .sub{font-size:20px;font-weight:500;opacity:.92;margin-top:18px;max-width:82%;}
+  .cover .part-badge{display:inline-block;margin-top:38px;background:var(--sand);color:#5A3410;font-weight:800;font-size:15px;padding:10px 22px;border-radius:30px;}
+  .cover .lesson-list{margin-top:auto;background:rgba(6,17,38,.5);border:1px solid rgba(255,255,255,.16);border-radius:14px;padding:22px 26px;max-width:78%;}
+  .cover .lesson-list h4{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--sand);margin-bottom:12px;}
+  .cover .lesson-list ol{margin-left:18px;display:grid;gap:7px;}
+  .cover .lesson-list li{font-size:14.5px;color:#DCE8FF;}
+  .cover .lesson-list li b{color:#fff;}
+  .cover .who{margin-top:24px;font-size:14px;opacity:.85;}
+  .cover .who b{opacity:1;}
+  .cover-deco{position:absolute;right:-120px;top:-120px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(145,190,235,.35),transparent 70%);z-index:1;}
+
+  .lesson-head{background:var(--blue);color:#fff;padding:26px 44px 24px;position:relative;display:flex;align-items:baseline;justify-content:space-between;}
+  .lesson-head::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:var(--sand);}
+  .lesson-num{font-size:13px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;opacity:.85;}
+  .lesson-title{font-size:25px;font-weight:800;line-height:1.15;margin-top:6px;max-width:90%;}
+  .lesson-quarter{font-size:12px;font-weight:600;opacity:.8;text-align:right;letter-spacing:.04em;flex:none;}
+  .body{padding:30px 44px 0;}
+
+  .goal{background:var(--sand-wash);border-left:5px solid var(--sand);border-radius:0 10px 10px 0;padding:16px 20px;margin-bottom:26px;}
+  .goal h3{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#B9770E;font-weight:700;margin-bottom:8px;}
+  .goal ul{list-style:none;display:grid;gap:5px;}
+  .goal li{padding-left:22px;position:relative;font-size:15px;}
+  .goal li::before{content:"→";position:absolute;left:0;color:#B9770E;font-weight:700;}
+
+  .sec{display:flex;align-items:center;gap:11px;margin:28px 0 14px;}
+  .sec .dot{width:30px;height:30px;border-radius:8px;flex:none;background:var(--blue-wash);color:var(--blue);display:grid;place-items:center;font-size:16px;font-weight:800;}
+  .sec h2{font-size:19px;font-weight:800;letter-spacing:-.01em;}
+
+  p{font-size:15px;margin-bottom:13px;color:#28303D;}
+  strong{font-weight:700;color:var(--ink);}
+  .term{color:var(--blue);font-weight:700;}
+  code{font-family:'JetBrains Mono',monospace;font-size:.92em;background:#EEF2F8;padding:1px 6px;border-radius:5px;color:#324;}
+
+  .analogy{background:var(--blue-wash);border-radius:12px;padding:16px 20px 16px 52px;position:relative;margin:16px 0 20px;font-size:14.5px;}
+  .analogy::before{content:"💡";position:absolute;left:16px;top:15px;font-size:20px;}
+  .analogy b{color:var(--blue);}
+
+  .code{background:#0E1A2E;border-radius:12px;margin:16px 0 8px;overflow:hidden;box-shadow:0 6px 18px rgba(14,26,46,.28);}
+  .code-bar{background:#152238;padding:9px 16px;display:flex;align-items:center;gap:7px;border-bottom:1px solid #22344F;}
+  .code-bar i{width:11px;height:11px;border-radius:50%;display:inline-block;}
+  .code-bar .r{background:#FF5F57;} .code-bar .y{background:#FEBC2E;} .code-bar .g{background:#28C840;}
+  .code-bar span{margin-left:8px;color:#7B8BA5;font:500 12px 'JetBrains Mono',monospace;}
+  .code pre{padding:16px 20px;margin:0;font-family:'JetBrains Mono',monospace;font-size:13.5px;line-height:1.7;color:#E6ECF5;overflow-x:auto;}
+  .c-key{color:#FF9D7A;} .c-str{color:#8FD98F;} .c-num{color:#7FB4FF;} .c-com{color:#6B7B93;font-style:italic;} .c-fn{color:#FFD479;}
+
+  .output{background:#F4F7FB;border:1px dashed var(--blue-soft);border-radius:0 0 12px 12px;margin:-8px 0 20px;padding:12px 20px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#2A3647;}
+  .output .lbl{display:block;font:700 11px 'Manrope',sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+
+  .task{border:1.5px solid var(--line);border-radius:14px;padding:18px 20px;margin:18px 0;background:#fff;}
+  .task-tag{display:inline-flex;align-items:center;gap:6px;background:var(--green-wash);color:var(--green);font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:4px 11px;border-radius:20px;margin-bottom:10px;}
+  .task h4{font-size:15.5px;font-weight:700;margin-bottom:7px;}
+  .task p{font-size:14px;margin-bottom:0;color:#3A4351;}
+  .task .pair{font-size:12.5px;color:var(--muted);margin-top:9px;font-style:italic;}
+
+  .keybox{background:#0E1A2E;color:#DCE6F5;border-radius:12px;padding:16px 20px;margin:18px 0;}
+  .keybox h4{color:var(--sand);font-size:12px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;}
+  .keybox p{color:#C6D3E8;font-size:14.5px;margin:0;}
+  .keybox code{background:rgba(255,255,255,.1);color:#FFD479;}
+
+  .errors{margin:20px 0;}
+  .err-head{display:grid;grid-template-columns:1fr 1fr;gap:1px;margin-bottom:1px;background:var(--line);border-radius:12px 12px 0 0;overflow:hidden;}
+  .err-head > div{padding:8px 15px;font:700 11px 'Manrope';letter-spacing:.08em;text-transform:uppercase;}
+  .err-head .h-bad{background:#F7D9D5;color:var(--red);} .err-head .h-good{background:#D6EEDF;color:var(--green);}
+  .err-row{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);overflow:hidden;margin-bottom:1px;}
+  .err-row:last-child{border-radius:0 0 12px 12px;}
+  .err-row > div{padding:11px 15px;font-family:'JetBrains Mono',monospace;font-size:12.5px;}
+  .err-bad{background:var(--red-wash);color:var(--red);} .err-good{background:var(--green-wash);color:var(--green);}
+
+  .home{background:var(--blue);color:#fff;border-radius:14px;padding:20px 24px;margin:24px 0 0;}
+  .home h3{font-size:13px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px;opacity:.9;}
+  .home ol{margin-left:18px;display:grid;gap:8px;}
+  .home li{font-size:14.5px;}
+  .home .star{margin-top:14px;padding-top:13px;border-top:1px solid rgba(255,255,255,.22);font-size:13.5px;}
+  .home .star b{color:var(--sand);}
+
+  .project-badge{display:inline-flex;align-items:center;gap:8px;background:var(--sand);color:#5A3410;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:6px 14px;border-radius:20px;margin-bottom:4px;}
+  .steps{counter-reset:st;margin:8px 0 4px;}
+  .step{display:flex;gap:14px;margin-bottom:16px;}
+  .step .sn{counter-increment:st;flex:none;width:30px;height:30px;border-radius:50%;background:var(--blue);color:#fff;font-weight:800;font-size:14px;display:grid;place-items:center;}
+  .step .sn::before{content:counter(st);}
+  .step .sc{flex:1;}
+  .step .sc h4{font-size:15px;font-weight:700;margin-bottom:4px;}
+  .step .sc p{font-size:13.5px;margin-bottom:6px;color:#3A4351;}
+
+  .foot{display:flex;justify-content:space-between;align-items:center;padding:16px 44px 30px;margin-top:8px;font-size:11.5px;color:var(--muted);}
+  .foot .brand{font-weight:700;color:var(--blue);}
+
+  /* игровое поле крестики-нолики */
+  .board{display:grid;grid-template-columns:repeat(3,58px);gap:4px;justify-content:center;margin:18px auto;}
+  .board div{width:58px;height:58px;background:var(--blue-wash);border-radius:8px;display:grid;place-items:center;
+    font:800 30px 'JetBrains Mono',monospace;color:var(--blue);}
+  .board div.num{color:var(--muted);font-size:20px;font-weight:600;}
+
+  @media print{body{background:#fff;padding:0;}.page{box-shadow:none;margin:0;border-radius:0;page-break-after:always;width:100%;}}
+</style>
+</head>
+<body>
+
+  <!-- ТИТУЛ ЧАСТИ 2 -->
+  <div class="page cover">
+    <div class="cover-deco"></div>
+    <div class="cover-inner">
+      <div class="kicker">Учебник · Часть 2</div>
+      <h1>Структуры<br>и функции</h1>
+      <div class="sub">Списки хранят много данных, функции наводят порядок в коде. А в конце — игра на двоих.</div>
+      <span class="part-badge">Четверть 2 · 7 уроков</span>
+      <div class="lesson-list">
+        <h4>Что в этой части</h4>
+        <ol>
+          <li><b>Урок 8.</b> Списки: много данных в одном ящике</li>
+          <li><b>Урок 9.</b> Списки и циклы вместе</li>
+          <li><b>Урок 10.</b> Функции: наводим порядок</li>
+          <li><b>Урок 11.</b> Функции возвращают результат</li>
+          <li><b>Урок 12.</b> Словари: ключ и значение</li>
+          <li><b>Урок 13.</b> 🎮 Проект «Крестики-нолики»: поле</li>
+          <li><b>Урок 14.</b> 🎮 «Крестики-нолики»: игра и защита</li>
+        </ol>
+      </div>
+      <div class="who">9 класс · субботний курс · <b>Эсхата Академия</b></div>
+    </div>
+  </div>
+
+  <!-- УРОК 8 — списки -->
+  <div class="page">
+    <div class="lesson-head">
+      <div><div class="lesson-num">Урок 8</div><div class="lesson-title">Списки: много данных в одном ящике</div></div>
+      <div class="lesson-quarter">Часть 2<br>Структуры и функции</div>
+    </div>
+    <div class="body">
+      <div class="goal"><h3>Чему научимся</h3><ul>
+        <li>Хранить много значений в одном списке</li>
+        <li>Брать элементы по номеру и добавлять новые командой <b>append</b></li>
+        <li>Узнавать длину списка</li>
+      </ul></div>
+
+      <div class="sec"><div class="dot">📚</div><h2>Зачем нужны списки</h2></div>
+      <p>Пока в каждый ящик-переменную мы клали <strong>одно</strong> значение. А если нужно хранить пять оценок? Заводить <code>g1, g2, g3, g4, g5</code> — неудобно. Есть решение получше: <span class="term">список</span> — один ящик, куда помещается сразу много значений.</p>
+      <div class="analogy"><b>На пальцах.</b> Переменная — это один ящик. Список — это полка с пронумерованными ячейками. Всё лежит вместе, а каждая ячейка со своим номером. Считаем с нуля: первая ячейка — номер 0.</div>
+
+      <div class="sec"><div class="dot">💻</div><h2>Разбираем код</h2></div>
+      <p>Список создаётся квадратными скобками, элементы через запятую:</p>
+      <div class="code"><div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>spiski.py</span></div>
+<pre>fruits = [<span class="c-str">"яблоко"</span>, <span class="c-str">"банан"</span>, <span class="c-str">"дыня"</span>]
+
+<span class="c-fn">print</span>(fruits[<span class="c-num">0</span>])          <span class="c-com"># яблоко — первый</span>
+<span class="c-fn">print</span>(fruits[<span class="c-num">2</span>])          <span class="c-com"># дыня — третий</span>
+<span class="c-fn">print</span>(<span class="c-fn">len</span>(fruits))       <span class="c-com"># 3 — сколько всего</span>
+
+fruits.<span class="c-fn">append</span>(<span class="c-str">"виноград"</span>)  <span class="c-com"># добавить в конец</span>
+<span class="c-fn">print</span>(fruits)</pre></div>
+      <div class="output"><span class="lbl">На экране появится</span>яблоко<br>дыня<br>3<br>['яблоко', 'банан', 'дыня', 'виноград']</div>
+
+      <p>Как и у строк, счёт с нуля: <code>fruits[0]</code> — первый элемент. <code>len</code> говорит, сколько всего элементов. А <code>append</code> добавляет новый в конец списка.</p>
+
+      <div class="keybox"><h4>Важно запомнить</h4><p>Список — в квадратных скобках <code>[ ]</code>. Элементы нумеруются с нуля. <code>append</code> — «добавь в конец». <code>len(список)</code> — сколько элементов внутри.</p></div>
+
+      <div class="task"><span class="task-tag">✋ Задание в паре</span><h4>Список любимого</h4>
+        <p>Создайте список из трёх любимых блюд. Выведите первое и последнее (подсказка: последнее — это <code>[-1]</code>). Добавьте в список четвёртое блюдо и выведите весь список.</p>
+        <p class="pair">Водитель печатает, штурман диктует. Через 10 минут — меняетесь.</p></div>
+
+      <div class="sec"><div class="dot">⚠️</div><h2>Частые ошибки</h2></div>
+      <div class="errors">
+        <div class="err-head"><div class="h-bad">Так не работает</div><div class="h-good">А так правильно</div></div>
+        <div class="err-row"><div class="err-bad">fruits[1] # первый</div><div class="err-good">fruits[0] # первый</div></div>
+        <div class="err-row"><div class="err-bad">fruits.append "манго"</div><div class="err-good">fruits.append("манго")</div></div>
+      </div>
+      <p style="font-size:13.5px;color:var(--muted);">Счёт с нуля, как у строк. И у append обязательны скобки с тем, что добавляем.</p>
+
+      <div class="home"><h3>🏠 Домашнее задание</h3><ol>
+        <li>Составь список из 5 городов Таджикистана и выведи каждый.</li>
+        <li>Заведи пустой список <code>[]</code>, добавь в него три числа через append.</li>
+      </ol><div class="star"><b>★ Со звёздочкой:</b> список дел на день — программа спрашивает 3 дела и складывает их в список.</div></div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+  <!-- УРОК 9 — списки и циклы -->
+  <div class="page">
+    <div class="lesson-head">
+      <div><div class="lesson-num">Урок 9</div><div class="lesson-title">Списки и циклы: обрабатываем данные</div></div>
+      <div class="lesson-quarter">Часть 2<br>Структуры и функции</div>
+    </div>
+    <div class="body">
+      <div class="goal"><h3>Чему научимся</h3><ul>
+        <li>Перебирать список циклом <b>for</b></li>
+        <li>Считать сумму, среднее, находить максимум</li>
+        <li>Обрабатывать оценки целого класса</li>
+      </ul></div>
+
+      <div class="sec"><div class="dot">📚</div><h2>Список + цикл = сила</h2></div>
+      <p>На уроке 5 мы перебирали числа через <code>range</code>. Но <code>for</code> умеет перебирать и <strong>список напрямую</strong> — брать по очереди каждый элемент. Это соединяет две вещи, которые мы уже знаем, и открывает настоящую обработку данных.</p>
+      <div class="analogy"><b>На пальцах.</b> Представь стопку тетрадей. Цикл for берёт по одной тетради сверху, что-то с ней делает, кладёт, берёт следующую — пока стопка не кончится. Список — это стопка, for — твои руки.</div>
+
+      <div class="sec"><div class="dot">💻</div><h2>Разбираем код</h2></div>
+      <p>Считаем средний балл по оценкам класса:</p>
+      <div class="code"><div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>ocenki.py</span></div>
+<pre>grades = [<span class="c-num">5</span>, <span class="c-num">4</span>, <span class="c-num">5</span>, <span class="c-num">3</span>, <span class="c-num">4</span>]
+
+total = <span class="c-num">0</span>
+<span class="c-key">for</span> grade <span class="c-key">in</span> grades:
+    total = total + grade
+
+<span class="c-fn">print</span>(<span class="c-str">"Сумма:"</span>, total)
+<span class="c-fn">print</span>(<span class="c-str">"Средний балл:"</span>, total / <span class="c-fn">len</span>(grades))
+<span class="c-fn">print</span>(<span class="c-str">"Лучшая оценка:"</span>, <span class="c-fn">max</span>(grades))</pre></div>
+      <div class="output"><span class="lbl">На экране появится</span>Сумма: 21<br>Средний балл: 4.2<br>Лучшая оценка: 5</div>
+
+      <p>Цикл берёт каждую оценку и прибавляет к <code>total</code>. После цикла делим сумму на количество — получаем среднее. А <code>max</code> сам находит наибольшее число в списке (есть и <code>min</code> — наименьшее).</p>
+
+      <div class="keybox"><h4>Важно запомнить</h4><p><code>for x in список</code> — берёт каждый элемент по очереди. Чтобы копить сумму, заведи ящик <code>total = 0</code> до цикла. Готовые помощники: <code>max</code>, <code>min</code>, <code>sum</code>.</p></div>
+
+      <div class="task"><span class="task-tag">✋ Задание в паре</span><h4>Магазинная корзина</h4>
+        <p>Есть список цен: <code>[12, 45, 8, 30, 15]</code>. Посчитайте общую стоимость покупки и выведите самый дорогой товар. Подсказка: <code>sum(...)</code> и <code>max(...)</code>.</p>
+        <p class="pair">Через 10 минут поменяйтесь ролями.</p></div>
+
+      <div class="sec"><div class="dot">⚠️</div><h2>Частые ошибки</h2></div>
+      <div class="errors">
+        <div class="err-head"><div class="h-bad">Так не работает</div><div class="h-good">А так правильно</div></div>
+        <div class="err-row"><div class="err-bad">for grade in grades:<br>total = grade</div><div class="err-good">for grade in grades:<br>&nbsp;&nbsp;total = total + grade</div></div>
+        <div class="err-row"><div class="err-bad">total = 0 # внутри цикла</div><div class="err-good">total = 0 # до цикла!</div></div>
+      </div>
+      <p style="font-size:13.5px;color:var(--muted);">Ящик для суммы заводится <b>до</b> цикла, иначе он обнуляется каждый раз. И прибавляй к total, а не перезаписывай.</p>
+
+      <div class="home"><h3>🏠 Домашнее задание</h3><ol>
+        <li>В списке температур <code>[18, 22, 25, 19, 30]</code> найди среднюю, самую высокую и низкую.</li>
+        <li>Посчитай, сколько в списке оценок «пятёрок» (подсказка: if внутри цикла + счётчик).</li>
+      </ol><div class="star"><b>★ Со звёздочкой:</b> выведи только те оценки из списка, которые выше среднего балла.</div></div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+  <!-- УРОК 10 — функции -->
+  <div class="page">
+    <div class="lesson-head">
+      <div><div class="lesson-num">Урок 10</div><div class="lesson-title">Функции: наводим порядок в коде</div></div>
+      <div class="lesson-quarter">Часть 2<br>Структуры и функции</div>
+    </div>
+    <div class="body">
+      <div class="goal"><h3>Чему научимся</h3><ul>
+        <li>Создавать свои команды — функции — словом <b>def</b></li>
+        <li>Передавать в функцию данные (аргументы)</li>
+        <li>Не повторять один и тот же код по многу раз</li>
+      </ul></div>
+
+      <div class="sec"><div class="dot">📚</div><h2>Зачем нужны функции</h2></div>
+      <p>Мы уже пользовались готовыми командами: <code>print</code>, <code>input</code>, <code>len</code>. Это <strong>функции</strong> — маленькие помощники, которые делают одно дело. Оказывается, свои функции можно создавать самому — и это главный способ навести порядок в коде.</p>
+      <div class="analogy"><b>На пальцах.</b> Функция — это рецепт с названием. Один раз записал «как заварить чай», а потом просто говоришь «завари чай» — и не пересказываешь все шаги заново. Так и в коде: описал функцию раз — вызываешь её сколько угодно.</div>
+
+      <div class="sec"><div class="dot">💻</div><h2>Разбираем код</h2></div>
+      <p>Создаём свою функцию-приветствие словом <span class="term">def</span>:</p>
+      <div class="code"><div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>funkcii.py</span></div>
+<pre><span class="c-key">def</span> <span class="c-fn">privet</span>(name):
+    <span class="c-fn">print</span>(<span class="c-str">"Привет, "</span> + name + <span class="c-str">"!"</span>)
+    <span class="c-fn">print</span>(<span class="c-str">"Рады тебя видеть."</span>)
+
+<span class="c-fn">privet</span>(<span class="c-str">"Алишер"</span>)
+<span class="c-fn">privet</span>(<span class="c-str">"Фарход"</span>)
+<span class="c-fn">privet</span>(<span class="c-str">"Мадина"</span>)</pre></div>
+      <div class="output"><span class="lbl">На экране появится</span>Привет, Алишер!<br>Рады тебя видеть.<br>Привет, Фарход!<br>Рады тебя видеть.<br>Привет, Мадина!<br>Рады тебя видеть.</div>
+
+      <p>Строка <code>def privet(name):</code> описывает функцию: её имя <code>privet</code> и что она принимает — <code>name</code>. Тело функции — с отступом. Дальше мы <strong>вызываем</strong> её три раза с разными именами — и код внутри не пришлось повторять.</p>
+
+      <div class="keybox"><h4>Важно запомнить</h4><p><code>def имя(данные):</code> — создаём функцию. Тело — с отступом. То, что в скобках при создании — <b>параметр</b>, то, что передаём при вызове — <b>аргумент</b>. Функцию сначала описывают, потом вызывают.</p></div>
+
+      <div class="task"><span class="task-tag">✋ Задание в паре</span><h4>Функция-рамка</h4>
+        <p>Напишите функцию <code>ramka(text)</code>, которая печатает текст в рамке из звёздочек. Вызовите её с тремя разными словами.</p>
+        <p class="pair">Через 10 минут поменяйтесь ролями.</p></div>
+
+      <div class="sec"><div class="dot">⚠️</div><h2>Частые ошибки</h2></div>
+      <div class="errors">
+        <div class="err-head"><div class="h-bad">Так не работает</div><div class="h-good">А так правильно</div></div>
+        <div class="err-row"><div class="err-bad">def privet(name)</div><div class="err-good">def privet(name):</div></div>
+        <div class="err-row"><div class="err-bad">def privet(name):<br>print(name)</div><div class="err-good">def privet(name):<br>&nbsp;&nbsp;&nbsp;&nbsp;print(name)</div></div>
+      </div>
+      <p style="font-size:13.5px;color:var(--muted);">Двоеточие после строки def, тело — с отступом. И не забудь вызвать функцию — само по себе описание ничего не печатает.</p>
+
+      <div class="home"><h3>🏠 Домашнее задание</h3><ol>
+        <li>Функция <code>privetstvie(name, city)</code> — здоровается и называет город.</li>
+        <li>Функция <code>ploshad(a, b)</code> — печатает площадь прямоугольника.</li>
+      </ol><div class="star"><b>★ Со звёздочкой:</b> функция рисует треугольник из звёздочек заданной высоты.</div></div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+  <!-- УРОК 11 — функции с return -->
+  <div class="page">
+    <div class="lesson-head">
+      <div><div class="lesson-num">Урок 11</div><div class="lesson-title">Функции возвращают результат</div></div>
+      <div class="lesson-quarter">Часть 2<br>Структуры и функции</div>
+    </div>
+    <div class="body">
+      <div class="goal"><h3>Чему научимся</h3><ul>
+        <li>Получать из функции результат словом <b>return</b></li>
+        <li>Понимать разницу между «напечатать» и «вернуть»</li>
+        <li>Собирать программу из функций-помощников</li>
+      </ul></div>
+
+      <div class="sec"><div class="dot">📚</div><h2>Печатать или вернуть?</h2></div>
+      <p>Функции с прошлого урока сами печатали результат. Но чаще нужно, чтобы функция <strong>отдала</strong> ответ обратно — и мы решили, что с ним делать: напечатать, сохранить в ящик, использовать в расчёте. За это отвечает слово <span class="term">return</span>.</p>
+      <div class="analogy"><b>На пальцах.</b> print — это когда повар выносит блюдо и сразу ставит на стол. return — когда повар отдаёт блюдо тебе в руки, а ты сам решаешь: съесть, отнести другу или положить в холодильник. return гибче.</div>
+
+      <div class="sec"><div class="dot">💻</div><h2>Разбираем код</h2></div>
+      <div class="code"><div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>return.py</span></div>
+<pre><span class="c-key">def</span> <span class="c-fn">summa</span>(a, b):
+    <span class="c-key">return</span> a + b
+
+<span class="c-com"># результат можно сохранить в ящик</span>
+result = <span class="c-fn">summa</span>(<span class="c-num">10</span>, <span class="c-num">5</span>)
+<span class="c-fn">print</span>(result)              <span class="c-com"># 15</span>
+
+<span class="c-com"># или сразу использовать в расчёте</span>
+<span class="c-fn">print</span>(<span class="c-fn">summa</span>(<span class="c-num">3</span>, <span class="c-num">4</span>) * <span class="c-num">2</span>)   <span class="c-com"># 14</span></pre></div>
+      <div class="output"><span class="lbl">На экране появится</span>15<br>14</div>
+
+      <p>Функция <code>summa</code> не печатает — она <strong>возвращает</strong> число. Поэтому его можно сохранить в <code>result</code>, умножить, передать дальше. В этом сила return: результат становится обычным значением, с которым можно делать что угодно.</p>
+
+      <div class="keybox"><h4>Важно запомнить</h4><p><code>return</code> отдаёт результат из функции наружу. После return функция заканчивает работу. Разница: <code>print</code> показывает на экране, <code>return</code> отдаёт значение, которое можно использовать.</p></div>
+
+      <div class="task"><span class="task-tag">✋ Задание в паре</span><h4>Калькулятор на функциях</h4>
+        <p>Напишите функции <code>summa(a,b)</code>, <code>raznost(a,b)</code>, <code>proizvedenie(a,b)</code> — каждая возвращает результат. Затем спросите два числа и покажите все три действия.</p>
+        <p class="pair">Через 10 минут поменяйтесь ролями.</p></div>
+
+      <div class="sec"><div class="dot">⚠️</div><h2>Частые ошибки</h2></div>
+      <div class="errors">
+        <div class="err-head"><div class="h-bad">Так не работает</div><div class="h-good">А так правильно</div></div>
+        <div class="err-row"><div class="err-bad">def summa(a, b):<br>&nbsp;&nbsp;&nbsp;&nbsp;print(a + b)<br>x = summa(2, 3) # x пустой</div><div class="err-good">def summa(a, b):<br>&nbsp;&nbsp;&nbsp;&nbsp;return a + b<br>x = summa(2, 3) # x = 5</div></div>
+      </div>
+      <p style="font-size:13.5px;color:var(--muted);">Если функция только печатает (print), в ящик ничего не попадёт. Чтобы сохранить результат — нужен return.</p>
+
+      <div class="home"><h3>🏠 Домашнее задание</h3><ol>
+        <li>Функция <code>srednee(a, b, c)</code> — возвращает среднее трёх чисел.</li>
+        <li>Функция <code>max_iz_dvuh(a, b)</code> — возвращает большее из двух.</li>
+      </ol><div class="star"><b>★ Со звёздочкой:</b> функция <code>chetnoe(n)</code> возвращает True или False — чётное ли число.</div></div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+  <!-- УРОК 12 — словари -->
+  <div class="page">
+    <div class="lesson-head">
+      <div><div class="lesson-num">Урок 12</div><div class="lesson-title">Словари: ключ и значение</div></div>
+      <div class="lesson-quarter">Часть 2<br>Структуры и функции</div>
+    </div>
+    <div class="body">
+      <div class="goal"><h3>Чему научимся</h3><ul>
+        <li>Хранить пары «ключ — значение» в словаре</li>
+        <li>Находить значение по ключу</li>
+        <li>Построить телефонную книгу</li>
+      </ul></div>
+
+      <div class="sec"><div class="dot">📚</div><h2>Когда списка мало</h2></div>
+      <p>В списке элементы ищут по номеру: <code>[0]</code>, <code>[1]</code>. Но иногда искать хочется по <strong>имени</strong>: не «третий элемент», а «телефон Алишера». Для этого есть <span class="term">словарь</span> — он хранит пары: ключ (имя) и значение (телефон).</p>
+      <div class="analogy"><b>На пальцах.</b> Словарь — как настоящий словарь или телефонная книга. Ты не листаешь по номерам страниц — ты ищешь слово и сразу видишь перевод. Ключ — это слово, значение — его перевод.</div>
+
+      <div class="sec"><div class="dot">💻</div><h2>Разбираем код</h2></div>
+      <p>Словарь создаётся фигурными скобками, пары через двоеточие:</p>
+      <div class="code"><div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>slovari.py</span></div>
+<pre>phones = {
+    <span class="c-str">"Алишер"</span>: <span class="c-str">"901-234-567"</span>,
+    <span class="c-str">"Мадина"</span>: <span class="c-str">"902-345-678"</span>,
+    <span class="c-str">"Фарход"</span>: <span class="c-str">"903-456-789"</span>
+}
+
+<span class="c-fn">print</span>(phones[<span class="c-str">"Мадина"</span>])   <span class="c-com"># находим по имени</span>
+
+phones[<span class="c-str">"Сафар"</span>] = <span class="c-str">"904-567-890"</span>  <span class="c-com"># добавляем нового</span>
+<span class="c-fn">print</span>(phones)</pre></div>
+      <div class="output"><span class="lbl">На экране появится</span>902-345-678<br>{'Алишер': '901-234-567', 'Мадина': '902-345-678', ...}</div>
+
+      <p>Вместо номера, как в списке, мы пишем <strong>ключ</strong> — <code>phones["Мадина"]</code> — и сразу получаем значение. Чтобы добавить новую пару, просто присваиваем значение новому ключу.</p>
+
+      <div class="keybox"><h4>Список против словаря</h4><p><b>Список</b> <code>[ ]</code> — доступ по номеру: <code>spisok[0]</code>. <b>Словарь</b> <code>{ }</code> — доступ по ключу: <code>slovar["имя"]</code>. Список — когда важен порядок, словарь — когда важно найти по названию.</p></div>
+
+      <div class="task"><span class="task-tag">✋ Задание в паре</span><h4>Словарь оценок</h4>
+        <p>Создайте словарь, где ключ — предмет, значение — твоя оценка: математика, история, информатика. Выведите оценку по информатике и добавьте новый предмет.</p>
+        <p class="pair">Через 10 минут поменяйтесь ролями.</p></div>
+
+      <div class="sec"><div class="dot">⚠️</div><h2>Частые ошибки</h2></div>
+      <div class="errors">
+        <div class="err-head"><div class="h-bad">Так не работает</div><div class="h-good">А так правильно</div></div>
+        <div class="err-row"><div class="err-bad">phones = ["Алишер": "901"]</div><div class="err-good">phones = {"Алишер": "901"}</div></div>
+        <div class="err-row"><div class="err-bad">phones[0] # первый</div><div class="err-good">phones["Алишер"]</div></div>
+      </div>
+      <p style="font-size:13.5px;color:var(--muted);">Словарь — в фигурных скобках <code>{ }</code>, а не квадратных. И ищем по ключу, а не по номеру.</p>
+
+      <div class="home"><h3>🏠 Домашнее задание</h3><ol>
+        <li>Словарь «столицы»: страна — столица (5 пар). Выведи столицу Таджикистана.</li>
+        <li>Словарь-меню кафе: блюдо — цена. Посчитай стоимость двух блюд.</li>
+      </ol><div class="star"><b>★ Со звёздочкой:</b> программа спрашивает имя и ищет его телефон в словаре; если нет — говорит «не найдено».</div></div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+  <!-- УРОК 13 — ПРОЕКТ крестики-нолики: поле -->
+  <div class="page">
+    <div class="lesson-head">
+      <div><div class="lesson-num">Урок 13 · Проект</div><div class="lesson-title">🎮 «Крестики-нолики»: строим поле</div></div>
+      <div class="lesson-quarter">Часть 2<br>Структуры и функции</div>
+    </div>
+    <div class="body">
+      <div class="goal"><h3>Что построим сегодня</h3><ul>
+        <li>Игровое поле 3×3 из списка</li>
+        <li>Функцию, которая красиво рисует поле</li>
+        <li>Ход игрока: ставим крестик в выбранную клетку</li>
+      </ul></div>
+
+      <div class="sec"><div class="dot">🎯</div><h2>Наш большой проект</h2></div>
+      <p>«Крестики-нолики» на двоих — это проект на два урока. Сегодня строим <strong>поле и ходы</strong>, на следующем уроке добавим проверку победы и защитим проект. Здесь соберётся всё из этой четверти: списки, функции, циклы.</p>
+
+      <div class="board">
+        <div class="num">1</div><div class="num">2</div><div class="num">3</div>
+        <div class="num">4</div><div>X</div><div class="num">6</div>
+        <div class="num">7</div><div>O</div><div class="num">9</div>
+      </div>
+      <p style="text-align:center;font-size:13px;color:var(--muted);margin-top:-4px;">Клетки пронумерованы 1–9. Игрок называет номер — туда ставится его знак.</p>
+
+      <div class="sec"><div class="dot">💻</div><h2>Поле и его показ</h2></div>
+      <p>Поле — это список из 9 клеток. Функция рисует его сеткой 3×3:</p>
+      <div class="code"><div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>pole.py</span></div>
+<pre>board = [<span class="c-str">" "</span>] * <span class="c-num">9</span>   <span class="c-com"># 9 пустых клеток</span>
+
+<span class="c-key">def</span> <span class="c-fn">show</span>(board):
+    <span class="c-fn">print</span>(board[<span class="c-num">0</span>], <span class="c-str">"|"</span>, board[<span class="c-num">1</span>], <span class="c-str">"|"</span>, board[<span class="c-num">2</span>])
+    <span class="c-fn">print</span>(<span class="c-str">"---------"</span>)
+    <span class="c-fn">print</span>(board[<span class="c-num">3</span>], <span class="c-str">"|"</span>, board[<span class="c-num">4</span>], <span class="c-str">"|"</span>, board[<span class="c-num">5</span>])
+    <span class="c-fn">print</span>(<span class="c-str">"---------"</span>)
+    <span class="c-fn">print</span>(board[<span class="c-num">6</span>], <span class="c-str">"|"</span>, board[<span class="c-num">7</span>], <span class="c-str">"|"</span>, board[<span class="c-num">8</span>])
+
+<span class="c-fn">show</span>(board)</pre></div>
+
+      <div class="steps">
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Поле — список из 9 клеток</h4><p><code>[" "] * 9</code> создаёт список из девяти пробелов — пустых клеток. Клетка 0 — верхняя левая.</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Функция show рисует поле</h4><p>Мы вынесли рисование в функцию — теперь можно показать поле в любой момент одной командой <code>show(board)</code>.</p></div></div>
+      </div>
+
+      <p>Теперь ход игрока — ставим знак в выбранную клетку:</p>
+      <div class="code"><div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>hod.py</span></div>
+<pre>pos = <span class="c-fn">int</span>(<span class="c-fn">input</span>(<span class="c-str">"Куда ставишь (1-9)? "</span>))
+board[pos - <span class="c-num">1</span>] = <span class="c-str">"X"</span>   <span class="c-com"># игрок назвал 1, а список с 0</span>
+<span class="c-fn">show</span>(board)</pre></div>
+
+      <div class="keybox"><h4>Важный момент</h4><p>Игрок называет клетки 1–9, а список считает с 0. Поэтому <code>board[pos - 1]</code>: вычитаем 1, чтобы номер клетки совпал с номером в списке.</p></div>
+
+      <div class="task"><span class="task-tag">✋ Задание в паре</span><h4>Соберите поле</h4>
+        <p>Наберите поле и функцию show. Сделайте два хода вручную: поставьте X в клетку 5 и O в клетку 1. Проверьте, что поле рисуется правильно.</p>
+        <p class="pair">На следующем уроке превратим это в полную игру.</p></div>
+
+      <div class="home"><h3>🏠 Домашнее задание</h3><ol>
+        <li>Допиши: пусть программа спрашивает клетку и ставит X, затем показывает поле.</li>
+        <li>Подумай: как чередовать X и O между двумя игроками? Запиши идею словами.</li>
+      </ol><div class="star"><b>★ Со звёздочкой:</b> сделай так, чтобы нельзя было поставить знак в уже занятую клетку.</div></div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+  <!-- УРОК 14 — ПРОЕКТ крестики-нолики: игра -->
+  <div class="page">
+    <div class="lesson-head">
+      <div><div class="lesson-num">Урок 14 · Проект</div><div class="lesson-title">🎮 «Крестики-нолики»: игра и защита</div></div>
+      <div class="lesson-quarter">Часть 2<br>Структуры и функции</div>
+    </div>
+    <div class="body">
+      <div class="goal"><h3>Что доделаем</h3><ul>
+        <li>Чередование игроков X и O</li>
+        <li>Проверку победы функцией</li>
+        <li>Готовую игру — и защиту проекта</li>
+      </ul></div>
+
+      <div class="sec"><div class="dot">💻</div><h2>Собираем игру целиком</h2></div>
+      <p>Соединяем поле с прошлого урока, чередование игроков и проверку победы:</p>
+      <div class="code"><div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>krestiki.py</span></div>
+<pre>board = [<span class="c-str">" "</span>] * <span class="c-num">9</span>
+
+<span class="c-key">def</span> <span class="c-fn">show</span>(board):
+    <span class="c-fn">print</span>(board[<span class="c-num">0</span>], <span class="c-str">"|"</span>, board[<span class="c-num">1</span>], <span class="c-str">"|"</span>, board[<span class="c-num">2</span>])
+    <span class="c-fn">print</span>(board[<span class="c-num">3</span>], <span class="c-str">"|"</span>, board[<span class="c-num">4</span>], <span class="c-str">"|"</span>, board[<span class="c-num">5</span>])
+    <span class="c-fn">print</span>(board[<span class="c-num">6</span>], <span class="c-str">"|"</span>, board[<span class="c-num">7</span>], <span class="c-str">"|"</span>, board[<span class="c-num">8</span>])
+
+<span class="c-key">def</span> <span class="c-fn">winner</span>(b):
+    lines = [(<span class="c-num">0</span>,<span class="c-num">1</span>,<span class="c-num">2</span>),(<span class="c-num">3</span>,<span class="c-num">4</span>,<span class="c-num">5</span>),(<span class="c-num">6</span>,<span class="c-num">7</span>,<span class="c-num">8</span>),
+             (<span class="c-num">0</span>,<span class="c-num">3</span>,<span class="c-num">6</span>),(<span class="c-num">1</span>,<span class="c-num">4</span>,<span class="c-num">7</span>),(<span class="c-num">2</span>,<span class="c-num">5</span>,<span class="c-num">8</span>),
+             (<span class="c-num">0</span>,<span class="c-num">4</span>,<span class="c-num">8</span>),(<span class="c-num">2</span>,<span class="c-num">4</span>,<span class="c-num">6</span>)]
+    <span class="c-key">for</span> a, b2, c <span class="c-key">in</span> lines:
+        <span class="c-key">if</span> b[a] == b[b2] == b[c] != <span class="c-str">" "</span>:
+            <span class="c-key">return</span> b[a]
+    <span class="c-key">return</span> <span class="c-key">None</span>
+
+player = <span class="c-str">"X"</span>
+<span class="c-key">for</span> turn <span class="c-key">in</span> <span class="c-fn">range</span>(<span class="c-num">9</span>):
+    <span class="c-fn">show</span>(board)
+    pos = <span class="c-fn">int</span>(<span class="c-fn">input</span>(player + <span class="c-str">", клетка (1-9): "</span>))
+    board[pos - <span class="c-num">1</span>] = player
+    <span class="c-key">if</span> <span class="c-fn">winner</span>(board):
+        <span class="c-fn">show</span>(board)
+        <span class="c-fn">print</span>(player + <span class="c-str">" победил!"</span>)
+        <span class="c-key">break</span>
+    player = <span class="c-str">"O"</span> <span class="c-key">if</span> player == <span class="c-str">"X"</span> <span class="c-key">else</span> <span class="c-str">"X"</span></pre></div>
+
+      <div class="steps">
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Функция winner проверяет линии</h4><p>Восемь способов победить: 3 ряда, 3 столбца, 2 диагонали. Функция проверяет каждую линию — три одинаковых знака подряд.</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Цикл на 9 ходов</h4><p>Максимум 9 клеток — значит 9 ходов. После каждого проверяем победу.</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Смена игрока</h4><p>Последняя строка меняет X на O и обратно: <code>"O" if player == "X" else "X"</code>.</p></div></div>
+      </div>
+
+      <div class="task"><span class="task-tag">🏆 Итоговый проект четверти</span><h4>Доделайте, украсьте, защитите</h4>
+        <p>Соберите игру и сыграйте пара на пару. Затем улучшите: добавьте сообщение о ничьей, запретите ходить в занятую клетку, добавьте рамку. На защите (2 минуты) расскажите: как устроено поле, как работает проверка победы, что было сложно.</p>
+        <p class="pair">Оба в паре должны уметь объяснить функцию winner.</p></div>
+
+      <div class="home"><h3>🏠 Что показать на защите</h3><ol>
+        <li>Игра работает: двое ходят по очереди, победа определяется верно.</li>
+        <li>Вы добавили хотя бы одно улучшение (ничья, защита клетки, рамка).</li>
+        <li>Каждый может объяснить, как функция winner находит победителя.</li>
+      </ol><div class="star"><b>★ Со звёздочкой:</b> добавьте счёт — сколько партий выиграл каждый игрок за вечер.</div></div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+</body>
+</html>
