@@ -56,7 +56,6 @@
         <div class="seg" id="domseg">
           <button data-v="text" class="sel">Тексты</button>
           <button data-v="table">Таблицы</button>
-          <button data-v="image">Фото</button>
           <button data-v="games">Игры/спорт</button>
         </div>
       </div>
@@ -79,11 +78,8 @@ const IDEAS=[
   {type:'clf',dom:'text',t:'Тема сообщения',target:'категория темы',metric:'accuracy',data:'свои сообщения по папкам',diff:'m'},
   // table
   {type:'reg',dom:'table',t:'Предсказание оценки',target:'балл за экзамен',metric:'MAE / R²',data:'часы учёбы → оценка (свой опрос)',diff:'e'},
-  {type:'clf',dom:'table',t:'Выживание/исход',target:'да / нет',metric:'accuracy, recall',data:'Titanic или похожий датасет',diff:'e'},
+  {type:'clf',dom:'table',t:'Вид пингвина по замерам',target:'вид (3 класса)',metric:'accuracy',data:'Palmer Penguins (готовый)',diff:'e'},
   {type:'reg',dom:'table',t:'Цена товара/жилья',target:'цена',metric:'MAE / RMSE',data:'датасет цен (Kaggle)',diff:'m'},
-  // image
-  {type:'clf',dom:'image',t:'Классификатор моих фото',target:'категория предмета',metric:'accuracy',data:'свои фото по папкам (урок 16)',diff:'m'},
-  {type:'clf',dom:'image',t:'Рукописные цифры',target:'цифра 0–9',metric:'accuracy',data:'MNIST (готовый)',diff:'e'},
   // games
   {type:'clf',dom:'games',t:'Победа в матче',target:'победа / поражение',metric:'accuracy',data:'игровая/спортивная статистика (Kaggle)',diff:'m'},
   {type:'reg',dom:'games',t:'Прогноз очков игрока',target:'кол-во очков',metric:'MAE',data:'статистика игроков (Kaggle)',diff:'m'},

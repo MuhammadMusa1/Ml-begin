@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Урок 13 — Разогрев: твоя первая нейросеть за 10 минут</title>
+<style>
+  :root{
+    --bg:#14102b; --bg2:#1b1540; --panel:#241a47; --panel2:#2b2050;
+    --indigo:#6366f1; --violet:#8b5cf6; --cyan:#22d3ee;
+    --text:#e8e6f5; --muted:#b9b3e0;
+    --code-bg:#20202e; --code-text:#e6e6ef;
+    --ok:#34d399; --ok-bg:#0f3d33; --bad:#fb7185; --bad-bg:#3d1424;
+    --gold:#fbbf24; --line:#3a2f66;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;
+    background:
+      radial-gradient(1200px 500px at 8% -10%, rgba(139,92,246,.25), transparent 60%),
+      radial-gradient(900px 500px at 100% 0%, rgba(34,211,238,.16), transparent 55%),
+      var(--bg);
+    color:var(--text); font-family:Calibri,"Segoe UI",sans-serif; line-height:1.55;
+    padding:34px 18px 70px;}
+  .wrap{max-width:940px;margin:0 auto;}
+  header.hero{background:linear-gradient(135deg, rgba(99,102,241,.30), rgba(34,211,238,.14));
+    border:1px solid var(--line); border-radius:18px; padding:24px 30px;
+    position:relative; overflow:hidden;}
+  header.hero:before{content:"🧠"; position:absolute; right:24px; top:8px; font-size:96px; opacity:.18;}
+  .tag{display:inline-block; font-size:13px; letter-spacing:2px; text-transform:uppercase;
+    color:var(--cyan); border:1px solid rgba(34,211,238,.4); border-radius:999px;
+    padding:4px 12px; margin-bottom:12px;}
+  h1{margin:6px 0 8px; font-size:29px; color:#fff; font-weight:800;}
+  .sub{color:var(--muted); font-size:17px; max-width:680px;}
+  .goal{background:var(--panel); border:1px solid var(--line); border-left:5px solid var(--gold);
+    border-radius:12px; padding:14px 18px; margin:20px 0; font-size:15.5px;}
+  .goal b{color:var(--gold);}
+  h2{color:var(--violet); font-size:22px; margin:34px 0 6px;
+    border-left:5px solid var(--cyan); padding-left:12px;}
+  .step-no{display:inline-flex; align-items:center; justify-content:center;
+    width:30px; height:30px; border-radius:9px;
+    background:linear-gradient(135deg,var(--indigo),var(--violet));
+    color:#fff; font-weight:800; margin-right:10px; font-family:Consolas,monospace; font-size:16px;}
+  .why{color:var(--muted); font-size:15.5px; margin:2px 0 12px;}
+  .why b{color:var(--cyan);}
+  .codebox{position:relative; background:var(--code-bg); border:1px solid var(--line);
+    border-left:5px solid var(--ok); border-radius:12px; padding:16px 18px; margin:10px 0;
+    font-family:Consolas,"Courier New",monospace; font-size:14.5px; color:var(--code-text);
+    overflow-x:auto; white-space:pre; tab-size:4;}
+  .cmt{color:#8a86b8;} .kw{color:#c4b5fd;} .str{color:#7dd3fc;}
+  .num{color:#f0abfc;} .fn{color:#5eead4;} .blank{color:var(--gold); font-weight:700;}
+  .copy{position:absolute; right:10px; top:10px; background:rgba(139,92,246,.25);
+    border:1px solid var(--line); color:var(--muted); font-family:Calibri,sans-serif;
+    font-size:12.5px; padding:4px 10px; border-radius:8px; cursor:pointer;}
+  .copy:hover{background:rgba(139,92,246,.5); color:#fff;}
+  .box{border-radius:12px; padding:12px 16px; margin:8px 0 4px; font-size:15px;}
+  .box.fix{background:var(--ok-bg); border:1px solid rgba(52,211,153,.35);}
+  .box.turn{background:linear-gradient(135deg, rgba(251,191,36,.14), rgba(139,92,246,.12));
+    border:1px solid rgba(251,191,36,.4);}
+  .box.note{background:var(--panel2); border:1px solid var(--line);}
+  .box b{color:#fff;} .box.turn b{color:var(--gold);}
+  table.data{border-collapse:collapse; margin:8px 0; font-size:14px; width:100%; max-width:520px;}
+  table.data th,table.data td{border:1px solid var(--line); padding:5px 10px; text-align:center;}
+  table.data th{background:var(--panel2); color:var(--violet);}
+  table.data td{color:var(--muted);}
+  .pass{color:var(--ok); font-weight:700;} .fail{color:var(--bad); font-weight:700;}
+  .star{background:linear-gradient(135deg, rgba(251,191,36,.12), rgba(34,211,238,.10));
+    border:1px dashed var(--gold); border-radius:14px; padding:6px 16px 14px; margin-top:14px;}
+  .star .flag{color:var(--gold); font-weight:800; font-size:16px; margin:10px 2px 4px;}
+  .star ul{margin:4px 0; padding-left:20px;} .star li{margin:6px 0; color:var(--muted); font-size:15px;}
+  code.inl{background:var(--code-bg); padding:1px 6px; border-radius:6px;
+    font-family:Consolas,monospace; color:var(--cyan); font-size:13.5px;}
+  .printbtn{display:inline-block; margin:26px 0 0; cursor:pointer;
+    background:linear-gradient(135deg,var(--indigo),var(--violet)); color:#fff; border:none;
+    border-radius:10px; padding:11px 22px; font-family:Calibri,sans-serif; font-size:15px; font-weight:700;}
+  footer{color:var(--muted); font-size:13.5px; margin-top:30px; text-align:center;}
+  @media print{
+    body{background:#fff; color:#111; padding:0;}
+    header.hero:before{display:none;}
+    .codebox,.goal,table.data,header.hero,.box{break-inside:avoid;}
+    .copy,.printbtn{display:none;}
+    h1,h2,.goal b,.star .flag{color:#4c1d95 !important;}
+    .codebox{background:#f3f3f7; color:#111; border:1px solid #ccc;}
+    .cmt{color:#6b7280;} .kw{color:#7c3aed;} .str{color:#0369a1;}
+    .num{color:#a21caf;} .fn{color:#0d9488;} .blank{color:#b45309;}
+    .box.turn,.box.fix,.box.note{background:#f5f3ff;} .box b{color:#111;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <span class="tag">Урок 13 · разогрев (10–12 минут)</span>
+  <h1>Твоя первая нейросеть за 10 минут</h1>
+  <p class="sub">Сегодня ты <b>сам</b> напишешь настоящую нейросеть — всего несколько строк — и научишь её предсказывать,
+  сдашь ли ты завтрашний тест. В конце введёшь свои цифры и спросишь у неё лично про себя.</p>
+</header>
+
+<div class="goal">
+  🎯 <b>Задача:</b> сеть смотрит на два числа — <b>сколько часов ты готовился</b> и <b>сколько спал</b> — и предсказывает: сдам / не сдам.
+  Мы не будем ничего объяснять формулами. Просто напишем, запустим и увидим, как она учится.
+</div>
+
+<!-- ШАГ 1 -->
+<h2><span class="step-no">1</span>Данные — 14 учеников</h2>
+<p class="why"><b>Зачем:</b> чтобы чему-то научиться, сети нужны примеры «вопрос → правильный ответ». Вот наши 14 учеников: у каждого часы подготовки, часы сна и что вышло на тесте.</p>
+
+<table class="data">
+  <tr><th>Готовился (ч)</th><th>Спал (ч)</th><th>Результат</th></tr>
+  <tr><td>1</td><td>4</td><td class="fail">не сдал</td></tr>
+  <tr><td>2</td><td>6</td><td class="fail">не сдал</td></tr>
+  <tr><td>0</td><td>6</td><td class="fail">не сдал</td></tr>
+  <tr><td>3</td><td>3</td><td class="fail">не сдал</td></tr>
+  <tr><td>4</td><td>7</td><td class="pass">сдал</td></tr>
+  <tr><td>6</td><td>8</td><td class="pass">сдал</td></tr>
+  <tr><td>5</td><td>6</td><td class="pass">сдал</td></tr>
+  <tr><td>...</td><td>...</td><td>... (ещё 7)</td></tr>
+</table>
+
+<div class="codebox"><button class="copy" onclick="cp(this)">копировать</button><span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">from</span> tensorflow.keras <span class="kw">import</span> Sequential, layers
+
+<span class="cmt"># X = [часы подготовки, часы сна]   →   y = 0 (не сдал) / 1 (сдал)</span>
+X = np.<span class="fn">array</span>([[<span class="num">1</span>,<span class="num">4</span>],[<span class="num">2</span>,<span class="num">6</span>],[<span class="num">0</span>,<span class="num">6</span>],[<span class="num">3</span>,<span class="num">3</span>],[<span class="num">1</span>,<span class="num">5</span>],[<span class="num">2</span>,<span class="num">3</span>],[<span class="num">3</span>,<span class="num">7</span>],
+              [<span class="num">4</span>,<span class="num">7</span>],[<span class="num">6</span>,<span class="num">8</span>],[<span class="num">5</span>,<span class="num">6</span>],[<span class="num">7</span>,<span class="num">7</span>],[<span class="num">4</span>,<span class="num">5</span>],[<span class="num">5</span>,<span class="num">8</span>],[<span class="num">6</span>,<span class="num">4</span>]], dtype=<span class="str">"float32"</span>)
+y = np.<span class="fn">array</span>([<span class="num">0</span>,<span class="num">0</span>,<span class="num">0</span>,<span class="num">0</span>,<span class="num">0</span>,<span class="num">0</span>,<span class="num">1</span>, <span class="num">1</span>,<span class="num">1</span>,<span class="num">1</span>,<span class="num">1</span>,<span class="num">1</span>,<span class="num">1</span>,<span class="num">1</span>], dtype=<span class="str">"int32"</span>)</div>
+
+<!-- ШАГ 2 -->
+<h2><span class="step-no">2</span>Строим сеть — это и есть «мозг»</h2>
+<p class="why"><b>Зачем:</b> сеть — это слои нейронов. Один скрытый слой (наш «мозг» из 8 нейронов) и выходной слой на 2 ответа: «не сдал» и «сдал». <b>Твоя очередь</b> — впиши функцию активации <code class="inl">relu</code> вместо жёлтого пропуска.</p>
+
+<div class="codebox"><button class="copy" onclick="cp(this)">копировать</button>model = <span class="fn">Sequential</span>([
+    layers.<span class="fn">Input</span>(shape=(<span class="num">2</span>,)),                <span class="cmt"># на входе 2 числа: подготовка и сон</span>
+    layers.<span class="fn">Dense</span>(<span class="num">8</span>, activation=<span class="blank">"____"</span>),      <span class="cmt"># ← впиши "relu" (скрытый слой, 8 нейронов)</span>
+    layers.<span class="fn">Dense</span>(<span class="num">2</span>, activation=<span class="str">"softmax"</span>)     <span class="cmt"># 2 ответа: не сдал / сдал</span>
+])</div>
+
+<!-- ШАГ 3 -->
+<h2><span class="step-no">3</span>Готовим сеть к обучению</h2>
+<p class="why"><b>Зачем:</b> говорим сети, КАК учиться (<code class="inl">adam</code>) и по чему считать ошибку. Метки у нас числа 0/1 → <code class="inl">sparse_categorical_crossentropy</code> (наш стандарт на весь курс).</p>
+
+<div class="codebox"><button class="copy" onclick="cp(this)">копировать</button>model.<span class="fn">compile</span>(optimizer=<span class="str">"adam"</span>,
+              loss=<span class="str">"sparse_categorical_crossentropy"</span>,
+              metrics=[<span class="str">"accuracy"</span>])</div>
+
+<!-- ШАГ 4 -->
+<h2><span class="step-no">4</span>Учим! И смотрим, как растёт точность</h2>
+<p class="why"><b>Зачем:</b> это главный момент — сеть много раз смотрит на примеры и сама подкручивает себя, чтобы ошибаться меньше (как ученик, исправляющий ошибки после проверки). <b>Что увидишь:</b> точность растёт к 1.0.</p>
+
+<div class="codebox"><button class="copy" onclick="cp(this)">копировать</button>model.<span class="fn">fit</span>(X, y, epochs=<span class="num">200</span>, verbose=<span class="num">0</span>)   <span class="cmt"># 200 «прогонов» по примерам</span>
+
+acc = model.<span class="fn">evaluate</span>(X, y, verbose=<span class="num">0</span>)[<span class="num">1</span>]
+<span class="fn">print</span>(<span class="str">f"Сеть научилась! Точность: {acc:.0%}"</span>)</div>
+
+<div class="box note">🔎 <b>Честно:</b> здесь мы проверяем сеть на тех же примерах, на которых учили — только чтобы увидеть, что она <i>вообще способна</i> учиться. На основном уроке узнаем, почему так проверять нельзя (train/test) и как правильно.</div>
+
+<!-- ШАГ 5 -->
+<h2><span class="step-no">5</span>🎉 Твоя очередь — спроси про СЕБЯ</h2>
+<div class="box turn"><b>Впиши свои настоящие цифры</b> — сколько часов ты обычно готовишься и сколько спишь перед тестом — и запусти. Сеть скажет свой прогноз лично про тебя.</div>
+
+<div class="codebox"><button class="copy" onclick="cp(this)">копировать</button>my_prep  = <span class="blank">4</span>    <span class="cmt"># ← сколько часов готовлюсь</span>
+my_sleep = <span class="blank">6</span>    <span class="cmt"># ← сколько часов сплю</span>
+
+pred = model.<span class="fn">predict</span>(np.<span class="fn">array</span>([[my_prep, my_sleep]], dtype=<span class="str">"float32"</span>), verbose=<span class="num">0</span>)[<span class="num">0</span>]
+answer = [<span class="str">"Скорее не сдам 😴"</span>, <span class="str">"Скорее сдам! 🎉"</span>][pred.<span class="fn">argmax</span>()]
+<span class="fn">print</span>(answer, <span class="str">f"(уверенность сети: {pred.max():.0%})"</span>)</div>
+
+<div class="box fix">😄 <b>Внимание:</b> это игрушка на 14 примерах — не воспринимай её всерьёз! Настоящие оценки зависят от многого. Но сама механика — точно такая же, как у больших нейросетей.</div>
+
+<!-- BONUS -->
+<div class="star">
+  <div class="flag">⭐ Кто быстрее — задания со звёздочкой</div>
+  <ul>
+    <li>Поставь в скрытом слое <code class="inl">Dense(2, ...)</code> вместо 8. Точность упадёт? А если <code class="inl">Dense(32, ...)</code>?</li>
+    <li>Уменьши <code class="inl">epochs</code> до 10. Успеет ли сеть научиться?</li>
+    <li>Добавь в данные «странного» ученика: готовился 8 часов, но спал 1 час. Как думаешь, что предскажет сеть — и почему?</li>
+    <li>Придумай свою задачу «по двум числам»: например, «зайдёт ли мой пост» по числу друзей и часу публикации. Собери 10 примеров и обучи.</li>
+  </ul>
+</div>
+
+<div class="box note" style="margin-top:26px">➡️ <b>Мостик к уроку 14:</b> сегодня сеть смотрела на 2 числа. На следующем уроке дадим ей картинку — рукописную цифру из 784 чисел — и та же самая идея научит её узнавать цифры (MNIST).</div>
+
+<button class="printbtn" onclick="window.print()">🖨️ Распечатать</button>
+<footer>Курс Machine Learning · Урок 13 «Мозг из математики» · разогрев-мини-проект · Keras</footer>
+
+</div>
+<script>
+  function cp(btn){
+    const box = btn.parentElement;
+    const text = box.innerText.replace(/^\s*копировать\s*/,'').trim();
+    navigator.clipboard.writeText(text).then(()=>{
+      const old = btn.textContent; btn.textContent = "скопировано ✓";
+      setTimeout(()=>btn.textContent = old, 1400);
+    }).catch(()=>{ btn.textContent = "выдели вручную"; });
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,55 @@
+<div style="padding:1rem 0;">
+<h2 class="sr-only">Интерактивная карта смыслов: похожие по смыслу слова стоят рядом, и со словами можно делать арифметику</h2>
+
+<div style="display:flex; gap:20px; flex-wrap:wrap; align-items:flex-start;">
+  <div style="flex:1; min-width:280px;">
+    <p style="font-size:13px; color:var(--text-secondary); margin:0 0 8px;">Наведи на слово — подсветятся близкие по смыслу соседи</p>
+    <svg id="map" viewBox="0 0 380 320" style="width:100%; max-width:400px; border:0.5px solid var(--border); border-radius:8px; background:var(--surface-1);"></svg>
+    <p style="font-size:12px; color:var(--text-muted); margin:8px 0 0;">Это упрощённая 2D-карта. В реальной модели координат сотни.</p>
+  </div>
+
+  <div style="flex:1; min-width:240px;">
+    <div style="background:var(--surface-1); border-radius:8px; padding:1rem; margin-bottom:14px;">
+      <p style="font-size:13px; color:var(--text-secondary); margin:0 0 8px;">Арифметика смыслов</p>
+      <p style="font-size:16px; margin:0 0 10px; font-family:var(--font-mono);">король − мужчина + женщина = ?</p>
+      <button id="solve" style="width:100%;">Вычислить →</button>
+      <p id="answer" style="font-size:20px; font-weight:500; margin:12px 0 0; color:var(--text-accent); min-height:26px;"></p>
+    </div>
+
+    <div style="background:var(--bg-accent); border-radius:8px; padding:12px 14px;">
+      <p style="font-size:13px; color:var(--text-accent); margin:0;">Каждое слово — точка на «карте смыслов». Близкие по смыслу слова стоят рядом. Поэтому со смыслами можно делать арифметику: убрать «мужское», добавить «женское».</p>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var words=[
+    {w:"король",x:300,y:70,g:"royal"},{w:"королева",x:330,y:120,g:"royal"},
+    {w:"принц",x:270,y:110,g:"royal"},{w:"трон",x:325,y:55,g:"royal"},
+    {w:"кот",x:70,y:230,g:"animal"},{w:"кошка",x:95,y:255,g:"animal"},
+    {w:"котёнок",x:60,y:270,g:"animal"},{w:"собака",x:110,y:220,g:"animal"},
+    {w:"машина",x:250,y:255,g:"vehicle"},{w:"грузовик",x:290,y:270,g:"vehicle"},
+    {w:"автобус",x:230,y:285,g:"vehicle"},
+    {w:"радость",x:80,y:70,g:"emotion"},{w:"счастье",x:110,y:55,g:"emotion"},
+    {w:"грусть",x:55,y:110,g:"emotion"}
+  ];
+  var colors={royal:"#7f77dd",animal:"#1d9e75",vehicle:"#d85a30",emotion:"#d4537e"};
+  var svg=document.getElementById('map');
+  var NS="http://www.w3.org/2000/svg";
+  function el(t,a){var e=document.createElementNS(NS,t);for(var k in a)e.setAttribute(k,a[k]);return e;}
+  words.forEach(function(o,i){
+    var c=el("circle",{cx:o.x,cy:o.y,r:6,fill:colors[o.g],"data-i":i,style:"cursor:pointer;"});
+    var t=el("text",{x:o.x+10,y:o.y+4,"font-size":12,fill:"var(--text-primary)","data-i":i,style:"cursor:pointer;"});
+    t.textContent=o.w;
+    svg.appendChild(c);svg.appendChild(t);
+    function on(){words.forEach(function(o2,j){var same=o2.g===o.g;svg.querySelectorAll('[data-i="'+j+'"]').forEach(function(n){n.setAttribute('opacity',same?1:0.2);});});}
+    function off(){svg.querySelectorAll('[data-i]').forEach(function(n){n.setAttribute('opacity',1);});}
+    c.onmouseenter=on;t.onmouseenter=on;c.onmouseleave=off;t.onmouseleave=off;
+  });
+  document.getElementById('solve').onclick=function(){
+    document.getElementById('answer').textContent="≈ королева 👑";
+  };
+})();
+</script>
+</div>

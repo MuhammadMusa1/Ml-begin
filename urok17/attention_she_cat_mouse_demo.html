@@ -1,0 +1,65 @@
+<div style="padding:1rem 0;">
+<h2 class="sr-only">Интерактивное демо механизма внимания: слово «она» смотрит на разные слова в зависимости от смысла предложения</h2>
+
+<div style="display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap;">
+  <button id="b1" style="padding:6px 14px;">…потому что она была быстрой</button>
+  <button id="b2" style="padding:6px 14px;">…потому что она была голодной</button>
+</div>
+
+<svg id="att" viewBox="0 0 640 180" style="width:100%; border:0.5px solid var(--border); border-radius:8px; background:var(--surface-1);"></svg>
+
+<div style="margin-top:14px; padding:12px 14px; background:var(--surface-1); border-radius:8px;">
+  <p id="expl" style="font-size:14px; margin:0; color:var(--text-secondary); line-height:1.6;">Нажми вариант выше. Толстая линия от «она» показывает, на какое слово модель смотрит сильнее.</p>
+</div>
+
+<div style="margin-top:12px; padding:12px 14px; background:var(--bg-accent); border-radius:8px;">
+  <p style="font-size:13px; color:var(--text-accent); margin:0;">Механизм внимания (attention) позволяет модели при каждом слове решать, на какие другие слова смотреть. Одно и то же «она» тянется к разным словам — в зависимости от смысла всего предложения.</p>
+</div>
+
+<script>
+(function(){
+  var words=["Кошка","гналась","за","мышью,","потому","что","она","была","___"];
+  var sheIdx=6;
+  var NS="http://www.w3.org/2000/svg";
+  var svg=document.getElementById('att');
+  function el(t,a,txt){var e=document.createElementNS(NS,t);for(var k in a)e.setAttribute(k,a[k]);if(txt!=null)e.textContent=txt;return e;}
+  var xs=[];
+  function layout(lastWord){
+    svg.innerHTML="";
+    var W=640,y=130,x=20;
+    xs=[];
+    var ww=words.slice();ww[8]=lastWord;
+    svg.appendChild(el("line",{x1:0,y1:y,x2:W,y2:y,stroke:"var(--border)","stroke-width":1}));
+    ww.forEach(function(w){
+      var tw=w.length*9+16;
+      var t=el("text",{x:x+tw/2,y:y+5,"font-size":15,"text-anchor":"middle",fill:(w==="она")?"#534ab7":"var(--text-primary)","font-weight":(w==="она")?"500":"400"},w);
+      xs.push(x+tw/2);
+      svg.appendChild(t);
+      x+=tw+6;
+    });
+  }
+  function arc(from,to,weight,color){
+    var x1=xs[from],x2=xs[to],y=118;
+    var mx=(x1+x2)/2, h=40+Math.abs(x2-x1)*0.12;
+    var p=el("path",{d:"M "+x1+" "+y+" Q "+mx+" "+(y-h)+" "+x2+" "+y,fill:"none",stroke:color,"stroke-width":weight,"stroke-linecap":"round",opacity:0.75});
+    svg.appendChild(p);
+  }
+  function show(mode){
+    if(mode==="fast"){
+      layout("быстрой");
+      arc(sheIdx,3,7,"#7f77dd");   // она -> мышью (толсто)
+      arc(sheIdx,0,1.5,"#b4b2a9"); // она -> Кошка (тонко)
+      document.getElementById('expl').innerHTML='«Быстрой» была та, что убегала → «она» сильно смотрит на <b style="color:#534ab7">«мышью»</b>. Раз кошка не поймала — быстрой была мышь.';
+    }else{
+      layout("голодной");
+      arc(sheIdx,0,7,"#7f77dd");   // она -> Кошка (толсто)
+      arc(sheIdx,3,1.5,"#b4b2a9"); // она -> мышью (тонко)
+      document.getElementById('expl').innerHTML='«Голодной» была охотница → «она» сильно смотрит на <b style="color:#534ab7">«Кошка»</b>. Голод объясняет, почему кошка гналась.';
+    }
+  }
+  document.getElementById('b1').onclick=function(){show("fast");};
+  document.getElementById('b2').onclick=function(){show("hungry");};
+  show("fast");
+})();
+</script>
+</div>

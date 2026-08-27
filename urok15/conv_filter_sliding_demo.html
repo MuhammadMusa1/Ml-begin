@@ -1,0 +1,97 @@
+<div style="padding: 1rem 0;">
+<h2 class="sr-only">Интерактивное демо: как свёрточный фильтр скользит по картинке и строит карту признаков</h2>
+
+<div style="display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap;">
+  <button id="step" style="padding:6px 14px;">Шаг фильтра →</button>
+  <button id="auto" style="padding:6px 14px;">Авто ▶</button>
+  <button id="reset" style="padding:6px 14px;">Сброс</button>
+  <select id="fsel" style="padding:6px 10px;">
+    <option value="vert">Фильтр: вертикальная линия</option>
+    <option value="horiz">Фильтр: горизонтальная линия</option>
+  </select>
+</div>
+
+<div style="display:flex; gap:24px; flex-wrap:wrap; align-items:flex-start;">
+  <div>
+    <p style="font-size:13px; color:var(--text-secondary); margin:0 0 8px;">Картинка (6×6) + рамка фильтра</p>
+    <canvas id="src" width="240" height="240" style="width:240px;height:240px;border:0.5px solid var(--border);border-radius:8px;"></canvas>
+  </div>
+
+  <div>
+    <p style="font-size:13px; color:var(--text-secondary); margin:0 0 8px;">Что под рамкой сейчас (3×3)</p>
+    <table id="patch" style="border-collapse:collapse; margin-bottom:14px;"></table>
+    <p style="font-size:13px; color:var(--text-secondary); margin:0 0 4px;">Фильтр (веса)</p>
+    <table id="kern" style="border-collapse:collapse;"></table>
+  </div>
+
+  <div>
+    <p style="font-size:13px; color:var(--text-secondary); margin:0 0 8px;">Карта признаков (4×4)</p>
+    <canvas id="out" width="160" height="160" style="width:160px;height:160px;border:0.5px solid var(--border);border-radius:8px;image-rendering:pixelated;"></canvas>
+  </div>
+</div>
+
+<div style="margin-top:16px; padding:12px 14px; background:var(--surface-1); border-radius:8px;">
+  <p id="calc" style="font-size:13px; font-family:var(--font-mono); margin:0; color:var(--text-secondary); line-height:1.7;">Нажми «Шаг фильтра» — рамка сдвинется, а под картой признаков появится одно новое число.</p>
+</div>
+
+<div style="margin-top:12px; padding:12px 14px; background:var(--bg-accent); border-radius:8px;">
+  <p style="font-size:13px; color:var(--text-accent); margin:0;">Фильтр 3×3 скользит по картинке. В каждом положении он перемножает свои 9 весов с 9 пикселями под собой, всё складывает — и получается ОДНО число карты признаков. Яркое число = «здесь фильтр нашёл свой узор».</p>
+</div>
+
+<script>
+(function(){
+  var IMG=[
+   [10,10,90,90,10,10],
+   [10,10,90,90,10,10],
+   [10,10,90,90,10,10],
+   [10,10,90,90,10,10],
+   [10,10,90,90,10,10],
+   [10,10,90,90,10,10]];
+  var KV={vert:[[-1,0,1],[-1,0,1],[-1,0,1]], horiz:[[-1,-1,-1],[0,0,0],[1,1,1]]};
+  var kernel=KV.vert;
+  var pos=0; var OUT=4; var timer=null;
+  var out=[];for(var i=0;i<OUT;i++){out.push([null,null,null,null]);}
+
+  var srcC=document.getElementById('src'),sx=srcC.getContext('2d');
+  var outC=document.getElementById('out'),ox=outC.getContext('2d');
+  var cell=40, ocell=40;
+
+  function pxColor(v){var g=Math.round(v*2.4);return 'rgb('+g+','+g+','+g+')';}
+
+  function drawSrc(){
+    for(var y=0;y<6;y++)for(var x=0;x<6;x++){sx.fillStyle=pxColor(IMG[y][x]);sx.fillRect(x*cell,y*cell,cell,cell);sx.strokeStyle='rgba(255,255,255,0.15)';sx.strokeRect(x*cell,y*cell,cell,cell);}
+    var r=Math.floor(pos/OUT),c=pos%OUT;
+    sx.strokeStyle='#7f77dd';sx.lineWidth=4;sx.strokeRect(c*cell+2,r*cell+2,3*cell-4,3*cell-4);sx.lineWidth=1;
+  }
+  function drawOut(){
+    var vals=[];for(var y=0;y<OUT;y++)for(var x=0;x<OUT;x++){if(out[y][x]!==null)vals.push(Math.abs(out[y][x]));}
+    var mx=vals.length?Math.max.apply(null,vals):1;if(mx===0)mx=1;
+    for(var y=0;y<OUT;y++)for(var x=0;x<OUT;x++){
+      if(out[y][x]===null){ox.fillStyle='var(--surface-1)';ox.fillStyle='#e8e8e8';}
+      else{var g=Math.round(255*Math.abs(out[y][x])/mx);ox.fillStyle='rgb('+g+','+g+','+g+')';}
+      ox.fillRect(x*ocell,y*ocell,ocell,ocell);ox.strokeStyle='#ccc';ox.strokeRect(x*ocell,y*ocell,ocell,ocell);
+    }
+  }
+  function tbl(el,data,hl){
+    var h='';for(var y=0;y<3;y++){h+='<tr>';for(var x=0;x<3;x++){var col=hl?'#EEEDFE':'#fff';h+='<td style="border:0.5px solid var(--border);width:34px;height:34px;text-align:center;font-family:var(--font-mono);font-size:13px;background:'+col+';color:#26215C;">'+data[y][x]+'</td>';}h+='</tr>';}
+    el.innerHTML=h;
+  }
+  function compute(){
+    var r=Math.floor(pos/OUT),c=pos%OUT;var patch=[];var sum=0;var terms=[];
+    for(var y=0;y<3;y++){patch.push([]);for(var x=0;x<3;x++){var v=IMG[r+y][c+x];patch[y].push(v);sum+=v*kernel[y][x];}}
+    out[r][c]=sum;
+    tbl(document.getElementById('patch'),patch,true);
+    document.getElementById('calc').textContent='Позиция ('+r+','+c+'): перемножаем 9 пар, складываем → результат = '+sum+'  (яркое = фильтр нашёл узор)';
+  }
+  function render(){drawSrc();drawOut();tbl(document.getElementById('kern'),kernel,false);}
+  function step(){if(pos>=OUT*OUT){stopAuto();return;}compute();pos++;render();}
+  function reset(){pos=0;out=[];for(var i=0;i<OUT;i++)out.push([null,null,null,null]);stopAuto();render();document.getElementById('calc').textContent='Сброшено. Нажми «Шаг фильтра».';document.getElementById('patch').innerHTML='';}
+  function stopAuto(){if(timer){clearInterval(timer);timer=null;document.getElementById('auto').textContent='Авто ▶';}}
+  document.getElementById('step').onclick=step;
+  document.getElementById('reset').onclick=reset;
+  document.getElementById('auto').onclick=function(){if(timer){stopAuto();}else{this.textContent='Стоп ⏸';timer=setInterval(step,600);}};
+  document.getElementById('fsel').onchange=function(){kernel=KV[this.value];reset();};
+  render();
+})();
+</script>
+</div>

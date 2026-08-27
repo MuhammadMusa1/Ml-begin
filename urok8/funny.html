@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Забывчивый курьер</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .input-group {
+            margin: 15px 0;
+        }
+        label {
+            display: inline-block;
+            width: 100px;
+            font-weight: bold;
+        }
+        input {
+            padding: 8px;
+            width: 100px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 30px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e8f5e9;
+            border-radius: 5px;
+            font-size: 18px;
+        }
+        .explanation {
+            margin-top: 20px;
+            padding: 15px;
+            background: #fff3e0;
+            border-radius: 5px;
+            border-left: 4px solid #ff9800;
+        }
+        .visualization {
+            margin: 20px 0;
+            padding: 20px;
+            background: #e3f2fd;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .circle-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .house {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #2196F3;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            transition: all 0.3s;
+        }
+        .house.target {
+            background: #f44336;
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        .arrow {
+            font-size: 24px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏠 Забывчивый курьер</h1>
+        <h3>Вероятность, что дом будет посещен последним</h3>
+        
+        <div class="input-group">
+            <label>Кол-во домов (N):</label>
+            <input type="number" id="n" value="5" min="1" max="20">
+        </div>
+        <div class="input-group">
+            <label>Номер дома (k):</label>
+            <input type="number" id="k" value="3" min="1" max="20">
+        </div>
+        <button onclick="calculate()">Рассчитать вероятность</button>
+        
+        <div id="result" class="result" style="display:none;"></div>
+        
+        <div id="visualization" class="visualization"></div>
+        
+        <div class="explanation" id="explanation"></div>
+    </div>
+
+    <script>
+        function calculate() {
+            const N = parseInt(document.getElementById('n').value);
+            const k = parseInt(document.getElementById('k').value);
+            
+            if (k > N) {
+                alert('Номер дома не может быть больше общего количества домов!');
+                return;
+            }
+            
+            // ☆☆☆ КЛЮЧЕВОЙ МОМЕНТ ☆☆☆
+            // Вероятность = 1/N из-за симметрии
+            const probability = 1 / N;
+            
+            // Показываем результат
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = `
+                <strong>Вероятность:</strong> ${probability.toFixed(10)}<br>
+                <strong>В процентах:</strong> ${(probability * 100).toFixed(2)}%
+            `;
+            
+            // Визуализация
+            visualize(N, k);
+            
+            // Объяснение
+            explain(N, k, probability);
+        }
+        
+        function visualize(N, k) {
+            const container = document.getElementById('visualization');
+            let html = '<h4>Визуализация домов:</h4><div class="circle-container">';
+            
+            // Показываем дома по кругу
+            for (let i = 1; i <= N; i++) {
+                const isTarget = (i === k);
+                html += `<div class="house ${isTarget ? 'target' : ''}">${i}</div>`;
+                if (i < N) {
+                    html += `<span class="arrow">➡️</span>`;
+                }
+            }
+            html += '</div>';
+            
+            // Добавляем объяснение про равноправие
+            html += `
+                <p style="margin-top:15px;color:#666;">
+                    🎯 <strong>Дом ${k}</strong> выделен красным<br>
+                    Все дома находятся в одинаковых условиях!
+                </p>
+            `;
+            
+            container.innerHTML = html;
+        }
+        
+        function explain(N, k, prob) {
+            const div = document.getElementById('explanation');
+            div.innerHTML = `
+                <h3>📚 Почему вероятность = 1/${N}?</h3>
+                
+                <p><strong>1. Симметрия задачи</strong></p>
+                <p>Представьте, что вы смотрите на круг из домов сверху. 
+                Все дома расположены одинаково относительно стартовой точки (лавки). 
+                Нет ни одного дома, который был бы "особенным".</p>
+                
+                <p><strong>2. Принцип равновозможности</strong></p>
+                <p>Поскольку каждый дом находится в одинаковых условиях, 
+                вероятность того, что любой конкретный дом окажется последним, 
+                одинакова для всех ${N} домов.</p>
+                
+                <p><strong>3. Сумма вероятностей = 1</strong></p>
+                <p>Сумма вероятностей для всех домов должна равняться 1 
+                (какой-то дом обязательно будет последним).</p>
+                
+                <p><strong>4. Вычисление</strong></p>
+                <p>Если все вероятности равны (обозначим их p), то:</p>
+                <p style="text-align:center;font-size:20px;color:#d32f2f;">
+                    p + p + ... + p (${N} раз) = 1
+                </p>
+                <p style="text-align:center;font-size:20px;color:#d32f2f;">
+                    ${N} × p = 1 → p = 1/${N}
+                </p>
+                
+                <p style="margin-top:15px;padding:10px;background:#fff;border-radius:5px;">
+                    <strong>✨ Главная идея:</strong> В задачах на вероятность 
+                    всегда ищите симметрию! Если объекты равноправны, 
+                    вероятности для них равны.
+                </p>
+            `;
+        }
+        
+        // Автоматический расчет при загрузке
+        window.onload = function() {
+            calculate();
+        };
+    </script>
+</body>
+</html>

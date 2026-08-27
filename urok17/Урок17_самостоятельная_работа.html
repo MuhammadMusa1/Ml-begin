@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Урок 17 · Самостоятельная работа</title>
+<style>
+  :root{--indigo:#3C3489;--violet:#7F77DD;--cyan:#1D9E75;--bg:#F1EFE8;--ink:#2C2C2A;--muted:#5F5E5A;}
+  *{box-sizing:border-box;}
+  body{font-family:Calibri,'Segoe UI',sans-serif;color:var(--ink);max-width:820px;margin:0 auto;padding:32px 24px;line-height:1.6;background:#fff;}
+  header{border-bottom:3px solid var(--violet);padding-bottom:16px;margin-bottom:24px;}
+  .tag{font-size:14px;color:var(--muted);font-weight:600;letter-spacing:.5px;}
+  h1{color:var(--indigo);font-size:28px;margin:6px 0 4px;}
+  .sub{color:var(--muted);font-size:15px;}
+  .meta{display:flex;gap:24px;margin-top:14px;flex-wrap:wrap;}
+  .meta div{font-size:14px;color:var(--muted);} .meta b{color:var(--ink);}
+  .q{background:var(--bg);border-left:5px solid var(--violet);border-radius:8px;padding:16px 20px;margin:18px 0;}
+  .q .num{display:inline-block;background:var(--violet);color:#fff;font-weight:700;width:28px;height:28px;line-height:28px;text-align:center;border-radius:50%;margin-right:10px;}
+  .q p{margin:0 0 12px;font-weight:600;}
+  .opt{display:block;padding:7px 12px;margin:5px 0;background:#fff;border:1px solid #D3D1C7;border-radius:6px;cursor:pointer;font-size:15px;}
+  .opt:hover{border-color:var(--violet);}
+  .open textarea{width:100%;min-height:70px;border:1px solid #D3D1C7;border-radius:6px;padding:10px;font-family:Calibri,sans-serif;font-size:15px;resize:vertical;}
+  .banner{background:linear-gradient(90deg,var(--indigo),var(--violet));color:#fff;padding:14px 20px;border-radius:8px;margin:24px 0;font-size:15px;}
+  .btns{display:flex;gap:12px;margin-top:28px;}
+  button{font-family:Calibri,sans-serif;font-size:15px;font-weight:600;padding:10px 22px;border-radius:8px;border:none;cursor:pointer;}
+  .print{background:var(--cyan);color:#fff;} .check{background:var(--violet);color:#fff;}
+  .result{margin-top:18px;padding:14px 18px;border-radius:8px;font-weight:600;display:none;}
+  footer{margin-top:32px;padding-top:16px;border-top:1px solid #D3D1C7;color:var(--muted);font-size:13px;}
+  @media print{.btns{display:none;}.opt{cursor:default;}button{display:none;}.q{break-inside:avoid;}}
+</style>
+</head>
+<body>
+<header>
+  <div class="tag">САМОСТОЯТЕЛЬНАЯ РАБОТА</div>
+  <h1>Урок 17. Токены, эмбеддинги, внимание</h1>
+  <div class="sub">Как текст превращается в числа · почему LLM галлюцинируют</div>
+  <div class="meta">
+    <div>Имя: <b>_______________________</b></div>
+    <div>Дата: <b>____________</b></div>
+    <div>Баллы: <b>____ / 5</b></div>
+  </div>
+</header>
+
+<div class="q">
+  <p><span class="num">1</span>Какую базовую задачу решает языковая модель (LLM)?</p>
+  <label class="opt"><input type="radio" name="q1"> Хранит и выдаёт факты из встроенной базы данных</label>
+  <label class="opt"><input type="radio" name="q1" data-correct> Предсказывает следующее слово (токен) в тексте</label>
+  <label class="opt"><input type="radio" name="q1"> Переводит текст по словарю слово в слово</label>
+  <label class="opt"><input type="radio" name="q1"> Ищет ответ в интернете в реальном времени</label>
+</div>
+
+<div class="q">
+  <p><span class="num">2</span>Что такое эмбеддинг слова?</p>
+  <label class="opt"><input type="radio" name="q2"> Картинка, которая описывает слово</label>
+  <label class="opt"><input type="radio" name="q2"> Номер слова в алфавитном словаре</label>
+  <label class="opt"><input type="radio" name="q2" data-correct> Смысл слова в виде набора чисел (координат), где похожие слова стоят рядом</label>
+  <label class="opt"><input type="radio" name="q2"> Перевод слова на английский</label>
+</div>
+
+<div class="q">
+  <p><span class="num">3</span>В предложении «Кошка не поймала мышь, потому что она была быстрой» — на какое слово механизм внимания заставит «она» смотреть сильнее?</p>
+  <label class="opt"><input type="radio" name="q3"> На «кошку»</label>
+  <label class="opt"><input type="radio" name="q3" data-correct> На «мышь» — раз кошка не поймала, быстрой была мышь</label>
+  <label class="opt"><input type="radio" name="q3"> На «поймала»</label>
+  <label class="opt"><input type="radio" name="q3"> Внимание не влияет на смысл</label>
+</div>
+
+<div class="q">
+  <p><span class="num">4</span>Почему LLM может уверенно выдать ложный факт (галлюцинация)?</p>
+  <label class="opt"><input type="radio" name="q4"> Потому что интернет содержит ошибки, и модель их копирует дословно</label>
+  <label class="opt"><input type="radio" name="q4" data-correct> Потому что модель генерирует правдоподобный текст, а не сверяется с базой фактов</label>
+  <label class="opt"><input type="radio" name="q4"> Потому что у неё закончились токены</label>
+  <label class="opt"><input type="radio" name="q4"> Это редкий баг, который уже почти исправили</label>
+</div>
+
+<div class="q open">
+  <p><span class="num">5</span>Своими словами: почему за длинный запрос к платному API берут больше денег? Как с этим связаны токены?</p>
+  <textarea placeholder="Твой ответ..."></textarea>
+</div>
+
+<div class="banner">💡 Главное правило работы с LLM: никогда не доверяй фактам от модели слепо — проверяй цифры, имена и даты.</div>
+
+<div class="btns">
+  <button class="check" onclick="checkAnswers()">Проверить ответы 1–4</button>
+  <button class="print" onclick="window.print()">🖨 Распечатать</button>
+</div>
+<div class="result" id="result"></div>
+
+<footer>Курс «Машинное обучение для подростков» · Фаза 4 · Урок 17 · вопрос 5 оценивает преподаватель</footer>
+
+<script>
+function checkAnswers(){
+  let correct=0,total=4;
+  for(let i=1;i<=4;i++){
+    const sel=document.querySelector('input[name="q'+i+'"]:checked');
+    if(sel && sel.hasAttribute('data-correct')) correct++;
+  }
+  const r=document.getElementById('result');r.style.display='block';
+  if(correct===total){r.style.background='#E1F5EE';r.style.color='#0F6E56';r.textContent='🎉 Отлично! '+correct+' из '+total+'. Вопрос 5 проверит преподаватель.';}
+  else{r.style.background='#FAEEDA';r.style.color='#633806';r.textContent='Правильно '+correct+' из '+total+'. Перечитай раздел про токены/эмбеддинги/внимание.';}
+}
+</script>
+</body>
+</html>

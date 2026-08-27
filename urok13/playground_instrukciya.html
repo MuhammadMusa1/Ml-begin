@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TensorFlow Playground — инструкция для учеников</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+
+  :root{
+    --indigo:#3B3B98;
+    --indigo-deep:#2A2A6E;
+    --violet:#6C5CE7;
+    --violet-soft:#8B7CF0;
+    --cyan:#00C2CB;
+    --cyan-glow:#22e3ec;
+    --ink:#12122A;
+    --panel:#1B1B3A;
+    --panel-2:#232350;
+    --text:#EDEDFB;
+    --text-dim:#A9A9D4;
+    --line:rgba(139,124,240,.22);
+    --orange:#F6A03C;
+    --blue:#5AA0E0;
+    --ok:#28C76F;
+    --warn:#FFB020;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Manrope',sans-serif;
+    background:
+      radial-gradient(1200px 700px at 80% -10%, rgba(108,92,231,.28), transparent 60%),
+      radial-gradient(900px 600px at -10% 20%, rgba(0,194,203,.16), transparent 55%),
+      var(--ink);
+    color:var(--text);
+    line-height:1.6;
+    padding-bottom:80px;
+  }
+  code{font-family:'JetBrains Mono',monospace}
+  .wrap{max-width:960px;margin:0 auto;padding:0 22px}
+
+  /* HERO */
+  header.hero{
+    text-align:center;
+    padding:64px 22px 40px;
+    position:relative;
+  }
+  .kicker{
+    display:inline-block;
+    font-size:13px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--cyan-glow);font-weight:700;
+    padding:7px 16px;border:1px solid var(--line);border-radius:100px;
+    background:rgba(0,194,203,.06);margin-bottom:22px;
+  }
+  .hero h1{
+    font-size:clamp(30px,5.4vw,52px);font-weight:800;line-height:1.08;
+    letter-spacing:-.02em;
+    background:linear-gradient(120deg,#fff 20%,var(--violet-soft) 60%,var(--cyan-glow));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .hero p.sub{
+    margin-top:18px;font-size:clamp(15px,2vw,19px);color:var(--text-dim);
+    max-width:620px;margin-left:auto;margin-right:auto;
+  }
+  .hero .goal{
+    margin:30px auto 0;max-width:640px;
+    background:linear-gradient(135deg,rgba(108,92,231,.16),rgba(0,194,203,.08));
+    border:1px solid var(--line);border-radius:16px;padding:18px 22px;
+    font-size:15px;color:var(--text);
+  }
+  .hero .goal b{color:var(--cyan-glow)}
+
+  /* SECTION TITLES */
+  .section{margin-top:56px}
+  .sec-head{display:flex;align-items:center;gap:14px;margin-bottom:24px}
+  .sec-head .dot{
+    width:40px;height:40px;border-radius:12px;flex:none;
+    display:grid;place-items:center;font-weight:800;font-size:18px;color:#fff;
+    background:linear-gradient(135deg,var(--violet),var(--indigo));
+    box-shadow:0 8px 24px rgba(108,92,231,.4);
+  }
+  .sec-head h2{font-size:clamp(21px,3vw,27px);font-weight:700;letter-spacing:-.01em}
+  .sec-head .en{color:var(--text-dim);font-weight:500;font-size:14px;margin-top:2px}
+
+  /* PANEL CARDS */
+  .grid{display:grid;gap:16px}
+  @media(min-width:640px){.grid.two{grid-template-columns:1fr 1fr}}
+  .card{
+    background:linear-gradient(180deg,var(--panel),rgba(27,27,58,.6));
+    border:1px solid var(--line);border-radius:16px;padding:20px 22px;
+    transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease;
+  }
+  .card:hover{transform:translateY(-3px);border-color:var(--violet-soft);
+    box-shadow:0 14px 40px rgba(43,42,110,.5)}
+  .card .tag{
+    display:inline-flex;align-items:center;gap:7px;
+    font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;
+    color:var(--ink);background:var(--cyan);border-radius:6px;padding:3px 9px;margin-bottom:12px;
+  }
+  .card h3{font-size:17px;font-weight:700;margin-bottom:7px}
+  .card p{font-size:14.5px;color:var(--text-dim)}
+  .card p b{color:var(--text)}
+
+  /* SCREEN MAP */
+  .screenmap{
+    background:var(--panel);border:1px solid var(--line);border-radius:20px;
+    padding:10px;overflow:hidden;
+  }
+  .screenmap .bar{
+    display:flex;gap:6px;padding:9px 12px;
+  }
+  .screenmap .bar i{width:11px;height:11px;border-radius:50%;background:#3a3a63}
+  .screenmap .bar i:nth-child(1){background:#ff5f57}
+  .screenmap .bar i:nth-child(2){background:#febc2e}
+  .screenmap .bar i:nth-child(3){background:#28c840}
+  .maprow{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:8px;
+  }
+  @media(max-width:620px){.maprow{grid-template-columns:1fr 1fr}}
+  .zone{
+    position:relative;border-radius:12px;padding:16px 14px;min-height:104px;
+    border:1px dashed rgba(255,255,255,.14);
+    background:rgba(255,255,255,.02);
+    cursor:default;transition:.18s;
+  }
+  .zone:hover{background:rgba(108,92,231,.12);border-color:var(--violet-soft)}
+  .zone .num{
+    position:absolute;top:-11px;left:12px;
+    width:26px;height:26px;border-radius:50%;display:grid;place-items:center;
+    font-size:13px;font-weight:800;color:#fff;
+    background:linear-gradient(135deg,var(--cyan),var(--violet));
+    box-shadow:0 4px 12px rgba(0,0,0,.4);
+  }
+  .zone h4{font-size:14px;margin:6px 0 4px;font-weight:700}
+  .zone span{font-size:12.5px;color:var(--text-dim)}
+
+  /* STEPS */
+  .steps{position:relative;padding-left:8px}
+  .step{
+    position:relative;padding:0 0 4px 58px;margin-bottom:22px;
+  }
+  .step::before{
+    content:attr(data-n);
+    position:absolute;left:0;top:0;
+    width:42px;height:42px;border-radius:12px;
+    display:grid;place-items:center;font-weight:800;font-size:17px;color:#fff;
+    background:linear-gradient(135deg,var(--indigo),var(--violet));
+    box-shadow:0 6px 18px rgba(43,42,110,.5);
+  }
+  .step::after{
+    content:"";position:absolute;left:20px;top:46px;bottom:-22px;width:2px;
+    background:linear-gradient(var(--violet),transparent);
+  }
+  .step:last-child::after{display:none}
+  .step h3{font-size:17.5px;font-weight:700;margin-bottom:5px}
+  .step p{font-size:15px;color:var(--text-dim)}
+  .step p b{color:var(--text)}
+  .pill{
+    display:inline-block;font-family:'JetBrains Mono',monospace;font-size:12.5px;
+    background:var(--panel-2);border:1px solid var(--line);border-radius:6px;
+    padding:2px 8px;color:var(--cyan-glow);
+  }
+
+  /* CALLOUT */
+  .callout{
+    margin-top:16px;display:flex;gap:14px;align-items:flex-start;
+    border-radius:14px;padding:16px 18px;font-size:14.5px;
+  }
+  .callout.tip{background:rgba(0,194,203,.09);border:1px solid rgba(0,194,203,.3)}
+  .callout.warn{background:rgba(255,176,32,.1);border:1px solid rgba(255,176,32,.32)}
+  .callout .ic{font-size:22px;line-height:1;flex:none}
+  .callout b{color:#fff}
+
+  /* CHALLENGE BOX */
+  .challenge{
+    margin-top:22px;border-radius:18px;overflow:hidden;
+    border:1px solid var(--line);
+  }
+  .challenge .top{
+    background:linear-gradient(120deg,var(--indigo),var(--violet));
+    padding:18px 22px;display:flex;align-items:center;gap:12px;
+  }
+  .challenge .top .badge{font-size:24px}
+  .challenge .top h3{font-size:18px;font-weight:800;color:#fff}
+  .challenge .body{background:var(--panel);padding:20px 22px}
+  .challenge ol{margin:0 0 0 20px;padding:0}
+  .challenge li{margin-bottom:10px;font-size:15px;color:var(--text-dim)}
+  .challenge li b{color:var(--text)}
+
+  /* MINI TILES for datasets */
+  .ds-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:14px}
+  .ds{
+    text-align:center;font-size:12.5px;color:var(--text-dim);
+  }
+  .ds .box{
+    width:64px;height:64px;border-radius:12px;border:2px solid var(--line);
+    margin-bottom:6px;display:grid;place-items:center;font-size:26px;
+    background:var(--panel-2);
+  }
+  .ds.hard .box{border-color:var(--warn)}
+  .ds b{color:var(--text)}
+
+  /* CHECKLIST interactive */
+  .check{
+    background:var(--panel);border:1px solid var(--line);border-radius:16px;
+    padding:8px 6px;margin-top:8px;
+  }
+  .check label{
+    display:flex;align-items:center;gap:14px;padding:13px 16px;
+    border-radius:11px;cursor:pointer;font-size:15px;transition:.15s;
+    user-select:none;
+  }
+  .check label:hover{background:rgba(108,92,231,.1)}
+  .check input{display:none}
+  .check .tick{
+    width:26px;height:26px;border-radius:8px;flex:none;
+    border:2px solid var(--violet-soft);display:grid;place-items:center;
+    transition:.15s;font-size:15px;color:transparent;
+  }
+  .check input:checked + .tick{
+    background:var(--ok);border-color:var(--ok);color:#fff;
+  }
+  .check input:checked ~ .txt{color:var(--text-dim);text-decoration:line-through}
+  .prog{
+    height:8px;border-radius:100px;background:var(--panel-2);overflow:hidden;margin:14px 4px 4px;
+  }
+  .prog span{display:block;height:100%;width:0;border-radius:100px;
+    background:linear-gradient(90deg,var(--cyan),var(--violet));transition:width .35s}
+
+  /* GLOSSARY */
+  .gloss{display:grid;gap:10px}
+  .gloss .row{
+    display:grid;grid-template-columns:150px 1fr;gap:16px;
+    padding:14px 18px;background:var(--panel);border:1px solid var(--line);
+    border-radius:12px;font-size:14.5px;
+  }
+  @media(max-width:560px){.gloss .row{grid-template-columns:1fr;gap:4px}}
+  .gloss .row .t{font-weight:700;color:var(--cyan-glow)}
+  .gloss .row .d{color:var(--text-dim)}
+
+  footer{
+    text-align:center;margin-top:60px;padding:30px 22px;
+    color:var(--text-dim);font-size:13px;border-top:1px solid var(--line);
+  }
+  .reveal{opacity:0;transform:translateY(22px);transition:.6s cubic-bezier(.2,.7,.2,1)}
+  .reveal.in{opacity:1;transform:none}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <span class="kicker">Урок 13 · Нейросети</span>
+  <h1>TensorFlow Playground</h1>
+  <p class="sub">Собери нейросеть мышкой прямо в браузере — без единой строки кода. Разберёмся, что означает каждая кнопка, и выполним задание.</p>
+  <div class="goal">🎯 <b>Цель:</b> научить сеть разделять сложный узор (кольца, потом спираль) и понять, сколько для этого нужно нейронов и слоёв.</div>
+</header>
+
+<div class="wrap">
+
+  <!-- STEP 0: open -->
+  <section class="section reveal">
+    <div class="sec-head">
+      <div class="dot">0</div>
+      <div><h2>Открой Playground</h2><div class="en">С чего начинаем</div></div>
+    </div>
+    <div class="card">
+      <p>Зайди на сайт <span class="pill">playground.tensorflow.org</span> — откроется ровно тот экран, что на скриншоте. Ничего скачивать и устанавливать не нужно, всё работает в браузере. <b>Сломать ничего нельзя</b> — экспериментируй смело.</p>
+    </div>
+  </section>
+
+  <!-- SCREEN MAP -->
+  <section class="section reveal">
+    <div class="sec-head">
+      <div class="dot">🗺️</div>
+      <div><h2>Карта экрана</h2><div class="en">4 зоны — наведи на каждую</div></div>
+    </div>
+    <div class="screenmap">
+      <div class="bar"><i></i><i></i><i></i></div>
+      <div class="maprow">
+        <div class="zone"><span class="num">1</span><h4>DATA</h4><span>Слева. Выбор узора данных и «шум».</span></div>
+        <div class="zone"><span class="num">2</span><h4>FEATURES</h4><span>Входы сети — X₁, X₂ и их комбинации.</span></div>
+        <div class="zone"><span class="num">3</span><h4>HIDDEN LAYERS</h4><span>Центр. Скрытые слои и нейроны.</span></div>
+        <div class="zone"><span class="num">4</span><h4>OUTPUT</h4><span>Справа. Результат и величина ошибки (loss).</span></div>
+      </div>
+      <div class="maprow" style="grid-template-columns:1fr">
+        <div class="zone" style="min-height:auto"><span class="num">▶</span><h4>Сверху — панель управления</h4><span>Кнопка Play, счётчик Epoch, Learning rate, Activation, Problem type.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTROL PANEL -->
+  <section class="section reveal">
+    <div class="sec-head">
+      <div class="dot">⚙️</div>
+      <div><h2>Верхняя панель управления</h2><div class="en">Что за кнопки наверху</div></div>
+    </div>
+    <div class="grid two">
+      <div class="card"><span class="tag">▶ Play</span><h3>Запуск обучения</h3><p>Круглая кнопка «плей». Нажал — сеть начинает учиться. Рядом — сброс (↺) и «один шаг» (▶|).</p></div>
+      <div class="card"><span class="tag">Epoch</span><h3>Счётчик эпох</h3><p><b>Эпоха</b> — один полный проход по всем данным. Число растёт, пока сеть учится. Как «сколько раз перечитал параграф».</p></div>
+      <div class="card"><span class="tag">Learning rate</span><h3>Скорость обучения</h3><p>Насколько большими шагами сеть меняет веса. Оставь <span class="pill">0.03</span> — для начала в самый раз.</p></div>
+      <div class="card"><span class="tag">Activation</span><h3>Функция активации</h3><p>«Фильтр» внутри нейрона. Для сложных узоров ставь <span class="pill">ReLU</span> или <span class="pill">Tanh</span> — без неё сеть слаба.</p></div>
+      <div class="card"><span class="tag">Problem type</span><h3>Тип задачи</h3><p>Оставь <span class="pill">Classification</span> — мы делим точки на два цвета (два класса).</p></div>
+      <div class="card"><span class="tag">Regularization</span><h3>Пока не трогаем</h3><p>Оставь <span class="pill">None</span>. Это защита от переобучения — вернёмся к ней позже.</p></div>
+    </div>
+  </section>
+
+  <!-- DATA -->
+  <section class="section reveal">
+    <div class="sec-head">
+      <div class="dot">1</div>
+      <div><h2>Зона DATA — выбери узор</h2><div class="en">С какими данными работаем</div></div>
+    </div>
+    <div class="card">
+      <p>Четыре картинки-узора. Чем «закрученнее» узор — тем труднее сети его разделить. Именно в этом суть задания.</p>
+      <div class="ds-row">
+        <div class="ds"><div class="box">⊙</div><b>Круг</b><br>лёгкий</div>
+        <div class="ds"><div class="box">⁘</div><b>Две зоны</b><br>лёгкий</div>
+        <div class="ds hard"><div class="box">◎</div><b>Кольца</b><br>сложный</div>
+        <div class="ds hard"><div class="box">🌀</div><b>Спираль</b><br>самый сложный</div>
+      </div>
+      <div class="callout tip"><span class="ic">💡</span><div>На скриншоте уже выбраны <b>кольца</b> (◎): синие точки в центре, оранжевые кольцом вокруг. Прямой линией их не разделить — нужна «умная» изогнутая граница. Ниже — ползунки <b>Noise</b> (шум, добавляет беспорядок) и <b>Ratio</b> (сколько данных на обучение). Для начала оставь Noise = 0.</div></div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="section reveal">
+    <div class="sec-head">
+      <div class="dot">2</div>
+      <div><h2>Зона FEATURES — входы сети</h2><div class="en">Что подаём на вход</div></div>
+    </div>
+    <div class="card">
+      <p><b>X₁</b> и <b>X₂</b> — это координаты точки (по горизонтали и вертикали). Это «глаза» сети: только их она и видит. Ниже есть готовые комбинации (X₁², X₂², X₁X₂) — они помогают на сложных узорах, но <b>честнее начать только с X₁ и X₂</b> и заставить сеть выкрутиться самой.</p>
+      <div class="callout tip"><span class="ic">🔎</span><div>Наведи мышкой на любой квадратик-нейрон — увидишь <b>крупную картинку</b>: как этот нейрон «видит» пространство. Толщина линий между нейронами = сила связи (вес).</div></div>
+    </div>
+  </section>
+
+  <!-- HIDDEN LAYERS -->
+  <section class="section reveal">
+    <div class="sec-head">
+      <div class="dot">3</div>
+      <div><h2>Зона HIDDEN LAYERS — сердце сети</h2><div class="en">Здесь ты строишь сеть</div></div>
+    </div>
+    <div class="card">
+      <p>Это твой конструктор. Кнопками <b>＋ / －</b> сверху добавляешь и убираешь <b>слои</b>, а такими же кнопками над каждым столбцом — <b>нейроны</b> в слое. На скриншоте: <b>2 скрытых слоя</b>, в первом 4 нейрона, во втором 2.</p>
+      <div class="callout warn"><span class="ic">🧠</span><div><b>Главная идея урока:</b> чем сложнее узор, тем больше нейронов и слоёв нужно. Один слой из 2 нейронов проведёт только простую границу. Глубина (несколько слоёв) позволяет строить сложные изогнутые границы — как для колец и спирали.</div></div>
+    </div>
+  </section>
+
+  <!-- OUTPUT -->
+  <section class="section reveal">
+    <div class="sec-head">
+      <div class="dot">4</div>
+      <div><h2>Зона OUTPUT — результат</h2><div class="en">Как понять, что получилось</div></div>
+    </div>
+    <div class="card">
+      <p>Большой квадрат справа — как сеть <b>сейчас</b> делит пространство на синюю и оранжевую области. Идеал: цветной фон точно повторяет расположение точек.</p>
+      <p style="margin-top:10px">Сверху две цифры — <b>Test loss</b> и <b>Training loss</b>. Это <b>ошибка</b>: чем <b>меньше</b>, тем лучше. На скриншоте loss ≈ 0.5 (сеть ещё не обучалась). Цель — прогнать обучение и увидеть, как loss падает к ~0.</p>
+      <div class="callout tip"><span class="ic">📉</span><div>Смотри на <b>Test loss</b>, а не только Training loss. Если Training падает, а Test застрял высоко — сеть «зазубрила» (переобучение). Это та же честная проверка, что и train/test в коде.</div></div>
+    </div>
+  </section>
+
+  <!-- CHALLENGE -->
+  <section class="section reveal">
+    <div class="sec-head">
+      <div class="dot">🏆</div>
+      <div><h2>Само задание — по шагам</h2><div class="en">Базовый уровень</div></div>
+    </div>
+
+    <div class="challenge">
+      <div class="top"><span class="badge">◎</span><h3>Часть А — Кольца с маленькой сетью (докажи, что не хватает)</h3></div>
+      <div class="body">
+        <ol>
+          <li>В <b>DATA</b> выбери узор <b>кольца</b> (◎).</li>
+          <li>В <b>FEATURES</b> оставь только <span class="pill">X₁</span> и <span class="pill">X₂</span> (остальное выключи).</li>
+          <li>В <b>HIDDEN LAYERS</b> кнопкой <b>－</b> оставь <b>один слой из 2 нейронов</b>.</li>
+          <li>Поставь <b>Activation → ReLU</b>, нажми <b>▶ Play</b>. Подожди ~200–300 эпох.</li>
+          <li><b>Наблюдай:</b> loss почти не падает, кольца не разделяются. <b>Так и должно быть</b> — мощности сети не хватает.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="challenge">
+      <div class="top" style="background:linear-gradient(120deg,var(--cyan),var(--violet))"><span class="badge">🌀</span><h3>Часть Б — Наращивай, пока не разделит</h3></div>
+      <div class="body">
+        <ol>
+          <li>Добавляй <b>нейроны</b> (＋ над слоем) — доведи до 6–8. Смотри, как граница гнётся.</li>
+          <li>Мало? Добавь <b>второй слой</b> (＋ сверху), потом при желании третий.</li>
+          <li>Как только фон точно совпал с точками и <b>Test loss</b> упал почти к нулю — <b>получилось!</b></li>
+          <li><b>Запиши ответ:</b> сколько слоёв и нейронов понадобилось именно тебе.</li>
+          <li>⭐ Смелым: переключись на <b>спираль</b> (🌀) и повтори. Ей нужно ещё больше — обычно 2–3 слоя по 6–8 нейронов.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="callout tip"><span class="ic">🤝</span><div><b>Правильного числа нет.</b> У разных учеников выйдут разные конфигурации — это нормально. Сравните с соседом: у кого меньше нейронов при том же результате и почему.</div></div>
+  </section>
+
+  <!-- CHECKLIST -->
+  <section class="section reveal">
+    <div class="sec-head">
+      <div class="dot">✓</div>
+      <div><h2>Чек-лист «я справился»</h2><div class="en">Отмечай по ходу</div></div>
+    </div>
+    <div class="check" id="check">
+      <label><input type="checkbox"><span class="tick">✓</span><span class="txt">Выбрал узор «кольца» и оставил только X₁, X₂</span></label>
+      <label><input type="checkbox"><span class="tick">✓</span><span class="txt">Увидел, что сеть из 2 нейронов не справляется</span></label>
+      <label><input type="checkbox"><span class="tick">✓</span><span class="txt">Добавлял нейроны и слои, пока loss не упал к нулю</span></label>
+      <label><input type="checkbox"><span class="tick">✓</span><span class="txt">Записал, сколько слоёв и нейронов понадобилось</span></label>
+      <label><input type="checkbox"><span class="tick">✓</span><span class="txt">⭐ Попробовал разделить спираль</span></label>
+    </div>
+    <div class="prog"><span id="bar"></span></div>
+  </section>
+
+  <!-- GLOSSARY -->
+  <section class="section reveal">
+    <div class="sec-head">
+      <div class="dot">📖</div>
+      <div><h2>Мини-словарь</h2><div class="en">Если забыл слово</div></div>
+    </div>
+    <div class="gloss">
+      <div class="row"><div class="t">Нейрон</div><div class="d">Маленький «решатель»: собирает входы с весами и выдаёт сигнал. Квадратик на схеме.</div></div>
+      <div class="row"><div class="t">Вес</div><div class="d">Насколько сильно один вход влияет на нейрон. При обучении сеть сама его подкручивает. Толщина линии.</div></div>
+      <div class="row"><div class="t">Слой</div><div class="d">Столбец нейронов. «Глубина» сети = сколько слоёв подряд.</div></div>
+      <div class="row"><div class="t">Эпоха</div><div class="d">Один полный проход по всем данным при обучении.</div></div>
+      <div class="row"><div class="t">Активация (ReLU)</div><div class="d">Фильтр в нейроне: пропускает полезный сигнал, гасит бесполезный. Без неё сеть не ловит сложные узоры.</div></div>
+      <div class="row"><div class="t">Loss (ошибка)</div><div class="d">Насколько сеть ошибается. Чем меньше — тем лучше. Цель обучения — уменьшить loss.</div></div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  Курс Machine Learning для подростков · Урок 13 · TensorFlow Playground<br>
+  Сделай сам, сломать нельзя 🚀
+</footer>
+
+<script>
+  // прогресс чек-листа
+  const box = document.getElementById('check');
+  const bar = document.getElementById('bar');
+  const boxes = box.querySelectorAll('input');
+  function upd(){
+    const done = [...boxes].filter(b=>b.checked).length;
+    bar.style.width = (done/boxes.length*100) + '%';
+  }
+  boxes.forEach(b=>b.addEventListener('change',upd));
+
+  // reveal on scroll
+  const io = new IntersectionObserver((es)=>{
+    es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+  },{threshold:.12});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>

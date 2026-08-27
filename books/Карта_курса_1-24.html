@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Карта курса · уроки 1–24</title>
+<style>
+  :root{--bg:#17132E;--card:#241E42;--card2:#2C2552;--violet:#8B7DF5;--violetd:#5B4FC4;
+    --cyan:#27D3EE;--teal:#2DD4BF;--lav:#D9D4F2;--muted:#9E96C8;--warn:#FF7A8A;--green:#6EE7B7;--gold:#FFD36E;--coral:#FF9E7A;--white:#fff;}
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1200px 800px at 18% -8%, #221a44 0%, var(--bg) 55%);
+    color:var(--lav);font-family:"Segoe UI",Calibri,system-ui,sans-serif;padding:24px;line-height:1.5}
+  .wrap{max-width:1220px;margin:0 auto}
+  h1{color:var(--white);font-size:28px;margin:0 0 4px}
+  .kick{color:var(--cyan);font-weight:700;letter-spacing:2px;font-size:13px;text-transform:uppercase}
+  .sub{color:var(--muted);margin:6px 0 14px;max-width:820px}
+  .phases{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-bottom:12px}
+  .phases span{display:inline-flex;gap:5px;align-items:center}
+  .legend{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+  .legend .lbl{font-size:13px;color:var(--muted);margin-right:4px}
+  .chip{background:var(--card2);border:2px solid transparent;border-radius:20px;padding:6px 12px;color:var(--lav);
+    cursor:pointer;font-size:13px;font-weight:600;transition:.15s;display:inline-flex;gap:6px;align-items:center}
+  .chip:hover{border-color:var(--violetd)}
+  .chip.sel{border-color:var(--cyan);background:#0E3540;color:var(--white)}
+  .dot{width:10px;height:10px;border-radius:50%}
+  .layout{display:grid;grid-template-columns:1fr 330px;gap:18px;align-items:start}
+  @media(max-width:960px){.layout{grid-template-columns:1fr}}
+  .mapwrap{background:var(--card);border-radius:16px;padding:8px;overflow-x:auto}
+  .map{position:relative;width:100%;min-width:900px;height:1120px}
+  svg.edges{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
+  .node{position:absolute;transform:translate(-50%,-50%);width:150px;background:var(--card2);
+    border:2px solid #3a3466;border-radius:14px;padding:9px 12px;cursor:pointer;z-index:2;transition:.18s}
+  .node:hover{border-color:var(--violet);transform:translate(-50%,-50%) scale(1.05)}
+  .node .num{position:absolute;top:-11px;left:-11px;min-width:28px;height:28px;padding:0 5px;border-radius:14px;
+    color:#fff;font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center;border:2px solid var(--bg)}
+  .node .tt{font-size:12.5px;font-weight:700;color:var(--white);line-height:1.22}
+  .node .tag{font-size:9.5px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.5px}
+  .node.active{border-color:var(--cyan);box-shadow:0 0 0 4px rgba(39,211,238,.15)}
+  .node.dim{opacity:.24}
+  .node.thread{border-color:var(--teal);box-shadow:0 0 0 3px rgba(45,212,191,.18)}
+  .edges path{stroke:#3a3466;stroke-width:1.8;fill:none;transition:.18s}
+  .edges path.hi{stroke:var(--cyan);stroke-width:3}
+  .edges path.dim{opacity:.10}
+  .bandlbl{position:absolute;left:2px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;z-index:1;opacity:.6}
+  .panel{background:var(--card);border-radius:16px;padding:18px;position:sticky;top:20px}
+  .panel h3{margin:0 0 2px;color:var(--white);font-size:18px}
+  .panel .ph{font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
+  .panel .row{margin:12px 0}
+  .panel .row .h{font-size:12px;color:var(--cyan);text-transform:uppercase;letter-spacing:.5px;font-weight:700;margin-bottom:3px}
+  .panel .row .v{font-size:14px;color:var(--lav)}
+  .ana{background:var(--card2);border-radius:10px;padding:10px 12px;font-size:14px;font-style:italic;color:var(--teal)}
+  .code{background:#0E0B22;border-radius:10px;padding:10px 12px;font-family:Consolas,monospace;font-size:12.5px;color:var(--cyan);white-space:pre-wrap;word-break:break-word}
+  .lnk{color:var(--violet);font-weight:600;cursor:pointer}
+  .lnk:hover{text-decoration:underline}
+  .hint{color:var(--muted);font-size:13px}
+  .footer{color:var(--muted);font-size:13px;margin-top:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="kick">Machine Learning для подростков · 3 месяца · 24 урока</div>
+  <h1>🧭 Карта всего курса: как связаны уроки 1–24</h1>
+  <p class="sub">Весь путь на одном экране — от «магии» ML до защиты финального проекта. Нажми на урок: концепция, ключевой код, на что опирается и что готовит. Включи «нить» — увидишь сквозную линию через весь курс.</p>
+
+  <div class="phases">
+    <span><span class="dot" style="background:var(--violet)"></span>Ф1 · Данные</span>
+    <span><span class="dot" style="background:var(--cyan)"></span>Ф2 · Классические модели</span>
+    <span><span class="dot" style="background:var(--green)"></span>Ф3 · Глубокое обучение</span>
+    <span><span class="dot" style="background:var(--teal)"></span>Ф4 · LLM</span>
+    <span><span class="dot" style="background:var(--gold)"></span>Ф5 · AutoML и деплой</span>
+    <span><span class="dot" style="background:var(--coral)"></span>Ф6 · Финальный проект</span>
+  </div>
+
+  <div class="legend">
+    <span class="lbl">Сквозные нити:</span>
+    <button class="chip" data-thread="eval"><span class="dot" style="background:var(--cyan)"></span>Честная оценка</button>
+    <button class="chip" data-thread="pipe"><span class="dot" style="background:var(--violet)"></span>Pipeline / sklearn</button>
+    <button class="chip" data-thread="models"><span class="dot" style="background:var(--green)"></span>Модели растут</button>
+    <button class="chip" data-thread="dl"><span class="dot" style="background:var(--teal)"></span>Глубокое обучение</button>
+    <button class="chip" data-thread="llm"><span class="dot" style="background:var(--gold)"></span>Языковые модели</button>
+    <button class="chip" data-thread="deploy"><span class="dot" style="background:var(--coral)"></span>Деплой / продукт</button>
+    <button class="chip" data-thread="project"><span class="dot" style="background:var(--warn)"></span>Линия проекта</button>
+    <button class="chip" id="reset">↺ Сбросить</button>
+  </div>
+
+  <div class="layout">
+    <div class="mapwrap"><div class="map" id="map"><svg class="edges" id="edges" preserveAspectRatio="none"></svg></div></div>
+    <div class="panel" id="panel"></div>
+  </div>
+
+  <div class="footer">Совет: включи «Линия проекта» — видно, как оцениваемые точки (4, 12, 16) и навыки всех фаз сходятся в финал (21→24). А «Pipeline / sklearn» показывает единый стержень с урока 5 до конца.</div>
+</div>
+
+<script>
+const PHASE_COLOR={1:'var(--violet)',2:'var(--cyan)',3:'var(--green)',4:'var(--teal)',5:'var(--gold)',6:'var(--coral)'};
+const PHASE_DARK={2:true,3:true,4:true,5:true,6:true};
+const PHASE_NAME={1:'Фаза 1 · Данные',2:'Фаза 2 · Классические модели',3:'Фаза 3 · Глубокое обучение',4:'Фаза 4 · LLM',5:'Фаза 5 · AutoML и деплой',6:'Фаза 6 · Финальный проект'};
+const LESSONS={
+ 1:{t:'«Магия» ML',tag:'Вау-старт',phase:1,concept:'ML учится на данных, а не по жёстким правилам. Типы задач и «паттерн в данных».',ana:null,code:'# данные → паттерн, а не правила',base:[],feeds:[2],tools:'живая демонстрация',threads:[]},
+ 2:{t:'Данные и Pandas',tag:'Данные',phase:1,concept:'Датасет, признак, целевая переменная. head/info/describe, фильтрация и группировка.',ana:'Pandas = Excel внутри Python',code:'df.head(); df.info(); df.describe()',base:[1],feeds:[3],tools:'Pandas',threads:[]},
+ 3:{t:'Визуализация и EDA',tag:'Данные',phase:1,concept:'Гистограмма, scatter plot, heatmap корреляций. Вывод словами.',ana:null,code:'sns.heatmap(df.corr(), annot=True)',base:[2],feeds:[4],tools:'Matplotlib, Seaborn',threads:[]},
+ 4:{t:'Мини-проект: данные',tag:'Оценивается',phase:1,concept:'Пропуски и выбросы, чистка данных, инсайт и мини-презентация.',ana:null,code:'df.fillna(df.median())   # пропуски',base:[3],feeds:[5],tools:'Pandas, графики',threads:['project']},
+ 5:{t:'KNN',tag:'Первая модель',phase:2,concept:'Ближайшие соседи, параметр K, границы классов. Первая модель курса.',ana:'KNN = смотрит на соседей',code:'KNeighborsClassifier(n_neighbors=5).fit(X, y)',base:[4],feeds:[6],tools:'KNeighborsClassifier',threads:['models','pipe']},
+ 6:{t:'Train/test, baseline, утечка',tag:'Ключевой',phase:2,concept:'Разделение train/test, baseline, data leakage, accuracy, подбор K.',ana:'train/test = «зазубрил vs понял»',code:'train_test_split(X, y, test_size=0.2, random_state=42)',base:[5],feeds:[7,8,10],tools:'train_test_split, accuracy',threads:['eval','pipe']},
+ 7:{t:'Деревья решений',tag:'Модель',phase:2,concept:'Дерево делит данные вопросами. plot_tree, переобучение, max_depth.',ana:'Дерево = игра «20 вопросов»',code:'DecisionTreeClassifier(max_depth=3)',base:[6],feeds:[9],tools:'DecisionTreeClassifier',threads:['models','pipe']},
+ 8:{t:'Регрессия',tag:'Числа',phase:2,concept:'Классификация vs регрессия. Линейная регрессия, метрики MAE и MSE.',ana:null,code:'LinearRegression().fit(X, y)   # MAE, MSE',base:[6],feeds:[],tools:'LinearRegression, MAE/MSE',threads:['eval','models','pipe']},
+ 9:{t:'Случайный лес',tag:'Ансамбль',phase:2,concept:'Ансамбль деревьев, мудрость толпы, n_estimators, важность признаков.',ana:'Лес = голосование класса',code:'RandomForestClassifier(n_estimators=100)',base:[7],feeds:[10],tools:'RandomForestClassifier',threads:['eval','models','pipe']},
+ 10:{t:'Pipeline + кросс-валидация',tag:'Стандарт',phase:2,concept:'Pipeline, ColumnTransformer, cross_val_score, k-fold, импьютеры и кодирование.',ana:null,code:'Pipeline([...]); cross_val_score(pipe, X, y, cv=5)',base:[9,6],feeds:[11],tools:'Pipeline, cross_val_score',threads:['eval','pipe']},
+ 11:{t:'Метрики и матрица ошибок',tag:'Оценка',phase:2,concept:'Confusion matrix, precision/recall/F1, выбор метрики. Accuracy врёт на несбалансе.',ana:'«99% точности» — и бесполезна',code:'confusion_matrix(y, p)   # precision, recall, F1',base:[10],feeds:[12],tools:'confusion_matrix, classification_report',threads:['eval','pipe']},
+ 12:{t:'Мини-проект «Предсказатель»',tag:'Оценивается',phase:2,concept:'Полный цикл: данные → Pipeline → оценка → вывод. Сравнение с baseline.',ana:null,code:'Pipeline + baseline → честная оценка',base:[11],feeds:[13,19,21],tools:'Pipeline, baseline',threads:['eval','pipe','project']},
+ 13:{t:'Нейросети: интуиция',tag:'Deep Learning',phase:3,concept:'Нейрон = взвешенная сумма + активация. Эпохи. Первая сеть на Keras.',ana:'Сеть = ученик, исправляет ошибки',code:"keras.Sequential([Dense(8,'relu'), Dense(1,'sigmoid')])",base:[12],feeds:[14],tools:'TensorFlow / Keras',threads:['models','dl']},
+ 14:{t:'MNIST: сеть узнаёт цифры',tag:'Deep Learning',phase:3,concept:'Картинка = матрица чисел. ~97%. Сеть уверенно ошибается на шуме.',ana:null,code:"Flatten(); Dense(10, 'softmax')",base:[13],feeds:[15,17],tools:'Keras, MNIST',threads:['models','dl']},
+ 15:{t:'Свёрточные сети (CNN)',tag:'Deep Learning',phase:3,concept:'Свёртка-фильтр, пулинг, карты признаков, transfer learning.',ana:'Свёртка = окошко скользит',code:'Conv2D(32,(3,3)); MaxPooling2D()',base:[14],feeds:[16],tools:'Conv2D, MobileNet',threads:['models','dl']},
+ 16:{t:'Проект: классификатор фото',tag:'Оценивается',phase:3,concept:'Свои фото, аугментация, transfer learning, интерфейс Gradio с ссылкой.',ana:null,code:'MobileNetV2(...); gr.Interface(...).launch(share=True)',base:[15],feeds:[20,21],tools:'MobileNet, Gradio',threads:['dl','deploy','project']},
+ 17:{t:'Токены, эмбеддинги, внимание',tag:'LLM',phase:4,concept:'Текст → числа (токены, эмбеддинги). Внимание. Природа галлюцинаций.',ana:'LLM = умный автодополнитель',code:'attention;  cosine(эмбеддинги)   # токены',base:[14],feeds:[18],tools:'эмбеддинги, attention, BertViz',threads:['dl','llm']},
+ 18:{t:'LLM на практике',tag:'LLM',phase:4,concept:'Промптинг (роль, примеры, шаги). Классификация тональности. Свой бот. Критическая оценка.',ana:'Промпт = точная постановка задачи',code:"pipeline('sentiment-analysis')  # + промпт",base:[17],feeds:[21],tools:'Hugging Face, LLM API',threads:['llm']},
+ 19:{t:'AutoML',tag:'Инструменты',phase:5,concept:'AutoML сам перебирает модели и выбирает лучшую. Сравнение с ручной. HF Hub.',ana:null,code:"TabularPredictor(label='y').fit(train)",base:[12],feeds:[21],tools:'AutoGluon, HF Hub',threads:['eval','pipe']},
+ 20:{t:'Gradio и деплой',tag:'Продукт',phase:5,concept:'Веб-интерфейс из Python. Деплой на Hugging Face Spaces. Постоянная ссылка.',ana:'share=True — временно, Spaces — навсегда',code:'gr.Interface(...).launch()   # app.py на Spaces',base:[16],feeds:[22],tools:'Gradio, Spaces',threads:['deploy']},
+ 21:{t:'Проект: питч и старт',tag:'Финал',phase:6,concept:'Реализуемая задача, поиск и подготовка данных, первичная модель в Pipeline.',ana:null,code:'Pipeline + baseline   # старт проекта',base:[12,16,18,19],feeds:[22],tools:'Pipeline, baseline',threads:['eval','pipe','project']},
+ 22:{t:'Проект: модель и интерфейс',tag:'Финал',phase:6,concept:'Улучшить и честно оценить модель. Веб-интерфейс. Структура презентации и README.',ana:null,code:'GridSearchCV(...); gr.Interface(...)',base:[21,20],feeds:[23],tools:'GridSearchCV, Gradio',threads:['eval','pipe','deploy','project']},
+ 23:{t:'Проект: репетиция',tag:'Финал',phase:6,concept:'Понятная нетехническая презентация. Обратная связь. Финальный деплой и README.',ana:null,code:'# рассказ 5 мин + финальный README',base:[22],feeds:[24],tools:'презентация, README',threads:['deploy','project']},
+ 24:{t:'Demo Day',tag:'Защита',phase:6,concept:'Публичная защита готового приложения. Ответы на вопросы. Дальнейшие шаги.',ana:'Финиш — проект для портфолио',code:'# живое приложение + защита',base:[23],feeds:[],tools:'публичная презентация',threads:['project']},
+};
+const POS={
+ 1:[11,5],2:[33,5],3:[55,5],4:[77,5],
+ 5:[11,20],6:[33,20],7:[55,20],8:[77,20],
+ 9:[11,35],10:[33,35],11:[55,35],12:[77,35],
+ 13:[11,52],14:[33,52],15:[55,52],16:[77,52],
+ 17:[11,68],18:[30,68],19:[58,68],20:[78,68],
+ 21:[14,86],22:[38,86],23:[62,86],24:[86,86]};
+const EDGES=[[1,2],[2,3],[3,4],[4,5],
+ [5,6],[6,7],[6,8],[7,9],[9,10],[6,10],
+ [10,11],[11,12],
+ [12,13],[13,14],[14,15],[15,16],
+ [14,17],[17,18],
+ [12,19],[16,20],
+ [12,21],[16,21],[18,21],[19,21],
+ [20,22],[21,22],[22,23],[23,24]];
+const THREAD_INFO={
+  eval:['Честная оценка','Стержень качества: train/test и baseline (6) → метрики MAE/MSE (8), лес (9), кросс-валидация (10), матрица ошибок (11), мини-проект (12). Не забывается даже в AutoML (19) и финале (21, 22).'],
+  pipe:['Pipeline / scikit-learn','Единый стиль fit/predict с урока 5. С урока 10 всё собирается в Pipeline — и это стандарт до самого финального проекта (21, 22).'],
+  models:['Модели растут','KNN (5) → дерево (7) → регрессия (8) → лес (9) → нейросеть (13) → MNIST (14) → CNN (15): от простого к глубокому.'],
+  dl:['Глубокое обучение','Интуиция сети (13) → MNIST (14) → CNN (15) → проект классификатора фото (16). Та же идея «текст в числа» ведёт к LLM (17).'],
+  llm:['Языковые модели','Как устроен ChatGPT: токены, эмбеддинги, внимание, галлюцинации (17) → управление через промпты и реальные задачи (18).'],
+  deploy:['Деплой / продукт','Первый Gradio в проекте фото (16) → настоящий деплой на Spaces (20) → интерфейс финального проекта (22) → финальная публикация (23).'],
+  project:['Линия проекта','Оцениваемые точки — мини-проект по данным (4), «Предсказатель» (12), классификатор фото (16). Навыки всех фаз сходятся в финал: старт (21) → модель и интерфейс (22) → репетиция (23) → Demo Day (24).']};
+
+/* ==== движок ==== */
+const map=document.getElementById('map'), svg=document.getElementById('edges'), panel=document.getElementById('panel');
+const nodeEls={}, pathEls={};
+for(const id in LESSONS){
+  const L=LESSONS[id],[x,y]=POS[id];
+  const el=document.createElement('div');
+  el.className='node'; el.style.left=x+'%'; el.style.top=y+'%';
+  el.innerHTML=`<div class="num" style="background:${PHASE_COLOR[L.phase]};${PHASE_DARK[L.phase]?'color:var(--bg)':''}">${id}</div><div class="tt">${L.t}</div><div class="tag">${L.tag}</div>`;
+  el.onclick=e=>{e.stopPropagation();select(+id);};
+  map.appendChild(el); nodeEls[id]=el;
+}
+EDGES.forEach(([a,b])=>{const p=document.createElementNS('http://www.w3.org/2000/svg','path');svg.appendChild(p);pathEls[a+'-'+b]=p;});
+function center(id){const[x,y]=POS[id];return{x:x/100*map.clientWidth,y:y/100*map.clientHeight};}
+function drawEdges(){
+  svg.setAttribute('viewBox',`0 0 ${map.clientWidth} ${map.clientHeight}`);
+  EDGES.forEach(([a,b])=>{const s=center(a),e=center(b);const mx=(s.x+e.x)/2,my=(s.y+e.y)/2;
+    const dx=e.x-s.x,dy=e.y-s.y,off=0.08;const cx=mx-dy*off,cy=my+dx*off;
+    pathEls[a+'-'+b].setAttribute('d',`M ${s.x} ${s.y} Q ${cx} ${cy} ${e.x} ${e.y}`);});
+}
+new ResizeObserver(drawEdges).observe(map); drawEdges();
+function clearClasses(){for(const id in nodeEls)nodeEls[id].classList.remove('active','dim','thread');
+  EDGES.forEach(([a,b])=>pathEls[a+'-'+b].classList.remove('hi','dim'));}
+function names(ids){return ids.map(i=>`<span class="lnk" data-go="${i}">${i}. ${LESSONS[i].t}</span>`).join(', ')||'—';}
+function bindLinks(){panel.querySelectorAll('[data-go]').forEach(a=>a.onclick=()=>select(+a.dataset.go));}
+function select(id){
+  document.querySelectorAll('.chip[data-thread]').forEach(c=>c.classList.remove('sel'));
+  clearClasses(); const L=LESSONS[id]; const inc=new Set();
+  EDGES.forEach(([a,b])=>{if(a===id||b===id){pathEls[a+'-'+b].classList.add('hi');inc.add(a);inc.add(b);}else pathEls[a+'-'+b].classList.add('dim');});
+  for(const nid in nodeEls){if(+nid===id)nodeEls[nid].classList.add('active');else if(!inc.has(+nid))nodeEls[nid].classList.add('dim');}
+  panel.innerHTML=`<div class="ph" style="color:${PHASE_COLOR[L.phase]}">Урок ${id} · ${PHASE_NAME[L.phase]}</div>
+    <h3>${L.t}</h3>
+    <div class="row"><div class="v">${L.concept}</div></div>
+    ${L.ana?`<div class="row"><div class="ana">«${L.ana}»</div></div>`:''}
+    <div class="row"><div class="h">Ключевой код</div><div class="code">${L.code}</div></div>
+    <div class="row"><div class="h">Опирается на</div><div class="v">${names(L.base)}</div></div>
+    <div class="row"><div class="h">Готовит к</div><div class="v">${names(L.feeds)}</div></div>
+    <div class="row"><div class="h">Инструменты</div><div class="v">${L.tools}</div></div>`;
+  bindLinks();
+}
+function showThread(key){
+  clearClasses();
+  const members=Object.keys(LESSONS).filter(id=>LESSONS[id].threads.includes(key)).map(Number);
+  for(const id in nodeEls){if(members.includes(+id))nodeEls[id].classList.add('thread');else nodeEls[id].classList.add('dim');}
+  EDGES.forEach(([a,b])=>{ if(members.includes(a)&&members.includes(b))pathEls[a+'-'+b].classList.add('hi'); else pathEls[a+'-'+b].classList.add('dim'); });
+  const info=THREAD_INFO[key];
+  panel.innerHTML=`<div class="ph" style="color:var(--teal)">Сквозная нить</div><h3>${info[0]}</h3>
+    <div class="row"><div class="v">${info[1]}</div></div>
+    <div class="row"><div class="h">Проходит через уроки</div><div class="v">${names(members)}</div></div>`;
+  bindLinks();
+}
+function resetPanel(){clearClasses();document.querySelectorAll('.chip[data-thread]').forEach(c=>c.classList.remove('sel'));
+  panel.innerHTML=`<div class="ph" style="color:var(--muted)">Наведи и нажми</div><h3>Весь курс на одной карте</h3>
+    <div class="row"><div class="v hint">24 урока в 6 фазах. Стрелки — что на чём строится. Клик по уроку открывает концепцию и ключевой код.</div></div>
+    <div class="row"><div class="h">Идея курса</div><div class="v">Данные → классические модели → нейросети → LLM → инструменты → собственный проект.</div></div>`;}
+document.querySelectorAll('.chip[data-thread]').forEach(c=>c.onclick=()=>{
+  document.querySelectorAll('.chip[data-thread]').forEach(x=>x.classList.remove('sel'));c.classList.add('sel');showThread(c.dataset.thread);});
+document.getElementById('reset').onclick=resetPanel;
+resetPanel();
+</script>
+</body>
+</html>

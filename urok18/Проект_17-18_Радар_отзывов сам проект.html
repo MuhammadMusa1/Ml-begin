@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🛰️ Радар отзывов · пошаговый проект</title>
+<style>
+  :root{
+    --bg:#17132E; --card:#241E42; --card2:#2C2552; --violet:#8B7DF5; --violetd:#5B4FC4;
+    --cyan:#27D3EE; --teal:#2DD4BF; --lav:#D9D4F2; --muted:#9E96C8; --warn:#FF7A8A;
+    --green:#6EE7B7; --white:#fff; --code:#0E0B22;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--lav);
+    font-family:Calibri,"Segoe UI",system-ui,sans-serif;line-height:1.55;padding:24px 16px 80px}
+  .wrap{max-width:900px;margin:0 auto}
+  .kick{color:var(--cyan);font-weight:700;letter-spacing:2px;font-size:13px;text-transform:uppercase}
+  h1{color:var(--white);font-size:30px;margin:6px 0 4px}
+  .sub{color:var(--muted);margin:0 0 18px;font-size:16px}
+
+  /* progress */
+  .progress-wrap{position:sticky;top:0;z-index:20;background:var(--bg);padding:10px 0 12px;margin-bottom:8px}
+  .pbar{height:12px;background:var(--code);border-radius:8px;overflow:hidden}
+  .pbar>div{height:100%;width:0;background:linear-gradient(90deg,var(--violet),var(--cyan));transition:.35s}
+  .pmeta{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-top:6px}
+  .pmeta b{color:var(--teal)}
+
+  .intro{background:var(--card);border-radius:16px;padding:18px 20px;margin-bottom:20px}
+  .intro b{color:var(--cyan)}
+  .intro ol{margin:10px 0 0;padding-left:22px}
+  .intro li{margin:3px 0}
+
+  /* step card */
+  .step{background:var(--card);border-radius:16px;padding:0;margin:14px 0;overflow:hidden;border:1px solid transparent;transition:.2s}
+  .step.done{border-color:var(--green)}
+  .step-head{display:flex;align-items:flex-start;gap:14px;padding:16px 20px;cursor:pointer}
+  .badge{flex:none;width:38px;height:38px;border-radius:50%;background:var(--violetd);color:#fff;
+    font-weight:700;font-size:18px;display:flex;align-items:center;justify-content:center}
+  .step.done .badge{background:var(--green);color:var(--bg)}
+  .step-title{font-size:19px;font-weight:700;color:var(--white);margin:0}
+  .step-why{font-size:14px;color:var(--muted);margin:3px 0 0}
+  .chev{margin-left:auto;color:var(--muted);font-size:20px;transition:.2s;flex:none}
+  .step.open .chev{transform:rotate(90deg)}
+  .step-body{display:none;padding:0 20px 18px}
+  .step.open .step-body{display:block}
+
+  .todo{background:var(--card2);border-left:4px solid var(--violet);border-radius:8px;padding:12px 14px;margin:6px 0 12px;font-size:15px}
+  .todo b{color:var(--lav)}
+
+  .row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+  button.act{font-family:inherit;font-size:14px;font-weight:600;border:none;border-radius:10px;
+    padding:9px 15px;cursor:pointer;background:var(--card2);color:var(--lav);transition:.15s}
+  button.act:hover{background:var(--violetd);color:#fff}
+  button.act.on{background:var(--violetd);color:#fff}
+
+  .panel{display:none;margin:4px 0 12px}
+  .panel.show{display:block}
+  .hint{background:rgba(39,211,238,.08);border:1px solid rgba(39,211,238,.3);border-radius:10px;
+    padding:12px 14px;font-size:14px;color:var(--lav)}
+  .hint b{color:var(--cyan)}
+
+  pre{background:var(--code);border-radius:10px;padding:14px 16px;overflow-x:auto;margin:0;
+    position:relative}
+  code{font-family:Consolas,"Courier New",monospace;font-size:13.5px;color:var(--cyan);white-space:pre;line-height:1.5}
+  .copy{position:absolute;top:8px;right:8px;font-size:12px;padding:5px 10px;border-radius:8px;
+    background:var(--card2);color:var(--lav);border:none;cursor:pointer}
+  .copy:hover{background:var(--violet);color:#fff}
+
+  .check{background:rgba(110,231,183,.08);border:1px solid rgba(110,231,183,.3);border-radius:10px;
+    padding:11px 14px;font-size:14px;margin:12px 0}
+  .check b{color:var(--green)}
+  .harder{background:rgba(139,125,245,.08);border:1px dashed var(--violet);border-radius:10px;
+    padding:10px 14px;font-size:13.5px;margin:10px 0;color:var(--muted)}
+  .harder b{color:var(--violet)}
+
+  .doneline{display:flex;align-items:center;gap:10px;margin-top:14px;padding-top:12px;border-top:1px solid var(--card2)}
+  .doneline input{width:20px;height:20px;accent-color:var(--green);cursor:pointer}
+  .doneline label{font-size:15px;font-weight:600;color:var(--lav);cursor:pointer;user-select:none}
+
+  /* live demo */
+  .demo{background:var(--card);border-radius:16px;padding:18px 20px;margin:26px 0}
+  .demo h2{color:var(--white);font-size:22px;margin:0 0 4px}
+  .demo p.d{color:var(--muted);font-size:14px;margin:0 0 12px}
+  textarea{width:100%;min-height:70px;background:var(--code);color:var(--lav);border:1px solid var(--violetd);
+    border-radius:10px;padding:12px;font-size:16px;font-family:inherit;resize:vertical}
+  .exs{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+  .ex{background:var(--card2);border:none;border-radius:20px;padding:6px 12px;color:var(--lav);cursor:pointer;font-size:12.5px}
+  .ex:hover{background:var(--violetd);color:#fff}
+  .verdict{display:flex;align-items:center;gap:14px;margin-top:12px}
+  .vbadge{font-size:20px;font-weight:800;padding:8px 18px;border-radius:12px;background:rgba(255,255,255,.06)}
+  .vbar{flex:1;height:14px;background:var(--code);border-radius:8px;overflow:hidden}
+  .vbar>div{height:100%;transition:.3s}
+  .warnbox{display:none;background:rgba(255,122,138,.1);border:1px solid rgba(255,122,138,.4);
+    border-radius:10px;padding:11px 14px;font-size:14px;margin-top:12px;color:var(--warn)}
+
+  footer{background:var(--card);border-radius:16px;padding:18px 20px;margin-top:26px}
+  footer h2{color:var(--white);font-size:20px;margin:0 0 10px}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  td,th{text-align:left;padding:7px 8px;border-bottom:1px solid var(--card2)}
+  th{color:var(--cyan)}
+  .final{background:linear-gradient(90deg,var(--violetd),var(--violet));color:#fff;border-radius:12px;
+    padding:14px 18px;margin-top:14px;font-size:15px}
+  .reset{background:transparent;border:1px solid var(--violetd);color:var(--muted);border-radius:8px;
+    padding:7px 12px;cursor:pointer;font-size:13px;margin-top:14px}
+  .reset:hover{color:var(--white);border-color:var(--cyan)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="kick">Финал фазы 4 · уроки 17–18 · проект</div>
+  <h1>🛰️ Радар отзывов</h1>
+  <p class="sub">Собери свой ИИ-анализатор отзывов — шаг за шагом, своими руками. В конце получишь сайт с публичной ссылкой.</p>
+
+  <div class="progress-wrap">
+    <div class="pbar"><div id="pfill"></div></div>
+    <div class="pmeta"><span>Прогресс проекта</span><span><b id="pcount">0</b> / 8 шагов готово</span></div>
+  </div>
+
+  <div class="intro">
+    <b>Задача из жизни.</b> Магазин получает тысячи отзывов в день — прочитать вручную невозможно.
+    Ты построишь умный анализатор тональности и завернёшь его в веб-приложение.
+    <ol>
+      <li>свои данные — отзывы;</li>
+      <li>текст → числа (токены, урок 17);</li>
+      <li>готовая модель тональности (урок 18);</li>
+      <li>разбор пачки отзывов и уверенность модели;</li>
+      <li>ловля «хитрых» отзывов, где модель ошибается;</li>
+      <li>диаграмма позитив / негатив;</li>
+      <li>⭐ веб-приложение с публичной ссылкой.</li>
+    </ol>
+    <p style="margin:12px 0 0;font-size:14px;color:var(--muted)">
+      Код пишешь в <b style="color:var(--cyan)">Google Colab</b>. Эта страница — твой проводник: подсказка,
+      образец кода и проверка на каждом шаге. Открывай шаг → пробуй сам → сверяйся.</p>
+  </div>
+
+  <div id="steps"></div>
+
+  <!-- ЖИВОЕ ДЕМО -->
+  <div class="demo">
+    <h2>🎮 Попробуй прямо сейчас</h2>
+    <p class="d">Это простой анализатор «по словам» (как в шаге 6). Введи отзыв — увидишь результат сразу, без Colab. И заметишь, где он ошибается.</p>
+    <textarea id="inp" placeholder="Напиши отзыв…">Отличный сервис, быстро и вежливо, очень советую!</textarea>
+    <div class="exs" id="exs"></div>
+    <div class="verdict">
+      <div class="vbadge" id="vbadge">—</div>
+      <div class="vbar"><div id="vbar"></div></div>
+    </div>
+    <div class="warnbox" id="warnbox"></div>
+    <p style="margin:14px 0 0;font-size:13.5px;color:var(--muted)">
+      💡 Настоящая модель из шага 3 понимает сарказм лучше — но и её ответ всегда проверяем.</p>
+  </div>
+
+  <footer>
+    <h2>🏁 Что у тебя получилось</h2>
+    <p style="color:var(--muted);font-size:14px;margin:0 0 12px">
+      Работающий продукт: читает отзыв, говорит тональность, честно помечает спорные случаи, рисует диаграмму и живёт как сайт.</p>
+    <table>
+      <tr><th>Критерий</th><th>Баллы</th></tr>
+      <tr><td>Свои данные и постановка (8 отзывов)</td><td>2</td></tr>
+      <tr><td>Модель подключена и разбирает отзывы</td><td>3</td></tr>
+      <tr><td>Диаграмма построена</td><td>2</td></tr>
+      <tr><td>Нашёл, где модель ошиблась, и объяснил почему</td><td>3</td></tr>
+    </table>
+    <div class="final">🎤 <b>Защита (1 минута):</b> покажи ссылку, введи хитрый отзыв (сарказм) и объясни, почему модель сомневается. Покажи родителям!</div>
+    <button class="reset" onclick="resetProgress()">Сбросить прогресс</button>
+  </footer>
+</div>
+
+<script>
+// ---------- данные шагов ----------
+const STEPS = [
+  { n:1, title:"Твои данные",
+    why:"Хороший анализ начинается со своих данных.",
+    todo:"Собери <b>8 своих отзывов</b> (игра, кафе, фильм — что угодно) в список.",
+    hint:"Список в Python — это значения в квадратных скобках через запятую, каждый отзыв в кавычках.",
+    code:`отзывы = [
+    'Эта игра затягивает на часы, обожаю её!',
+    'Ужасный сервис, больше не приду.',
+    'Неплохо, но дороговато.',
+    'Лучшее кафе в городе, всем советую!',
+    'Ждал доставку неделю, кошмар.',
+    'Ну очень «порадовал» этот магазин...',
+    'Фильм неплохой, но затянут.',
+    'Обожаю этот трек, слушаю на репите!',
+]
+print('Всего отзывов:', len(отзывы))`,
+    check:"В выводе — «Всего отзывов: 8» (или сколько ты вписал)." },
+
+  { n:2, title:"Текст → числа (токены)",
+    why:"Модель не видит букв. Как в уроке 17: текст режется на токены-числа.",
+    todo:"Закодируй первый отзыв в токены и посмотри на кусочки.",
+    hint:"Кодирует текст метод <code>enc.encode(текст)</code>. Обратно один токен в текст — <code>enc.decode([t])</code>.",
+    code:`!pip install tiktoken -q
+import tiktoken
+enc = tiktoken.get_encoding('cl100k_base')   # токенайзер ChatGPT
+
+пример = отзывы[0]
+числа = enc.encode(пример)                    # текст -> список токенов
+куски = [enc.decode([t]) for t in числа]      # каждый токен обратно в текст
+print('Отзыв :', пример)
+print('Токены:', куски)`,
+    check:"Видно, что один отзыв разбит на кусочки — некоторые короче слова." },
+
+  { n:3, title:"Готовая модель тональности",
+    why:"Одна строка — и у тебя модель. Ничего обучать не надо (урок 18).",
+    todo:"Подключи бесплатную многоязычную модель тональности с Hugging Face.",
+    hint:"Функция <code>pipeline('sentiment-analysis', model='...')</code> из <code>transformers</code>. API-ключ НЕ нужен.",
+    code:`!pip install transformers -q
+from transformers import pipeline
+
+модель = pipeline('sentiment-analysis',
+                  model='nlptown/bert-base-multilingual-uncased-sentiment')
+
+print(модель('Отличный сервис!'))   # вернёт что-то вроде [{'label': '5 stars', 'score': 0.7}]`,
+    check:"Вывод вроде [{'label': '5 stars', 'score': ...}] — модель загрузилась.",
+    harder:"добавь вторую, англоязычную модель и сравни ответы на один русский отзыв." },
+
+  { n:4, title:"Понятный вердикт",
+    why:"Модель отвечает «звёздами». Превратим в ПОЗИТИВ / НЕГАТИВ / НЕЙТРАЛ.",
+    todo:"Напиши функцию: 4–5 звёзд → ПОЗИТИВ, 1–2 → НЕГАТИВ, иначе → НЕЙТРАЛ.",
+    hint:"Тернарное условие: <code>'ПОЗИТИВ' if звёзд&gt;=4 else ('НЕГАТИВ' if звёзд&lt;=2 else 'НЕЙТРАЛ')</code>.",
+    code:`def разобрать(отзыв):
+    р = модель(отзыв)[0]
+    звёзд = int(р['label'][0])        # '4 stars' -> 4
+    увер  = р['score']                # уверенность 0..1
+    вердикт = 'ПОЗИТИВ' if звёзд>=4 else ('НЕГАТИВ' if звёзд<=2 else 'НЕЙТРАЛ')
+    return звёзд, вердикт, увер
+
+print(разобрать('Лучшее кафе в городе!'))`,
+    check:"Для «Лучшее кафе в городе!» вердикт — ПОЗИТИВ." },
+
+  { n:5, title:"Пачка отзывов + подсчёт",
+    why:"Прогоняем все свои отзывы и считаем, чего больше.",
+    todo:"Пройди циклом по всем отзывам, посчитай ПОЗИТИВ / НЕГАТИВ / НЕЙТРАЛ.",
+    hint:"Счётчик — словарь. Внутри цикла: <code>счёт[вердикт] += 1</code>.",
+    code:`счёт = {'ПОЗИТИВ':0, 'НЕГАТИВ':0, 'НЕЙТРАЛ':0}
+for о in отзывы:
+    звёзд, вердикт, увер = разобрать(о)
+    счёт[вердикт] += 1
+    print(f'{вердикт:8} {звёзд}★  ув.{увер:.0%}  <-  {о}')
+print('\\nИтог:', счёт)`,
+    check:"Каждый отзыв получил вердикт и уверенность, в конце — словарь с числами." },
+
+  { n:6, title:"Хитрые случаи",
+    why:"Сарказм и «не плохо» модель путает. Помечаем спорные — это работа умного инженера.",
+    todo:"Напечатай отзывы, где уверенность низкая (&lt; 0.6) ИЛИ вердикт НЕЙТРАЛ.",
+    hint:"Условие: <code>if увер &lt; 0.6 or вердикт == 'НЕЙТРАЛ':</code>",
+    code:`print('На проверку человеку:')
+for о in отзывы:
+    звёзд, вердикт, увер = разобрать(о)
+    if увер < 0.6 or вердикт == 'НЕЙТРАЛ':
+        print(f'  ⚠ {вердикт} ув.{увер:.0%}  <-  {о}')`,
+    check:"В список попали сарказм и отзывы с «не» — там модель менее уверена.",
+    harder:"добавь свой список слов-маркеров сарказма (кавычки, «спасибо, что…») и помечай их отдельно." },
+
+  { n:7, title:"Диаграмма",
+    why:"Показываем результат наглядно — столбики позитив / негатив / нейтрал.",
+    todo:"Построй столбчатую диаграмму по словарю «счёт».",
+    hint:"<code>plt.bar(метки, числа, color=[...])</code>, потом <code>plt.show()</code>.",
+    code:`import matplotlib.pyplot as plt
+метки  = list(счёт.keys())
+числа_ = list(счёт.values())
+plt.bar(метки, числа_, color=['#2DD4BF','#FF7A8A','#9E96C8'])
+plt.title('Радар отзывов: тональность'); plt.ylabel('сколько отзывов'); plt.show()`,
+    check:"Появилась столбчатая диаграмма с тремя столбиками." },
+
+  { n:8, title:"⭐ Веб-приложение",
+    why:"Финал: заворачиваем анализатор в сайт с публичной ссылкой (Gradio).",
+    todo:"Создай и запусти интерфейс Gradio с публичной ссылкой.",
+    hint:"<code>gr.Interface(fn=оценить, inputs='text', outputs='text').launch(share=True)</code>. Параметр <code>share=True</code> даёт публичную ссылку.",
+    code:`!pip install gradio -q
+import gradio as gr
+
+def оценить(отзыв):
+    звёзд, вердикт, увер = разобрать(отзыв)
+    флаг = '  ⚠ стоит проверить человеку' if (увер<0.6 or вердикт=='НЕЙТРАЛ') else ''
+    return f'{вердикт} ({звёзд}★, уверенность {увер:.0%}){флаг}'
+
+gr.Interface(fn=оценить, inputs='text', outputs='text',
+             title='🛰️ Радар отзывов',
+             description='Введи отзыв — модель определит тональность.').launch(share=True)`,
+    check:"Появилась ссылка вида https://...gradio.live — открой её на телефоне!",
+    harder:"добавь примеры кнопками (gr.Interface(..., examples=[...])) и задеплой на Hugging Face Spaces." },
+];
+
+// ---------- рендер шагов ----------
+const KEY='radar_progress_v1';
+let done = loadProgress();
+const stepsBox = document.getElementById('steps');
+
+STEPS.forEach(s=>{
+  const el=document.createElement('div');
+  el.className='step'+(done[s.n]?' done':'');
+  el.id='step'+s.n;
+
+  const head=document.createElement('div');
+  head.className='step-head';
+  head.innerHTML=`<div class="badge">${done[s.n]?'✓':s.n}</div>
+    <div><p class="step-title">${s.title}</p><p class="step-why">${s.why}</p></div>
+    <div class="chev">▸</div>`;
+  head.onclick=()=>el.classList.toggle('open');
+
+  const body=document.createElement('div');
+  body.className='step-body';
+
+  const todo=document.createElement('div');
+  todo.className='todo';
+  todo.innerHTML=`<b>Что делаем:</b> ${s.todo}`;
+  body.appendChild(todo);
+
+  // кнопки
+  const row=document.createElement('div'); row.className='row';
+  const bh=document.createElement('button'); bh.className='act'; bh.textContent='💡 Подсказка';
+  const bc=document.createElement('button'); bc.className='act'; bc.textContent='👀 Показать код';
+  row.appendChild(bh); row.appendChild(bc); body.appendChild(row);
+
+  // подсказка
+  const hint=document.createElement('div'); hint.className='panel';
+  hint.innerHTML=`<div class="hint"><b>Подсказка.</b> ${s.hint}</div>`;
+  body.appendChild(hint);
+  bh.onclick=()=>{hint.classList.toggle('show');bh.classList.toggle('on');};
+
+  // код
+  const codep=document.createElement('div'); codep.className='panel';
+  const pre=document.createElement('pre');
+  const codeEl=document.createElement('code'); codeEl.textContent=s.code;
+  const cpy=document.createElement('button'); cpy.className='copy'; cpy.textContent='Копировать';
+  cpy.onclick=()=>copyText(s.code,cpy);
+  pre.appendChild(cpy); pre.appendChild(codeEl); codep.appendChild(pre);
+  body.appendChild(codep);
+  bc.onclick=()=>{codep.classList.toggle('show');bc.classList.toggle('on');bc.textContent=codep.classList.contains('show')?'🙈 Скрыть код':'👀 Показать код';};
+
+  // проверка
+  const chk=document.createElement('div'); chk.className='check';
+  chk.innerHTML=`<b>✅ Проверка.</b> ${s.check}`;
+  body.appendChild(chk);
+
+  if(s.harder){
+    const h=document.createElement('div'); h.className='harder';
+    h.innerHTML=`<b>🔶 Усложни (для сильных):</b> ${s.harder}`;
+    body.appendChild(h);
+  }
+
+  // готово
+  const dl=document.createElement('div'); dl.className='doneline';
+  const cb=document.createElement('input'); cb.type='checkbox'; cb.id='cb'+s.n; cb.checked=!!done[s.n];
+  const lb=document.createElement('label'); lb.htmlFor='cb'+s.n; lb.textContent='Готово — шаг работает';
+  cb.onchange=()=>{ done[s.n]=cb.checked; saveProgress();
+    el.classList.toggle('done',cb.checked);
+    head.querySelector('.badge').textContent=cb.checked?'✓':s.n;
+    updateBar(); };
+  dl.appendChild(cb); dl.appendChild(lb); body.appendChild(dl);
+
+  el.appendChild(head); el.appendChild(body);
+  stepsBox.appendChild(el);
+});
+document.querySelector('.step')?.classList.add('open'); // первый шаг раскрыт
+updateBar();
+
+function updateBar(){
+  const c=STEPS.filter(s=>done[s.n]).length;
+  document.getElementById('pcount').textContent=c;
+  document.getElementById('pfill').style.width=(c/STEPS.length*100)+'%';
+}
+function loadProgress(){ try{return JSON.parse(localStorage.getItem(KEY))||{};}catch(e){return {};} }
+function saveProgress(){ try{localStorage.setItem(KEY,JSON.stringify(done));}catch(e){} }
+function resetProgress(){ done={}; saveProgress();
+  document.querySelectorAll('.step').forEach((el,i)=>{el.classList.remove('done');
+    el.querySelector('.badge').textContent=i+1; el.querySelector('input').checked=false;});
+  updateBar();
+}
+function copyText(txt,btn){
+  const ok=()=>{btn.textContent='Скопировано!';setTimeout(()=>btn.textContent='Копировать',1200);};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(ok).catch(fallback);}
+  else fallback();
+  function fallback(){const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);
+    ta.select();try{document.execCommand('copy');ok();}catch(e){}document.body.removeChild(ta);}
+}
+
+// ---------- живое демо: наивный словарь ----------
+const POS=['отличный','отлично','супер','класс','классно','советую','нравится','понравилось','быстро','вежливо','вежливый','хорошо','хороший','прекрасно','замечательно','люблю','лучший','довольна','доволен','порадовал','спасибо','удобно','обожаю'];
+const NEG=['ужасно','ужасный','плохо','плохой','долго','грубо','грубый','обман','отвратительно','кошмар','разочарован','медленно','дорого','сломалось','хамство','зря','жаль','отстой'];
+const NEGATORS=['не','ни','без'];
+const inp=document.getElementById('inp'), vbadge=document.getElementById('vbadge'),
+      vbar=document.getElementById('vbar'), warnbox=document.getElementById('warnbox');
+const examples=['Отличный сервис, быстро и вежливо, очень советую!',
+  'Ужасно, ждал долго, никто не помог.',
+  'Ну очень «порадовал» этот сервис… спасибо, что испортили день.',
+  'Не плохо, но и не отлично.'];
+const exBox=document.getElementById('exs');
+examples.forEach(t=>{const b=document.createElement('button');b.className='ex';
+  b.textContent=t.slice(0,26)+(t.length>26?'…':'');b.onclick=()=>{inp.value=t;analyze();};exBox.appendChild(b);});
+
+function analyze(){
+  const raw=inp.value;
+  const words=raw.toLowerCase().split(/[\s.,!?;:«»"()]+/).filter(Boolean);
+  let score=0, prevNeg=false;
+  words.forEach(w=>{
+    let isP=POS.includes(w), isN=NEG.includes(w);
+    if(isP||isN){ if(prevNeg){const t=isP;isP=isN;isN=t;} score+=isP?1:(isN?-1:0); }
+    prevNeg=NEGATORS.includes(w);
+  });
+  let label,color;
+  if(score>0){label='ПОЗИТИВ';color='var(--green)';}
+  else if(score<0){label='НЕГАТИВ';color='var(--warn)';}
+  else{label='НЕЙТРАЛЬНО';color='var(--muted)';}
+  vbadge.textContent=label; vbadge.style.color=color;
+  const pct=Math.max(-5,Math.min(5,score))/5;
+  vbar.style.width=(Math.abs(pct)*50+50)+'%';
+  vbar.style.marginLeft=pct<0?'0':'auto';
+  vbar.style.background=color;
+  const sarcasm=(/«[^»]*»|"[^"]*"/.test(raw)&&POS.some(w=>raw.toLowerCase().includes(w)))||/спасибо,?\s*что/i.test(raw);
+  if(sarcasm){warnbox.style.display='block';
+    warnbox.innerHTML='⚠ <b>Возможен сарказм!</b> Позитивные слова в кавычках или ироничная фраза — словарь, скорее всего, ошибётся. Именно такие отзывы твой «Радар» отправит на проверку человеку (шаг 6).';}
+  else warnbox.style.display='none';
+}
+inp.addEventListener('input',analyze);
+analyze();
+</script>
+</body>
+</html>

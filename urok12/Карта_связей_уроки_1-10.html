@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Как связаны уроки 1–10</title>
+<style>
+  :root{--bg:#17132E;--card:#241E42;--card2:#2C2552;--violet:#8B7DF5;--violetd:#5B4FC4;
+    --cyan:#27D3EE;--teal:#2DD4BF;--lav:#D9D4F2;--muted:#9E96C8;--warn:#FF7A8A;--green:#6EE7B7;--white:#fff;}
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1200px 700px at 20% -10%, #221a44 0%, var(--bg) 55%);
+    color:var(--lav);font-family:"Segoe UI",Calibri,system-ui,sans-serif;padding:24px;line-height:1.5}
+  .wrap{max-width:1140px;margin:0 auto}
+  h1{color:var(--white);font-size:28px;margin:0 0 4px}
+  .kick{color:var(--cyan);font-weight:700;letter-spacing:2px;font-size:13px;text-transform:uppercase}
+  .sub{color:var(--muted);margin:6px 0 16px;max-width:760px}
+  .legend{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+  .legend .lbl{font-size:13px;color:var(--muted);margin-right:4px}
+  .chip{background:var(--card2);border:2px solid transparent;border-radius:20px;padding:6px 12px;color:var(--lav);
+    cursor:pointer;font-size:13px;font-weight:600;transition:.15s;display:inline-flex;gap:6px;align-items:center}
+  .chip:hover{border-color:var(--violetd)}
+  .chip.sel{border-color:var(--cyan);background:#0E3540;color:var(--white)}
+  .dot{width:10px;height:10px;border-radius:50%}
+  .layout{display:grid;grid-template-columns:1fr 320px;gap:18px;align-items:start}
+  @media(max-width:880px){.layout{grid-template-columns:1fr}}
+  .mapwrap{background:var(--card);border-radius:16px;padding:8px;overflow-x:auto}
+  .map{position:relative;width:100%;min-width:720px;height:600px}
+  svg.edges{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
+  .node{position:absolute;transform:translate(-50%,-50%);width:150px;background:var(--card2);
+    border:2px solid #3a3466;border-radius:14px;padding:10px 12px;cursor:pointer;z-index:2;transition:.18s}
+  .node:hover{border-color:var(--violet);transform:translate(-50%,-50%) scale(1.04)}
+  .node .num{position:absolute;top:-11px;left:-11px;width:26px;height:26px;border-radius:50%;
+    background:var(--violetd);color:#fff;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;border:2px solid var(--bg)}
+  .node.p2 .num{background:var(--cyan);color:var(--bg)}
+  .node .tt{font-size:13px;font-weight:700;color:var(--white);line-height:1.25}
+  .node .tag{font-size:10px;color:var(--muted);margin-top:3px;text-transform:uppercase;letter-spacing:.5px}
+  .node.active{border-color:var(--cyan);box-shadow:0 0 0 4px rgba(39,211,238,.15)}
+  .node.dim{opacity:.28}
+  .node.thread{border-color:var(--teal);box-shadow:0 0 0 3px rgba(45,212,191,.18)}
+  .edges path{stroke:#3a3466;stroke-width:2;fill:none;transition:.18s}
+  .edges path.hi{stroke:var(--cyan);stroke-width:3}
+  .edges path.dim{opacity:.15}
+  .panel{background:var(--card);border-radius:16px;padding:18px;position:sticky;top:20px}
+  .panel h3{margin:0 0 2px;color:var(--white);font-size:18px}
+  .panel .ph{font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
+  .panel .row{margin:12px 0}
+  .panel .row .h{font-size:12px;color:var(--cyan);text-transform:uppercase;letter-spacing:.5px;font-weight:700;margin-bottom:3px}
+  .panel .row .v{font-size:14px;color:var(--lav)}
+  .ana{background:var(--card2);border-radius:10px;padding:10px 12px;font-size:14px;font-style:italic;color:var(--teal)}
+  .lnk{color:var(--violet);font-weight:600;cursor:pointer}
+  .lnk:hover{text-decoration:underline}
+  .hint{color:var(--muted);font-size:13px}
+  .phase-band{position:absolute;left:0;right:0;border-radius:12px;z-index:0}
+  .footer{color:var(--muted);font-size:13px;margin-top:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="kick">Machine Learning для подростков · Фазы 1–2</div>
+  <h1>🧭 Как связаны уроки 1–10</h1>
+  <p class="sub">Каждый урок опирается на предыдущие и готовит следующие. Нажми на урок — увидишь, на что он опирается и что готовит. Включи «нить» — увидишь, как одна идея проходит через несколько уроков.</p>
+
+  <div class="legend">
+    <span class="lbl">Сквозные нити:</span>
+    <button class="chip" data-thread="clean"><span class="dot" style="background:var(--green)"></span>Данные и чистка</button>
+    <button class="chip" data-thread="eval"><span class="dot" style="background:var(--cyan)"></span>Честная оценка</button>
+    <button class="chip" data-thread="overfit"><span class="dot" style="background:var(--warn)"></span>Переобучение</button>
+    <button class="chip" data-thread="models"><span class="dot" style="background:var(--violet)"></span>Модели</button>
+    <button class="chip" data-thread="pipe"><span class="dot" style="background:var(--teal)"></span>Pipeline / sklearn</button>
+    <button class="chip" id="reset">↺ Сбросить</button>
+  </div>
+
+  <div class="layout">
+    <div class="mapwrap">
+      <div class="map" id="map">
+        <svg class="edges" id="edges" preserveAspectRatio="none"></svg>
+        <!-- nodes injected by JS -->
+      </div>
+    </div>
+
+    <div class="panel" id="panel">
+      <div class="ph" style="color:var(--muted)">Наведи и нажми</div>
+      <h3>Выбери урок на карте</h3>
+      <div class="row"><div class="v hint">Стрелки показывают, что на чём строится: от урока-основы к уроку, который её использует.</div></div>
+      <div class="row"><div class="h">Как читать</div>
+        <div class="v"><span style="color:var(--violet)">●</span> Фаза 1 — данные (1–4)<br><span style="color:var(--cyan)">●</span> Фаза 2 — модели (5–10)</div></div>
+    </div>
+  </div>
+
+  <div class="footer">Совет: включи нить «Честная оценка» — увидишь, что урок 6 (train/test, baseline) держит на себе почти всю вторую фазу.</div>
+</div>
+
+<script>
+const LESSONS={
+ 1:{t:'«Магия» ML',tag:'Вау-старт',phase:1,concept:'ML учится на данных, а не по жёстким правилам. Типы задач и «паттерн в данных».',
+    ana:null,base:[],feeds:[2],tools:'живая демонстрация',threads:[]},
+ 2:{t:'Данные и Pandas',tag:'Данные',phase:1,concept:'Датасет, признак, целевая переменная. head/info/describe, фильтрация и группировка.',
+    ana:'Pandas = Excel внутри Python',base:[1],feeds:[3],tools:'Pandas',threads:['clean']},
+ 3:{t:'Визуализация и EDA',tag:'Данные',phase:1,concept:'Гистограмма, scatter plot, heatmap корреляций. Вывод словами.',
+    ana:null,base:[2],feeds:[4],tools:'Matplotlib, Seaborn',threads:['clean']},
+ 4:{t:'Мини-проект: данные',tag:'Оценивается',phase:1,concept:'Пропуски и выбросы, чистка данных, инсайт и мини-презентация.',
+    ana:null,base:[3],feeds:[5],tools:'Pandas, графики',threads:['clean']},
+ 5:{t:'KNN',tag:'Первая модель',phase:2,concept:'Ближайшие соседи, параметр K, границы классов. Первая модель курса.',
+    ana:'KNN = смотрит на соседей («ленивый ученик»)',base:[4],feeds:[6],tools:'KNeighborsClassifier',threads:['models','pipe']},
+ 6:{t:'Train/test, baseline, утечка',tag:'Ключевой урок',phase:2,concept:'Разделение train/test, baseline, data leakage, accuracy, подбор K.',
+    ana:'train/test = «зазубрил vs понял»',base:[5],feeds:[7,8,10],tools:'train_test_split, accuracy',threads:['eval','pipe']},
+ 7:{t:'Деревья решений',tag:'Модель',phase:2,concept:'Дерево делит данные вопросами. plot_tree, переобучение, max_depth.',
+    ana:'Дерево = игра «20 вопросов»',base:[6],feeds:[9],tools:'DecisionTreeClassifier',threads:['models','overfit','pipe']},
+ 8:{t:'Регрессия',tag:'Числа',phase:2,concept:'Классификация vs регрессия. Линейная регрессия, метрики MAE и MSE.',
+    ana:null,base:[6],feeds:[],tools:'LinearRegression, MAE/MSE',threads:['eval','models','pipe']},
+ 9:{t:'Случайный лес',tag:'Ансамбль',phase:2,concept:'Ансамбль деревьев, мудрость толпы, n_estimators, важность признаков.',
+    ana:'Лес = голосование целого класса',base:[7],feeds:[10],tools:'RandomForestClassifier',threads:['eval','overfit','models','pipe']},
+ 10:{t:'Pipeline + кросс-валидация',tag:'Стандарт курса',phase:2,concept:'Pipeline, ColumnTransformer, cross_val_score, k-fold, импьютеры и кодирование.',
+    ana:null,base:[9,6],feeds:[],tools:'Pipeline, cross_val_score',threads:['clean','eval','overfit','pipe']},
+};
+const POS={1:[7,13],2:[31,13],3:[55,13],4:[79,13],5:[12,45],6:[37,45],7:[61,45],8:[85,45],9:[41,80],10:[67,80]};
+const EDGES=[[1,2],[2,3],[3,4],[4,5],[5,6],[6,7],[6,8],[7,9],[9,10],[6,10]];
+
+const map=document.getElementById('map'), svg=document.getElementById('edges'), panel=document.getElementById('panel');
+// build nodes
+const nodeEls={};
+for(const id in LESSONS){
+  const L=LESSONS[id], [x,y]=POS[id];
+  const el=document.createElement('div');
+  el.className='node'+(L.phase===2?' p2':''); el.style.left=x+'%'; el.style.top=y+'%';
+  el.innerHTML=`<div class="num">${id}</div><div class="tt">${L.t}</div><div class="tag">${L.tag}</div>`;
+  el.onclick=(e)=>{e.stopPropagation();select(+id);};
+  map.appendChild(el); nodeEls[id]=el;
+}
+// edges as paths (built once, positioned by drawEdges)
+const pathEls={};
+EDGES.forEach(([a,b])=>{
+  const p=document.createElementNS('http://www.w3.org/2000/svg','path');
+  p.dataset.a=a; p.dataset.b=b; svg.appendChild(p); pathEls[a+'-'+b]=p;
+});
+function center(id){const [x,y]=POS[id];return {x:x/100*map.clientWidth, y:y/100*map.clientHeight};}
+function drawEdges(){
+  svg.setAttribute('viewBox',`0 0 ${map.clientWidth} ${map.clientHeight}`);
+  EDGES.forEach(([a,b])=>{
+    const s=center(a),e=center(b);
+    const mx=(s.x+e.x)/2, my=(s.y+e.y)/2;
+    // slight curve: control point offset perpendicular
+    const dx=e.x-s.x, dy=e.y-s.y, off=0.12;
+    const cx=mx - dy*off, cy=my + dx*off;
+    pathEls[a+'-'+b].setAttribute('d',`M ${s.x} ${s.y} Q ${cx} ${cy} ${e.x} ${e.y}`);
+  });
+}
+new ResizeObserver(drawEdges).observe(map);
+drawEdges();
+
+let selected=null, thread=null;
+function clearClasses(){
+  for(const id in nodeEls) nodeEls[id].classList.remove('active','dim','thread');
+  EDGES.forEach(([a,b])=>pathEls[a+'-'+b].classList.remove('hi','dim'));
+}
+function names(ids){return ids.map(i=>`<span class="lnk" data-go="${i}">${i}. ${LESSONS[i].t}</span>`).join(', ')||'—';}
+function select(id){
+  thread=null; document.querySelectorAll('.chip[data-thread]').forEach(c=>c.classList.remove('sel'));
+  selected=id; clearClasses();
+  const L=LESSONS[id];
+  // incident edges
+  const inc=new Set();
+  EDGES.forEach(([a,b])=>{ if(a===id||b===id){pathEls[a+'-'+b].classList.add('hi');inc.add(a);inc.add(b);} else pathEls[a+'-'+b].classList.add('dim'); });
+  for(const nid in nodeEls){ if(+nid===id)nodeEls[nid].classList.add('active'); else if(!inc.has(+nid))nodeEls[nid].classList.add('dim'); }
+  panel.innerHTML=`
+    <div class="ph" style="color:${L.phase===2?'var(--cyan)':'var(--violet)'}">Урок ${id} · Фаза ${L.phase}</div>
+    <h3>${L.t}</h3>
+    <div class="row"><div class="v">${L.concept}</div></div>
+    ${L.ana?`<div class="row"><div class="ana">«${L.ana}»</div></div>`:''}
+    <div class="row"><div class="h">Опирается на</div><div class="v">${names(L.base)}</div></div>
+    <div class="row"><div class="h">Готовит к</div><div class="v">${names(L.feeds)}</div></div>
+    <div class="row"><div class="h">Инструменты</div><div class="v">${L.tools}</div></div>`;
+  panel.querySelectorAll('[data-go]').forEach(a=>a.onclick=()=>select(+a.dataset.go));
+}
+function showThread(key){
+  selected=null; clearClasses(); thread=key;
+  const members=Object.keys(LESSONS).filter(id=>LESSONS[id].threads.includes(key)).map(Number);
+  for(const id in nodeEls){ if(members.includes(+id))nodeEls[id].classList.add('thread'); else nodeEls[id].classList.add('dim'); }
+  EDGES.forEach(([a,b])=>pathEls[a+'-'+b].classList.add('dim'));
+  const info={clean:['Данные и чистка','От знакомства с данными (2,3) через обработку пропусков и выбросов (4) — к автоматической подготовке внутри Pipeline (10).'],
+    eval:['Честная оценка','Урок 6 вводит train/test, baseline и утечку данных. Дальше это используется в регрессии (8), лесе (9) и усиливается кросс-валидацией (10).'],
+    overfit:['Переобучение','Появляется на деревьях (7, max_depth), лес (9) его снижает, а кросс-валидация (10) помогает его заметить.'],
+    models:['Модели растут','KNN (5) → дерево (7) → регрессия (8) → лес (9): от простого к ансамблю, всё на едином API scikit-learn.'],
+    pipe:['Pipeline / scikit-learn','Единый стиль fit/predict с урока 5. На уроке 10 подготовка + модель + честная оценка собираются в один Pipeline — стандарт курса.']}[key];
+  panel.innerHTML=`<div class="ph" style="color:var(--teal)">Сквозная нить</div><h3>${info[0]}</h3>
+    <div class="row"><div class="v">${info[1]}</div></div>
+    <div class="row"><div class="h">Проходит через уроки</div><div class="v">${names(members)}</div></div>`;
+  panel.querySelectorAll('[data-go]').forEach(a=>a.onclick=()=>select(+a.dataset.go));
+}
+document.querySelectorAll('.chip[data-thread]').forEach(c=>c.onclick=()=>{
+  document.querySelectorAll('.chip[data-thread]').forEach(x=>x.classList.remove('sel'));
+  c.classList.add('sel'); showThread(c.dataset.thread);
+});
+document.getElementById('reset').onclick=()=>{
+  selected=null;thread=null;clearClasses();
+  document.querySelectorAll('.chip[data-thread]').forEach(c=>c.classList.remove('sel'));
+  panel.innerHTML=`<div class="ph" style="color:var(--muted)">Наведи и нажми</div><h3>Выбери урок на карте</h3>
+    <div class="row"><div class="v hint">Стрелки показывают, что на чём строится: от урока-основы к уроку, который её использует.</div></div>
+    <div class="row"><div class="h">Как читать</div><div class="v"><span style="color:var(--violet)">●</span> Фаза 1 — данные (1–4)<br><span style="color:var(--cyan)">●</span> Фаза 2 — модели (5–10)</div></div>`;
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Вкладыш · Деплой на Spaces за 6 шагов</title>
+<style>
+  :root{--indigo:#3C3489;--violet:#7F77DD;--cyan:#1D9E75;--bg:#F1EFE8;--ink:#2C2C2A;--muted:#5F5E5A;--amber:#633806;--amberbg:#FAEEDA;--green:#0F6E56;--greenbg:#E1F5EE;}
+  *{box-sizing:border-box;}
+  body{font-family:Calibri,'Segoe UI',sans-serif;color:var(--ink);max-width:800px;margin:0 auto;padding:28px 24px;line-height:1.5;background:#fff;}
+  header{text-align:center;border-bottom:3px solid var(--violet);padding-bottom:14px;margin-bottom:18px;}
+  .tag{font-size:13px;color:var(--muted);font-weight:600;letter-spacing:.5px;}
+  h1{color:var(--indigo);font-size:26px;margin:6px 0 2px;}
+  .sub{color:var(--muted);font-size:14px;}
+  .banner{border-radius:8px;padding:11px 16px;margin:16px 0;font-size:14px;font-weight:600;}
+  .b-violet{background:linear-gradient(90deg,var(--indigo),var(--violet));color:#fff;}
+  .b-cyan{background:var(--greenbg);color:var(--green);border-left:5px solid var(--cyan);}
+  .b-amber{background:var(--amberbg);color:var(--amber);border-left:5px solid #EF9F27;}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px;}
+  th{background:var(--indigo);color:#fff;text-align:left;padding:9px 12px;font-weight:600;}
+  th:first-child{width:46px;text-align:center;border-top-left-radius:8px;}
+  th:last-child{border-top-right-radius:8px;}
+  td{border-bottom:1px solid #E0DDD3;padding:10px 12px;vertical-align:top;}
+  tr:nth-child(even) td{background:var(--bg);}
+  .stepnum{background:var(--violet);color:#fff;font-weight:700;width:26px;height:26px;line-height:26px;text-align:center;border-radius:50%;display:inline-block;font-size:14px;}
+  td.click{color:var(--indigo);font-weight:600;}
+  .code{font-family:Consolas,monospace;background:#fff;border:1px solid #D3D1C7;border-radius:4px;padding:1px 5px;color:var(--indigo);font-size:13px;}
+  .files{display:flex;gap:14px;flex-wrap:wrap;margin:14px 0;}
+  .file{flex:1;min-width:240px;background:var(--bg);border-radius:8px;padding:12px 14px;}
+  .file h3{margin:0 0 6px;font-size:15px;color:var(--indigo);}
+  .file pre{margin:0;background:#fff;border:1px solid #D3D1C7;border-radius:5px;padding:8px 10px;font-family:Consolas,monospace;font-size:12.5px;color:var(--ink);white-space:pre-wrap;line-height:1.45;}
+  h2{color:var(--violet);font-size:18px;margin:20px 0 6px;}
+  .print-btn{display:block;margin:22px auto 0;background:var(--cyan);color:#fff;font-family:Calibri,sans-serif;font-size:15px;font-weight:600;padding:10px 24px;border-radius:8px;border:none;cursor:pointer;}
+  footer{margin-top:20px;padding-top:12px;border-top:1px solid #D3D1C7;color:var(--muted);font-size:12px;text-align:center;}
+  @media print{.print-btn{display:none;}body{padding:0;}@page{margin:1.2cm;}}
+</style>
+</head>
+<body>
+<header>
+  <div class="tag">ШПАРГАЛКА-ВКЛАДЫШ · держи перед глазами</div>
+  <h1>Деплой на Hugging Face Spaces</h1>
+  <div class="sub">Урок 20 · от модели в Colab до постоянной ссылки · 6 шагов</div>
+</header>
+
+<div class="banner b-violet">🎯 Цель: приложение живёт в интернете ВСЕГДА, ссылку можно отправить родителям и добавить в портфолио.</div>
+
+<h2>Сначала — файлы приложения (создаются в Colab)</h2>
+<div class="files">
+  <div class="file">
+    <h3>app.py — код приложения</h3>
+    <pre>import gradio as gr, joblib
+
+model = joblib.load("penguin_model.joblib")
+def predict(bl, bd, fl, bm):
+    p = model.predict_proba([[bl, bd, fl, bm]])[0]
+    return {c: float(x) for c, x in zip(model.classes_, p)}
+
+gr.Interface(fn=predict,
+    inputs=[gr.Number(), gr.Number(),
+            gr.Number(), gr.Number()],
+    outputs=gr.Label()).launch()</pre>
+  </div>
+  <div class="file">
+    <h3>requirements.txt — библиотеки</h3>
+    <pre>gradio
+scikit-learn
+joblib</pre>
+  </div>
+</div>
+<div class="banner b-cyan" style="margin-top:0;">📦 Третий файл — <span class="code">penguin_model.joblib</span> (сохранён в Colab через <span class="code">joblib.dump</span>). Его тоже загружаем на Spaces рядом с кодом.</div>
+<div class="banner b-amber">⚠️ В <span class="code">app.py</span> для Spaces НЕ пиши <span class="code">share=True</span> — публичный адрес там даётся сам.</div>
+
+<h2>6 шагов деплоя</h2>
+<table>
+  <tr><th>Шаг</th><th>Что делаешь</th><th>Что нажать / ввести</th></tr>
+  <tr>
+    <td><span class="stepnum">1</span></td>
+    <td>Заходишь на сайт и входишь в аккаунт</td>
+    <td class="click">huggingface.co → Log in</td>
+  </tr>
+  <tr>
+    <td><span class="stepnum">2</span></td>
+    <td>Создаёшь новое пространство</td>
+    <td class="click">аватар → New Space</td>
+  </tr>
+  <tr>
+    <td><span class="stepnum">3</span></td>
+    <td>Заполняешь: имя, тип, доступ</td>
+    <td class="click">name → любое · SDK → <b>Gradio</b> · <b>Public</b> → Create Space</td>
+  </tr>
+  <tr>
+    <td><span class="stepnum">4</span></td>
+    <td>Открываешь загрузку файлов</td>
+    <td class="click">вкладка Files → Add file → Upload files</td>
+  </tr>
+  <tr>
+    <td><span class="stepnum">5</span></td>
+    <td>Загружаешь ВСЕ ТРИ файла и сохраняешь</td>
+    <td class="click"><span class="code">app.py</span> + <span class="code">requirements.txt</span> + <span class="code">penguin_model.joblib</span> → Commit changes</td>
+  </tr>
+  <tr>
+    <td><span class="stepnum">6</span></td>
+    <td>Ждёшь сборку и открываешь приложение</td>
+    <td class="click">вкладка App → ждёшь «Building» 2–3 мин → готово!</td>
+  </tr>
+</table>
+
+<div class="banner b-cyan">✅ Твоя постоянная ссылка: <span class="code">huggingface.co/spaces/ТВОЙ_ЛОГИН/имя-приложения</span> — открывается с любого телефона.</div>
+
+<h2>Если не запустилось — не паникуй</h2>
+<table>
+  <tr><th style="width:auto">Симптом</th><th>Что делать</th></tr>
+  <tr><td>Вкладка App показывает ошибку (Error)</td><td class="click">Открой вкладку <b>Logs</b> — там видно, какой библиотеки не хватило</td></tr>
+  <tr><td>В логах: <span class="code">ModuleNotFoundError</span></td><td class="click">Добавь недостающую библиотеку в <span class="code">requirements.txt</span> → Commit</td>
+  </tr>
+  <tr><td>Долго висит «Building»</td><td class="click">Это норма: первая сборка идёт 2–3 минуты. Подожди.</td></tr>
+  <tr><td>В логах: <span class="code">FileNotFoundError</span> (модель)</td><td class="click">Забыл загрузить <span class="code">penguin_model.joblib</span> — добавь этот файл в Space</td></tr>
+  <tr><td>Приложение просит share=True</td><td class="click">Убери <span class="code">share=True</span> из <span class="code">app.py</span> — на Spaces он лишний</td></tr>
+</table>
+
+<div class="banner b-violet" style="text-align:center;">💡 Модель без интерфейса видишь только ты. С Gradio и Spaces её видит весь мир по ссылке.</div>
+
+<button class="print-btn" onclick="window.print()">🖨 Распечатать вкладыш</button>
+
+<footer>Курс «Машинное обучение для подростков» · Фаза 5 · Урок 20 · вкладыш для ученика</footer>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<div style="padding: 1rem 0;">
+<h2 class="sr-only">Интерактивное демо: как нейросеть видит картинку как массив чисел и что делает нормализация</h2>
+
+<div style="display:flex; gap:20px; flex-wrap:wrap; align-items:flex-start;">
+  <div style="flex:1; min-width:240px;">
+    <p style="font-size:13px; color:var(--text-secondary); margin:0 0 8px;">Наведи мышь на пиксель — увидишь его числа</p>
+    <canvas id="grid" width="288" height="288" style="width:288px; height:288px; border:0.5px solid var(--border); border-radius:8px; image-rendering:pixelated; cursor:crosshair; display:block;"></canvas>
+    <p style="font-size:12px; color:var(--text-muted); margin:8px 0 0;">Картинка 32×32 · показаны 12×12 для наглядности</p>
+  </div>
+
+  <div style="flex:1; min-width:240px;">
+    <div style="background:var(--surface-1); border-radius:8px; padding:1rem; margin-bottom:16px;">
+      <p style="font-size:13px; color:var(--text-secondary); margin:0 0 10px;">Пиксель под курсором</p>
+      <div id="swatch" style="width:56px; height:56px; border-radius:8px; border:0.5px solid var(--border); margin-bottom:12px; background:#888;"></div>
+      <table style="width:100%; font-size:14px; border-collapse:collapse;">
+        <tr><td style="padding:3px 0; color:#993c1d;">R (красный)</td><td id="r" style="text-align:right; font-family:var(--font-mono);">—</td></tr>
+        <tr><td style="padding:3px 0; color:#3b6d11;">G (зелёный)</td><td id="g" style="text-align:right; font-family:var(--font-mono);">—</td></tr>
+        <tr><td style="padding:3px 0; color:#185fa5;">B (синий)</td><td id="b" style="text-align:right; font-family:var(--font-mono);">—</td></tr>
+      </table>
+    </div>
+
+    <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px;">
+      <label style="font-size:14px; color:var(--text-secondary);">Нормализация</label>
+      <input type="range" min="0" max="1" step="1" value="0" id="norm" style="flex:1;" />
+      <span id="normlabel" style="font-size:13px; font-weight:500; min-width:60px;">выкл</span>
+    </div>
+
+    <div style="background:var(--surface-1); border-radius:8px; padding:1rem;">
+      <p style="font-size:13px; color:var(--text-secondary); margin:0 0 8px;">Что уходит в сеть</p>
+      <p id="formula" style="font-size:14px; font-family:var(--font-mono); margin:0; line-height:1.6;">[R, G, B] = [—, —, —]</p>
+      <p id="shape" style="font-size:13px; color:var(--text-muted); margin:10px 0 0;">форма всей картинки: (32, 32, 3)</p>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top:16px; padding:12px 14px; background:var(--bg-accent); border-radius:8px;">
+  <p style="font-size:13px; color:var(--text-accent); margin:0;">Каждый пиксель — это 3 числа от 0 до 255. Нормализация делит их на 255, чтобы получить числа от 0 до 1 — сети так учиться удобнее.</p>
+</div>
+
+<script>
+(function(){
+  var img=[[70,90,140],[80,100,150],[90,110,160],[110,130,175],[120,140,180],[130,150,185],[140,160,190],[135,155,188],[125,145,182],[115,135,178],[95,115,165],[75,95,148],
+  [72,92,142],[130,120,95],[150,135,100],[160,145,110],[155,140,105],[145,130,98],[140,128,96],[150,138,102],[158,144,108],[120,110,88],[85,105,158],[70,90,140],
+  [74,94,144],[160,140,100],[190,165,120],[205,180,135],[200,175,130],[185,160,115],[180,155,112],[195,170,125],[200,175,130],[150,130,98],[80,100,152],[68,88,138],
+  [76,96,146],[170,148,105],[210,185,138],[225,200,150],[215,190,142],[135,110,88],[130,105,84],[210,185,140],[218,192,145],[160,138,102],[78,98,150],[66,86,136],
+  [78,98,148],[175,152,108],[215,190,142],[220,195,146],[145,118,92],[95,72,58],[92,70,56],[150,122,95],[222,196,148],[168,144,106],[76,96,148],[64,84,134],
+  [80,100,150],[178,155,110],[218,192,145],[210,185,140],[120,95,74],[110,140,90],[115,145,92],[125,98,76],[215,190,143],[172,148,108],[74,94,146],[62,82,132],
+  [82,102,152],[176,153,109],[212,188,142],[218,193,146],[160,130,100],[105,132,86],[108,135,88],[165,134,102],[210,186,141],[168,145,106],[72,92,144],[60,80,130],
+  [80,100,150],[170,148,106],[205,182,138],[212,188,143],[208,184,140],[150,122,95],[148,120,94],[206,182,139],[203,180,137],[160,138,102],[70,90,142],[58,78,128],
+  [78,98,148],[158,138,100],[195,172,130],[202,178,135],[198,175,132],[188,165,124],[185,162,122],[196,173,131],[192,170,128],[148,128,96],[68,88,140],[56,76,126],
+  [72,92,144],[135,118,90],[170,150,114],[178,158,120],[176,156,118],[170,150,114],[168,148,112],[172,152,116],[168,148,112],[125,108,84],[66,86,138],[54,74,124],
+  [66,86,140],[95,105,120],[110,120,130],[120,128,138],[122,130,140],[118,126,136],[116,124,134],[120,128,138],[114,122,132],[92,102,118],[64,84,136],[52,72,122],
+  [60,80,136],[62,82,132],[70,90,138],[78,98,142],[82,102,145],[85,105,148],[86,106,149],[82,102,145],[76,96,140],[68,88,136],[60,80,132],[50,70,120]];
+  var N=12, cell=24;
+  var cv=document.getElementById('grid'), ctx=cv.getContext('2d');
+  function draw(){for(var y=0;y<N;y++)for(var x=0;x<N;x++){var p=img[y*N+x];ctx.fillStyle='rgb('+p[0]+','+p[1]+','+p[2]+')';ctx.fillRect(x*cell,y*cell,cell,cell);}}
+  draw();
+  var rEl=document.getElementById('r'),gEl=document.getElementById('g'),bEl=document.getElementById('b');
+  var sw=document.getElementById('swatch'),fm=document.getElementById('formula'),shape=document.getElementById('shape');
+  var norm=document.getElementById('norm'),nl=document.getElementById('normlabel');
+  var last=null;
+  function show(p){if(!p)return;var on=norm.value==='1';sw.style.background='rgb('+p[0]+','+p[1]+','+p[2]+')';
+    if(on){rEl.textContent=(p[0]/255).toFixed(2);gEl.textContent=(p[1]/255).toFixed(2);bEl.textContent=(p[2]/255).toFixed(2);
+      fm.textContent='[R, G, B] = ['+(p[0]/255).toFixed(2)+', '+(p[1]/255).toFixed(2)+', '+(p[2]/255).toFixed(2)+']';}
+    else{rEl.textContent=p[0];gEl.textContent=p[1];bEl.textContent=p[2];
+      fm.textContent='[R, G, B] = ['+p[0]+', '+p[1]+', '+p[2]+']';}}
+  cv.addEventListener('mousemove',function(e){var rect=cv.getBoundingClientRect();var x=Math.floor((e.clientX-rect.left)/cell),y=Math.floor((e.clientY-rect.top)/cell);if(x<0||x>=N||y<0||y>=N)return;last=img[y*N+x];show(last);});
+  norm.addEventListener('input',function(){nl.textContent=norm.value==='1'?'вкл (÷255)':'выкл';show(last);});
+})();
+</script>
+</div>

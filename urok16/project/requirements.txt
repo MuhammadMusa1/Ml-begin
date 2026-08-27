@@ -1,0 +1,3 @@
+gradio
+spaces
+tensorflow==2.21.0

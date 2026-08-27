@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Демо · Конструктор идеи проекта</title>
+<style>
+  :root{--bg:#17132E;--card:#241E42;--card2:#2C2552;--violet:#8B7DF5;--violetd:#5B4FC4;
+    --cyan:#27D3EE;--teal:#2DD4BF;--lav:#D9D4F2;--muted:#9E96C8;--warn:#FF7A8A;--green:#6EE7B7;--white:#fff;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--lav);font-family:"Segoe UI",Calibri,system-ui,sans-serif;padding:24px;line-height:1.5}
+  .wrap{max-width:860px;margin:0 auto}
+  h1{color:var(--white);font-size:26px;margin:0 0 4px}
+  .kick{color:var(--cyan);font-weight:700;letter-spacing:2px;font-size:13px;text-transform:uppercase}
+  .sub{color:var(--muted);margin:6px 0 12px}
+  .demoday{background:linear-gradient(90deg,#2E2557,#241E42);border:1px solid var(--violet);border-radius:10px;
+    padding:10px 14px;margin:0 0 18px;font-size:14px;color:var(--lav)}
+  .demoday b{color:var(--white)}
+  .panel{background:var(--card);border-radius:16px;padding:18px}
+  .filters{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:6px}
+  .fg{flex:1;min-width:220px}
+  label{display:block;font-weight:600;color:var(--white);margin-bottom:8px;font-size:14px}
+  .seg{display:flex;gap:6px;flex-wrap:wrap}
+  .seg button{background:var(--card2);border:2px solid transparent;border-radius:8px;padding:8px 12px;color:var(--lav);cursor:pointer;font-size:13px}
+  .seg button.sel{border-color:var(--cyan);background:#0E3540;color:var(--white)}
+  .ideas{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+  @media(max-width:640px){.ideas{grid-template-columns:1fr}}
+  .idea{background:var(--card2);border-radius:12px;padding:14px;cursor:pointer;border:2px solid transparent;transition:.15s}
+  .idea:hover{border-color:var(--violet)}
+  .idea.sel{border-color:var(--cyan)}
+  .idea .t{font-weight:700;color:var(--white);font-size:15px;margin-bottom:6px}
+  .idea .t .ic{margin-right:6px}
+  .idea .m{font-size:13px;color:var(--muted);margin:2px 0}
+  .idea .m b{color:var(--teal)}
+  .diff{font-size:11px;padding:1px 8px;border-radius:20px;float:right}
+  .diff.e{background:#1E3A34;color:var(--green)} .diff.m{background:#3A2352;color:var(--violet)}
+  .stmt{background:var(--card2);border-radius:12px;padding:16px;margin-top:16px;font-size:15px;line-height:1.7}
+  .stmt b{color:var(--cyan)}
+  .copybtn{margin-top:12px;background:var(--violetd);border:none;border-radius:8px;padding:10px 16px;color:#fff;
+    font-size:14px;font-weight:600;cursor:pointer;transition:.15s;opacity:.5;pointer-events:none}
+  .copybtn.on{opacity:1;pointer-events:auto}
+  .copybtn.on:hover{background:var(--violet)}
+  .copybtn.done{background:#1E3A34;color:var(--green)}
+  .note{background:var(--card2);border-radius:12px;padding:14px;font-size:14px;margin-top:16px}
+  .note b{color:var(--teal)}
+  .warn{background:#3A1E28;border-left:3px solid var(--warn);border-radius:0 12px 12px 0;padding:14px;font-size:14px;margin-top:16px}
+  .warn b{color:var(--warn)}
+  .warn ul{margin:8px 0 0;padding-left:18px}
+  .warn li{margin:3px 0}
+  .warn li s{color:var(--muted)}
+  .warn li b.ok{color:var(--green)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="kick">Урок 21 · интерактивное демо</div>
+  <h1>💡 Конструктор идеи финального проекта</h1>
+  <p class="sub">Выбери тип задачи и тему — получишь реализуемые идеи с готовой постановкой, метрикой и подсказкой, где взять данные.</p>
+
+  <div class="demoday">🎓 <b>Это твой финальный проект.</b> Готовое приложение ты покажешь родителям на <b>Demo Day</b> и добавишь в портфолио.</div>
+
+  <div class="panel">
+    <div class="filters">
+      <div class="fg">
+        <label>Тип задачи</label>
+        <div class="seg" id="typeseg">
+          <button data-v="clf" class="sel">Классификация</button>
+          <button data-v="reg">Регрессия</button>
+        </div>
+      </div>
+      <div class="fg">
+        <label>Тема</label>
+        <div class="seg" id="domseg">
+          <button data-v="text" class="sel">Тексты</button>
+          <button data-v="table">Таблицы</button>
+          <button data-v="games">Игры/спорт</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="ideas" id="ideas"></div>
+    <div class="stmt" id="stmt">Выбери идею — соберём готовую постановку задачи.</div>
+    <button class="copybtn" id="copybtn">📋 Скопировать постановку</button>
+  </div>
+
+  <div class="warn">
+    <b>⚠️ Осторожно со «слишком большими» идеями.</b> Их не успеть за оставшиеся уроки, и часто нет данных или нельзя честно измерить результат. Лучше сузить:
+    <ul>
+      <li><s>«Сделаю свой ChatGPT»</s> → <b class="ok">классификация отзывов на 2 класса</b></li>
+      <li><s>«Распознаю любые предметы на фото»</s> → <b class="ok">2–3 своих категории</b></li>
+      <li><s>«Предскажу курс биткоина»</s> → <b class="ok">предскажу оценку по часам учёбы</b></li>
+    </ul>
+  </div>
+
+  <div class="note">
+    <b>Как проверить реализуемость:</b> данные реально достать? результат измеряется метрикой? успеешь за 2–3 урока? Если на все «да» — идея хорошая. Начинай с baseline и Pipeline.
+  </div>
+</div>
+
+<script>
+const IDEAS=[
+  // text
+  {type:'clf',dom:'text',ic:'🎭',t:'Детектор настроения отзывов',target:'позитив / негатив',metric:'accuracy, F1',data:'свои отзывы или датасет с Kaggle',diff:'e'},
+  {type:'clf',dom:'text',ic:'📧',t:'Спам или не спам',target:'спам / не спам',metric:'precision (не удалить важное)',data:'датасет SMS Spam (Kaggle)',diff:'e'},
+  {type:'clf',dom:'text',ic:'🏷️',t:'Тема сообщения',target:'категория темы',metric:'accuracy',data:'свои сообщения по папкам',diff:'m'},
+  // table
+  {type:'reg',dom:'table',ic:'📈',t:'Предсказание оценки',target:'балл за экзамен',metric:'MAE / R²',data:'часы учёбы → оценка (свой опрос)',diff:'e'},
+  {type:'clf',dom:'table',ic:'🐧',t:'Вид пингвина по замерам',target:'вид (3 класса)',metric:'accuracy',data:'Palmer Penguins (готовый)',diff:'e'},
+  {type:'reg',dom:'table',ic:'💰',t:'Цена товара/жилья',target:'цена',metric:'MAE / RMSE',data:'датасет цен (Kaggle)',diff:'m'},
+  // games
+  {type:'clf',dom:'games',ic:'🏆',t:'Победа в матче',target:'победа / поражение',metric:'accuracy',data:'игровая/спортивная статистика (Kaggle)',diff:'m'},
+  {type:'reg',dom:'games',ic:'🎮',t:'Прогноз очков игрока',target:'кол-во очков',metric:'MAE',data:'статистика игроков (Kaggle)',diff:'m'},
+];
+let type='clf', dom='text', selText='';
+const ideasBox=document.getElementById('ideas'), stmt=document.getElementById('stmt'), copybtn=document.getElementById('copybtn');
+
+function resetCopy(){ selText=''; copybtn.className='copybtn'; copybtn.textContent='📋 Скопировать постановку'; }
+
+function render(){
+  const list=IDEAS.filter(i=>i.type===type && i.dom===dom);
+  ideasBox.innerHTML=''; resetCopy();
+  if(!list.length){ideasBox.innerHTML='<div style="color:var(--muted);grid-column:1/-1">Для этой комбинации в примерах нет идей — попробуй другую тему или тип. (Регрессия чаще на таблицах/играх.)</div>';stmt.textContent='Выбери идею.';return;}
+  list.forEach((i)=>{
+    const d=document.createElement('div'); d.className='idea';
+    d.innerHTML=`<span class="diff ${i.diff}">${i.diff==='e'?'просто':'средне'}</span>
+      <div class="t"><span class="ic">${i.ic}</span>${i.t}</div>
+      <div class="m">🎯 предсказываем: <b>${i.target}</b></div>
+      <div class="m">📏 метрика: <b>${i.metric}</b></div>
+      <div class="m">📦 данные: ${i.data}</div>`;
+    d.onclick=()=>{ideasBox.querySelectorAll('.idea').forEach(x=>x.classList.remove('sel'));d.classList.add('sel');fill(i);};
+    ideasBox.appendChild(d);
+  });
+  stmt.textContent='Выбери идею — соберём готовую постановку задачи.';
+}
+function fill(i){
+  const kind = i.type==='clf' ? 'классификации' : 'регрессии';
+  const kindShort = i.type==='clf' ? 'классификация' : 'регрессия';
+  stmt.innerHTML=`<b>Постановка задачи:</b><br>
+    Я хочу предсказать <b>${i.target}</b> — это задача <b>${kind}</b>.<br>
+    Главная метрика: <b>${i.metric}</b>.<br>
+    Данные возьму: ${i.data}.<br><br>
+    <span style="color:var(--muted)">Следующий шаг: загрузить данные, сделать baseline и первичную модель в Pipeline.</span>`;
+  // plain-text для копирования
+  selText=`Проект: ${i.t}\n`+
+    `Задача: ${kindShort}\n`+
+    `Предсказываю: ${i.target}\n`+
+    `Метрика: ${i.metric}\n`+
+    `Данные: ${i.data}\n`+
+    `Следующий шаг: данные -> baseline -> модель в Pipeline`;
+  copybtn.className='copybtn on'; copybtn.textContent='📋 Скопировать постановку';
+}
+copybtn.onclick=async ()=>{
+  if(!selText) return;
+  try{ await navigator.clipboard.writeText(selText); }
+  catch(e){ const ta=document.createElement('textarea'); ta.value=selText; document.body.appendChild(ta); ta.select();
+    try{document.execCommand('copy');}catch(_){} document.body.removeChild(ta); }
+  copybtn.className='copybtn on done'; copybtn.textContent='✅ Скопировано!';
+  setTimeout(()=>{ if(selText){copybtn.className='copybtn on';copybtn.textContent='📋 Скопировать постановку';} },1600);
+};
+function seg(id,setter){
+  document.querySelectorAll('#'+id+' button').forEach(b=>b.onclick=()=>{
+    document.querySelectorAll('#'+id+' button').forEach(x=>x.classList.remove('sel'));
+    b.classList.add('sel'); setter(b.dataset.v); render();
+  });
+}
+seg('typeseg',v=>type=v); seg('domseg',v=>dom=v);
+render();
+</script>
+</body>
+</html>

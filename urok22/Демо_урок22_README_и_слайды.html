@@ -28,6 +28,8 @@
   .btn:hover{background:var(--violet)}
   .note{background:var(--card2);border-radius:12px;padding:14px;font-size:14px;margin-top:16px}
   .note b{color:var(--teal)}
+  .demoday{background:linear-gradient(90deg,#2E2557,#241E42);border:1px solid var(--violet);border-radius:10px;padding:10px 14px;margin:0 0 18px;font-size:14px;color:var(--lav)}
+  .demoday b{color:var(--white)}
 </style>
 </head>
 <body>
@@ -35,6 +37,8 @@
   <div class="kick">Урок 22 · интерактивное демо</div>
   <h1>📝 Генератор README и структуры презентации</h1>
   <p class="sub">Заполни поля про свой проект — получишь готовый README.md и план из 5 слайдов, которые можно скопировать.</p>
+
+  <div class="demoday">🎓 <b>README и слайды — часть защиты.</b> Их ты покажешь родителям на <b>Demo Day</b> и приложишь к портфолио.</div>
 
   <div class="grid">
     <div class="panel">
@@ -117,9 +121,11 @@ function render(){document.getElementById('out').textContent = tab==='readme'?re
 document.querySelectorAll('input,textarea').forEach(el=>el.addEventListener('input',render));
 document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
   document.querySelectorAll('.tab').forEach(x=>x.classList.remove('sel'));t.classList.add('sel');tab=t.dataset.t;render();});
-document.getElementById('copy').addEventListener('click',()=>{
+document.getElementById('copy').addEventListener('click',async ()=>{
   const txt=document.getElementById('out').textContent;
-  navigator.clipboard&&navigator.clipboard.writeText(txt);
+  try{ await navigator.clipboard.writeText(txt); }
+  catch(e){ const ta=document.createElement('textarea'); ta.value=txt; document.body.appendChild(ta); ta.select();
+    try{document.execCommand('copy');}catch(_){} document.body.removeChild(ta); }
   const b=document.getElementById('copy');b.textContent='✓ Скопировано';setTimeout(()=>b.textContent='📋 Скопировать',1500);
 });
 render();

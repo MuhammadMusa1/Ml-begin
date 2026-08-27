@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Площадь комнаты в лабиринте</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .maze-container {
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+        }
+        .maze {
+            display: grid;
+            gap: 2px;
+            background: #333;
+            padding: 2px;
+        }
+        .cell {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .cell.wall {
+            background: #333;
+        }
+        .cell.empty {
+            background: #e8f5e9;
+        }
+        .cell.visited {
+            background: #4CAF50;
+            color: white;
+        }
+        .cell.start {
+            background: #ff9800;
+            color: white;
+            animation: pulse 1s infinite;
+        }
+        .cell.path {
+            background: #2196F3;
+            color: white;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        .controls {
+            margin: 20px 0;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        button {
+            padding: 10px 20px;
+            background: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #1976D2;
+        }
+        button.reset {
+            background: #f44336;
+        }
+        button.reset:hover {
+            background: #d32f2f;
+        }
+        .result {
+            margin: 20px 0;
+            padding: 15px;
+            background: #e8f5e9;
+            border-radius: 5px;
+            font-size: 18px;
+        }
+        .explanation {
+            margin-top: 20px;
+            padding: 15px;
+            background: #fff3e0;
+            border-radius: 5px;
+            border-left: 4px solid #ff9800;
+        }
+        .step {
+            padding: 10px;
+            margin: 10px 0;
+            background: #e3f2fd;
+            border-radius: 5px;
+            border-left: 4px solid #1976D2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏗️ Площадь комнаты в лабиринте</h1>
+        <h3>Поиск всех связанных пустых клеток</h3>
+        
+        <div class="controls">
+            <button onclick="generateMaze()">Сгенерировать новый лабиринт</button>
+            <button onclick="startSearch()">Найти комнату</button>
+            <button onclick="resetMaze()" class="reset">Сбросить</button>
+        </div>
+        
+        <div class="maze-container" id="mazeContainer"></div>
+        
+        <div id="result" class="result" style="display:none;"></div>
+        
+        <div id="explanation" class="explanation"></div>
+        
+        <div style="margin-top: 15px; padding: 10px; background: #e3f2fd; border-radius: 5px;">
+            <p><strong>Управление:</strong> Нажмите на любую пустую клетку, чтобы выбрать стартовую позицию.</p>
+        </div>
+    </div>
+
+    <script>
+        // Глобальные переменные
+        let N = 8;
+        let maze = [];
+        let visited = [];
+        let startX = -1, startY = -1;
+        let currentStep = 0;
+        let steps = [];
+        let isSearching = false;
+        
+        // Генерация лабиринта
+        function generateMaze() {
+            // Создаем пустой лабиринт со стенками по краям
+            maze = [];
+            for (let i = 0; i < N; i++) {
+                maze[i] = [];
+                for (let j = 0; j < N; j++) {
+                    if (i === 0 || i === N-1 || j === 0 || j === N-1) {
+                        maze[i][j] = '*';
+                    } else {
+                        maze[i][j] = '.';
+                    }
+                }
+            }
+            
+            // Добавляем случайные стенки
+            const numWalls = Math.floor(N * N * 0.2);
+            for (let w = 0; w < numWalls; w++) {
+                const i = Math.floor(Math.random() * (N-2)) + 1;
+                const j = Math.floor(Math.random() * (N-2)) + 1;
+                maze[i][j] = '*';
+            }
+            
+            // Выбираем стартовую позицию
+            let found = false;
+            for (let i = 1; i < N-1 && !found; i++) {
+                for (let j = 1; j < N-1 && !found; j++) {
+                    if (maze[i][j] === '.') {
+                        startX = i;
+                        startY = j;
+                        found = true;
+                    }
+                }
+            }
+            
+            // Сбрасываем состояние
+            visited = [];
+            for (let i = 0; i < N; i++) {
+                visited[i] = [];
+                for (let j = 0; j < N; j++) {
+                    visited[i][j] = false;
+                }
+            }
+            
+            isSearching = false;
+            currentStep = 0;
+            steps = [];
+            
+            renderMaze();
+            document.getElementById('result').style.display = 'none';
+            document.getElementById('explanation').innerHTML = '';
+        }
+        
+        // Отрисовка лабиринта
+        function renderMaze() {
+            const container = document.getElementById('mazeContainer');
+            container.innerHTML = '';
+            
+            const grid = document.createElement('div');
+            grid.className = 'maze';
+            grid.style.gridTemplateColumns = `repeat(${N}, 40px)`;
+            
+            for (let i = 0; i < N; i++) {
+                for (let j = 0; j < N; j++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    
+                    if (maze[i][j] === '*') {
+                        cell.className += ' wall';
+                    } else {
+                        cell.className += ' empty';
+                        
+                        if (visited[i][j]) {
+                            cell.className += ' visited';
+                        }
+                        
+                        if (i === startX && j === startY) {
+                            cell.className += ' start';
+                        }
+                        
+                        // Добавляем возможность выбрать стартовую клетку
+                        cell.onclick = function() {
+                            if (!isSearching) {
+                                startX = i;
+                                startY = j;
+                                visited = [];
+                                for (let i2 = 0; i2 < N; i2++) {
+                                    visited[i2] = [];
+                                    for (let j2 = 0; j2 < N; j2++) {
+                                        visited[i2][j2] = false;
+                                    }
+                                }
+                                document.getElementById('result').style.display = 'none';
+                                document.getElementById('explanation').innerHTML = '';
+                                renderMaze();
+                            }
+                        };
+                    }
+                    
+                    grid.appendChild(cell);
+                }
+            }
+            
+            container.appendChild(grid);
+        }
+        
+        // ☆☆☆ ОСНОВНОЙ АЛГОРИТМ - BFS ☆☆☆
+        function startSearch() {
+            if (startX === -1 || startY === -1) {
+                alert('Выберите стартовую клетку!');
+                return;
+            }
+            
+            if (maze[startX][startY] === '*') {
+                alert('Стартовая клетка должна быть пустой!');
+                return;
+            }
+            
+            isSearching = true;
+            steps = [];
+            currentStep = 0;
+            
+            // Сброс visited
+            visited = [];
+            for (let i = 0; i < N; i++) {
+                visited[i] = [];
+                for (let j = 0; j < N; j++) {
+                    visited[i][j] = false;
+                }
+            }
+            
+            // ☆☆☆ BFS (Поиск в ширину) ☆☆☆
+            const queue = [];
+            queue.push([startX, startY]);
+            visited[startX][startY] = true;
+            let count = 0;
+            
+            // Запоминаем шаги для анимации
+            const stepQueue = [[startX, startY]];
+            
+            // Направления: вверх, вниз, влево, вправо
+            const dx = [-1, 1, 0, 0];
+            const dy = [0, 0, -1, 1];
+            
+            while (queue.length > 0) {
+                const [x, y] = queue.shift();
+                count++;
+                
+                // Проверяем всех соседей
+                for (let dir = 0; dir < 4; dir++) {
+                    const nx = x + dx[dir];
+                    const ny = y + dy[dir];
+                    
+                    // Проверяем, что клетка внутри лабиринта, пустая и не посещена
+                    if (nx >= 0 && nx < N && ny >= 0 && ny < N && 
+                        maze[nx][ny] === '.' && !visited[nx][ny]) {
+                        visited[nx][ny] = true;
+                        queue.push([nx, ny]);
+                        stepQueue.push([nx, ny]);
+                    }
+                }
+            }
+            
+            // Сохраняем шаги для анимации
+            steps = stepQueue;
+            
+            // Показываем результат
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = `
+                <strong>Площадь комнаты:</strong> ${count} клеток
+                <br>
+                <span style="font-size:14px;color:#666;">
+                    (Начинаем с клетки (${startX+1}, ${startY+1}))
+                </span>
+            `;
+            
+            // Анимируем поиск
+            animateSearch();
+            
+            // Объясняем алгоритм
+            explainBFS(count);
+            
+            isSearching = false;
+        }
+        
+        // Анимация поиска
+        function animateSearch() {
+            let index = 0;
+            
+            function step() {
+                if (index >= steps.length) {
+                    // Показываем стартовую клетку
+                    renderMaze();
+                    return;
+                }
+                
+                const [x, y] = steps[index];
+                visited[x][y] = true;
+                renderMaze();
+                index++;
+                
+                setTimeout(step, 50);
+            }
+            
+            step();
+        }
+        
+        // Сброс лабиринта
+        function resetMaze() {
+            visited = [];
+            for (let i = 0; i < N; i++) {
+                visited[i] = [];
+                for (let j = 0; j < N; j++) {
+                    visited[i][j] = false;
+                }
+            }
+            isSearching = false;
+            currentStep = 0;
+            steps = [];
+            document.getElementById('result').style.display = 'none';
+            document.getElementById('explanation').innerHTML = '';
+            renderMaze();
+        }
+        
+        // Объяснение BFS
+        function explainBFS(count) {
+            const div = document.getElementById('explanation');
+            div.innerHTML = `
+                <h3>📚 Как работает BFS (Поиск в ширину)?</h3>
+                
+                <div class="step">
+                    <strong>Шаг 1: Начинаем с стартовой клетки</strong>
+                    <p>Кладем стартовую клетку в очередь и отмечаем её как посещенную.</p>
+                </div>
+                
+                <div class="step">
+                    <strong>Шаг 2: Исследуем соседей</strong>
+                    <p>Берем клетку из начала очереди и смотрим на всех её соседей 
+                    (вверх, вниз, влево, вправо).</p>
+                </div>
+                
+                <div class="step">
+                    <strong>Шаг 3: Добавляем новых соседей</strong>
+                    <p>Если соседняя клетка пустая и ещё не посещена, 
+                    отмечаем её и добавляем в конец очереди.</p>
+                </div>
+                
+                <div class="step">
+                    <strong>Шаг 4: Повторяем</strong>
+                    <p>Продолжаем, пока очередь не опустеет.</p>
+                </div>
+                
+                <div class="step" style="background:#fff3e0;border-left-color:#ff9800;">
+                    <strong>🎯 Почему BFS?</strong>
+                    <p>BFS идеально подходит для поиска всех связанных клеток в лабиринте.</p>
+                    <p>Он гарантированно найдет все доступные клетки в комнате.</p>
+                    <p>Время работы: O(N²) - мы посещаем каждую клетку не более одного раза.</p>
+                </div>
+                
+                <p style="margin-top:15px;padding:10px;background:#e8f5e9;border-radius:5px;">
+                    <strong>💡 Ключевая идея:</strong> BFS работает как "волна" - мы расширяемся 
+                    от стартовой клетки во все стороны, пока не исследуем всю комнату.
+                    Это как если бы мы заливали комнату водой - вода заполняет все доступное пространство.
+                </p>
+                
+                <p style="margin-top:10px;padding:10px;background:#e3f2fd;border-radius:5px;">
+                    <strong>📝 Запомните:</strong> BFS использует <strong>очередь</strong> (FIFO).
+                    DFS (поиск в глубину) использует <strong>стек</strong> (LIFO).
+                    Для поиска площади комнаты лучше использовать BFS, так как он гарантирует 
+                    нахождение всех связанных клеток без рекурсии.
+                </p>
+            `;
+        }
+        
+        // Запускаем при загрузке
+        window.onload = function() {
+            generateMaze();
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Каталог идей финального проекта · 30 тем</title>
+<style>
+ :root{--bg:#17132E;--card:#241E42;--card2:#2C2552;--violet:#8B7DF5;--violetd:#5B4FC4;
+  --cyan:#27D3EE;--teal:#2DD4BF;--lav:#D9D4F2;--muted:#9E96C8;--warn:#FF7A8A;--green:#6EE7B7;--gold:#F7C948;--white:#fff;}
+ *{box-sizing:border-box}
+ body{margin:0;background:var(--bg);color:var(--lav);font-family:"Segoe UI",Calibri,system-ui,sans-serif;padding:26px;line-height:1.5}
+ .wrap{max-width:1080px;margin:0 auto}
+ .kick{color:var(--cyan);font-weight:700;letter-spacing:2px;font-size:13px;text-transform:uppercase}
+ h1{color:var(--white);font-size:30px;margin:4px 0 6px}
+ h2{color:var(--white);font-size:21px;margin:26px 0 10px;border-bottom:1px solid var(--card2);padding-bottom:6px}
+ .sub{color:var(--muted);margin:4px 0 14px}
+ .howto{background:var(--card);border-left:3px solid var(--cyan);border-radius:0 12px 12px 0;padding:14px 16px;margin:14px 0}
+ .howto b{color:var(--white)}
+ .howto ul{margin:8px 0 0;padding-left:18px} .howto li{margin:3px 0}
+ .nav{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+ .nav a{background:var(--card2);color:var(--lav);text-decoration:none;padding:6px 12px;border-radius:20px;font-size:13px;font-weight:600}
+ .nav a:hover{background:var(--violetd);color:#fff}
+ .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+ @media(max-width:720px){.grid{grid-template-columns:1fr}}
+ .card{background:var(--card);border-radius:14px;padding:14px 16px;break-inside:avoid}
+ .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+ .num{color:var(--muted);font-weight:700;font-size:13px}
+ .tier{font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px;text-transform:uppercase;letter-spacing:.5px}
+ .tier.b{background:#1E3A34;color:var(--green)} .tier.a{background:#3A2352;color:var(--violet)} .tier.s{background:#3A3410;color:var(--gold)}
+ .name{color:var(--white);font-weight:700;font-size:16px}
+ .type{color:var(--teal);font-size:12px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+ .row{font-size:13px;margin:3px 0} .row b{color:var(--lav)}
+ .parent{background:var(--card2);border-radius:8px;padding:8px 10px;margin-top:8px;font-size:13px;color:var(--cyan)}
+ .note{color:var(--warn);font-size:12px;margin-top:6px;font-style:italic}
+ .print{background:transparent;border:1.5px solid var(--violetd);color:var(--lav);border-radius:10px;padding:9px 16px;cursor:pointer;font-size:14px;margin-top:6px}
+ .print:hover{border-color:var(--cyan);color:#fff}
+ .legend{display:flex;gap:16px;flex-wrap:wrap;margin:10px 0;font-size:13px;color:var(--muted)}
+ @media print{
+  body{background:#fff;color:#111} h1,h2,.name{color:#111} .howto,.card{background:#f4f3fa;border:1px solid #ddd}
+  .parent{background:#e8e6f6;color:#3C3489} .nav,.print{display:none} h2{border-color:#ccc}
+  .kick{color:#5B4FC4} .grid{grid-template-columns:1fr 1fr}
+ }
+</style></head><body><div class="wrap">
+ <div class="kick">Финальный проект · уроки 21–24</div>
+ <h1>🎁 Каталог идей проекта — 30 тем</h1>
+ <p class="sub">Готовые, реализуемые идеи, которые не стыдно показать родителям на Demo Day. Все доводятся до веб-приложения (Gradio) за 2–3 урока.</p>
+
+ <div class="howto">
+  <b>Как выбрать (для ученика):</b> возьми <b>3 идеи из разных тем</b> и принеси на урок 21 — вместе оставим одну.
+  <ul>
+   <li>Данные реально достать? Метрику видно? Успею за оставшиеся уроки?</li>
+   <li>Проект «не стыдный», если: работает вживую, есть ссылка для родителей, ты объясняешь его простыми словами и он обыгрывает baseline.</li>
+  </ul>
+ </div>
+
+ <div class="legend">
+  <span>🟢 база — уверенный старт</span><span>🟣 продвинутый — чуть сложнее</span><span>🟡 со звёздочкой ⭐ — для сильных</span>
+ </div>
+ <button class="print" onclick="window.print()">🖨 Печать / PDF для раздачи</button>
+
+ <div class="nav"><a href="#t0">📝 Тексты (как ChatGPT)</a><a href="#t40">🎓 Школа и учёба</a><a href="#t74">🎬 Кино, музыка, игры</a><a href="#t113">🏃 Спорт и здоровье</a><a href="#t151">💰 Деньги, покупки, жильё</a><a href="#t195">🌿 Природа и наука</a></div>
+
+ <h2 id="t0">📝 Тексты (как ChatGPT)</h2>
+<div class="grid">
+  <div class="card">
+    <div class="top"><span class="num">#01</span><span class="tier b">база</span></div>
+    <div class="name">Детектор тональности отзывов</div>
+    <div class="type">классификация</div>
+    <div class="row">🎯 <b>предсказываем:</b> позитив / негатив</div>
+    <div class="row">📦 <b>данные:</b> IMDB reviews или свои отзывы (Kaggle)</div>
+    <div class="row">📏 <b>метрика:</b> F1</div>
+    <div class="row">🖥️ <b>интерфейс:</b> вводишь отзыв → настроение</div>
+    <div class="parent">👀 родителям: печатаешь любой отзыв — ИИ говорит, добрый он или злой</div>
+    
+  </div>
+  <div class="card">
+    <div class="top"><span class="num">#02</span><span class="tier b">база</span></div>
+    <div class="name">Спам-фильтр сообщений</div>
+    <div class="type">классификация</div>
+    <div class="row">🎯 <b>предсказываем:</b> спам / не спам</div>
+    <div class="row">📦 <b>данные:</b> SMS Spam Collection (Kaggle)</div>
+    <div class="row">📏 <b>метрика:</b> precision</div>
+    <div class="row">🖥️ <b>интерфейс:</b> вводишь сообщение → спам?</div>
+    <div class="parent">👀 родителям: как фильтр в телефоне, но сделал ты сам</div>
+    
+  </div>
+  <div class="card">
+    <div class="top"><span class="num">#03</span><span class="tier a">продвинутый</span></div>
+    <div class="name">Эмоция сообщения</div>
+    <div class="type">классификация</div>
+    <div class="row">🎯 <b>предсказываем:</b> радость/грусть/злость/страх</div>
+    <div class="row">📦 <b>данные:</b> Emotion dataset (Kaggle)</div>
+    <div class="row">📏 <b>метрика:</b> accuracy</div>
+    <div class="row">🖥️ <b>интерфейс:</b> вводишь текст → эмоция</div>
+    <div class="parent">👀 родителям: ИИ угадывает эмоцию по словам</div>
+    
+  </div>
+  <div class="card">
+    <div class="top"><span class="num">#04</span><span class="tier a">продвинутый</span></div>
+    <div class="name">Определитель темы новости</div>
+    <div class="type">классификация</div>
+    <div class="row">🎯 <b>предсказываем:</b> спорт/наука/политика…</div>
+    <div class="row">📦 <b>данные:</b> AG News или свои заголовки</div>
+    <div class="row">📏 <b>метрика:</b> accuracy</div>
+    <div class="row">🖥️ <b>интерфейс:</b> вводишь заголовок → раздел</div>
+    <div class="parent">👀 родителям: автоматическая рубрикация как в новостных лентах</div>
+    
+  </div>
+  <div class="card">
+    <div class="top"><span class="num">#05</span><span class="tier b">база</span></div>
+    <div class="name">Определитель языка фразы</div>
+    <div class="type">классификация</div>
+    <div class="row">🎯 <b>предсказываем:</b> 3–4 языка</div>
+    <div class="row">📦 <b>данные:</b> свой мини-датасет фраз</div>
+    <div class="row">📏 <b>метрика:</b> accuracy</div>
+    <div class="row">🖥️ <b>интерфейс:</b> вводишь фразу → язык</div>
+    <div class="parent">👀 родителям: ИИ понимает, на каком языке написано</div>
+    
+  </div>
+</div>
+<h2 id="t40">🎓 Школа и учёба</h2>
+<div class="grid">
+  <div class="card">
+    <div class="top"><span class="num">#06</span><span class="tier b">база</span></div>
+    <div class="name">Прогноз оценки по часам учёбы</div>
+    <div class="type">регрессия</div>
+    <div class="row">🎯 <b>предсказываем:</b> балл за экзамен</div>
+    <div class="row">📦 <b>данные:</b> свой опрос класса / UCI Student Performance</div>
+    <div class="row">📏 <b>метрика:</b> MAE / R²</div>
+    <div class="row">🖥️ <b>интерфейс:</b> вводишь часы → прогноз балла</div>
+    <div class="parent">👀 родителям: показывает, сколько учиться ради нужной оценки</div>
+    
+  </div>
+  <div class="card">
+    <div class="top"><span class="num">#07</span><span class="tier a">продвинутый</span></div>
+    <div class="name">Сдаст или не сдаст экзамен</div>
+    <div class="type">классификация</div>
+    <div class="row">🎯 <b>предсказываем:</b> да / нет</div>
+    <div class="row">📦 <b>данные:</b> UCI Student Performance</div>
+    <div class="row">📏 <b>метрика:</b> recall</div>
+    <div class="row">🖥️ <b>интерфейс:</b> вводишь параметры → сдаст?</div>
+    <div class="parent">👀 родителям: модель-советчик для подготовки</div>
+    
+  </div>
+  <div class="card">
+    <div class="top"><span class="num">#08</span><span class="tier b">база</span></div>
+    <div class="name">Рекомендатор кружка/предмета</div>
+    <div class="type">классификация</div>
+    <div class="row">🎯 <b>предсказываем:</b> предмет по интересам</div>
+    <div class="row">📦 <b>данные:</b> свой опрос интересов</div>
+    <div class="row">📏 <b>метрика:</b> accuracy</div>
+    <div class="row">🖥️ <b>интерфейс:</b> вводишь интересы → предмет</div>
+    <div class="parent">👀 родителям: ИИ советует, куда пойти учиться</div>
+    
+  </div>
+  <div class="card">
+    <div class="top"><span class="num">#09</span><span class="tier b">база</span></div>
+    <div class="name">Сова или жаворонок</div>
+    <div class="type">классификация</div>
+    <div class="row">🎯 <b>предсказываем:</b> тип по привычкам</div>
+    <div class="row">📦 <b>данные:</b> свой опрос класса</div>
+    <div class="row">📏 <b>метрика:</b> accuracy</div>
+    <div class="row">🖥️ <b>интерфейс:</b> отвечаешь на вопросы → тип</div>
+    <div class="parent">👀 родителям: весёлый тест на основе настоящей модели</div>
+    
+  </div>
+  <div class="card">
+    <div class="top"><span class="num">#10</span><span class="tier a">продвинутый</span></div>
+    <div class="name">Прогноз времени на домашку</div>
+    <div class="type">регрессия</div>
+    <div class="row">🎯 <b>предсказываем:</b> минуты</div>
+    <div class="row">📦 <b>данные:</b> свой опрос / замеры</div>
+    <div class="row">📏 <b>метрика:</b> MAE</div>
+    <div class="row">🖥️ <b>интерфейс:</b> вводишь предмет и объём → время</div>
+    <div class="parent">👀 родителям: планировщик, который реально считает</div>
+    
+  </div>
+</div>
+<h2 id="t74">🎬 Кино, музыка, игры</h2>
+<div class="grid">
+  <div class="card">
+    <div class="top"><span class="num">#11</span><span class="tier a">продвинутый</span></div>
+    <div class="name">Понравится ли фильм</div>
+    <div class="type">классификация</div>
+    <div class="row">🎯 <b>предсказываем:</b> да / нет</div>
+    <div class="row">📦 <b>данные:</b> IMDB movies: жанр, год, рейтинг (Kaggle)</div>
+    <div class="row">📏 <b>метрика:</b> accuracy</div>
+    <div class="row">🖥️ <b>интерфейс:</b> жанр + год → понравится?</div>
+    <div class="parent">👀 родителям: личный кинокритик-ИИ</div>
+    
+  </div>
+  <div class="card">
+    <div class="top"><span class="num">#12</span><span class="tier s">со звёздочкой ⭐</span></div>
+    <div class="name">Жанр песни по звуку</div>
+    <div class="type">классификация</div>
+    <div class="row">🎯 <b>предсказываем:</b> жанр трека</div>
+    <div class="row">📦 <b>данные:</b> Spotify audio features (Kaggle)</div>
+    <div class="row">📏 <b>метрика:</b> accuracy</div>
+    <div class="row">🖥️ <b>интерфейс:</b> вводишь признаки трека → жанр</div>
+    <div class="parent">👀 родителям: ИИ «слышит» жанр по характеристикам</div>
+    
+  </div>
+  <div class="card">
+    <div class="top"><span class="num">#13</span><span class="tier s">со звёздочкой ⭐</span></div>
+    <div class="name">Хит или не хит</div>
+    <div class="type">классификация</div>
+    <div class="row">🎯 <b>предсказываем:</b> популярный / нет</div>
+    <div class="row">📦 <b>данные:</b> Spotify tracks (Kaggle)</div>
+    <div class="row">📏 <b>метрика:</b> F1</div>
+    <div class="row">🖥️ <b>интерфейс:</b> признаки трека → хит?</div>
+    <div class="parent">👀 родителям: предсказание популярности песни</div>
+    
+  </div>
+  <div class="card">
+    <div class="top"><span class="num">#14</span><span class="tier a">продвинутый</span></div>
+    <div class="name">Прогноз рейтинга фильма</div>
+    <div class="type">регрессия</div>
+    <div class="row">🎯 <b>предсказываем:</b> оценка 0–10</div>
+    <div class="row">📦 <b>данные:</b> IMDB movies (Kaggle)</div>
+    <div class="row">📏 <b>метрика:</b> MAE</div>
+    <div class="row">🖥️ <b>интерфейс:</b> параметры фильма → рейтинг</div>
+    <div class="parent">👀 родителям: угадывает оценку до выхода</div>
+    
+  </div>
+  <div class="card">
+    <div class="top"><span class="num">#15</span><span class="tier a">продвинутый</span></div>
+    <div class="name">Победа в матче по статистике</div>
+    <div class="type">классификация</div>
+    <div class="row">🎯 <b>предсказываем:</b> победа / поражение</div>
+    <div class="row">📦 <b>данные:</b> игровая/спортивная статистика (Kaggle)</div>
+    <div class="row">📏 <b>метрика:</b> accuracy</div>
+    <div class="row">🖥️ <b>интерфейс:</b> вводишь статы → исход</div>
+    <div class="parent">👀 родителям: аналитик матчей своими руками</div>
+    
+  </div>
+</div>
+<h2 id="t113">🏃 Спорт и здоровье</h2>
+<div class="grid">
+  <div class="card">
+    <div class="top"><span class="num">#16</span><span class="tier s">со звёздочкой ⭐</span></div>
+    <div class="name">Тип активности по датчикам</div>
+    <div class="type">классификация</div>
+    <div class="row">🎯 <b>предсказываем:</b> ходьба/бег/покой</div>
+    <div class="row">📦 <b>данные:</b> UCI Human Activity Recognition</div>
+    <div class="row">📏 <b>метрика:</b> accuracy</div>
+    <div class="row">🖥️ <b>интерфейс:</b> вводишь данные → активность</div>
+    <div class="parent">👀 родителям: как фитнес-браслет распознаёт движение</div>
+    
+  </div>
+  <div class="card">
+    <div class="top"><span class="num">#17</span><span class="tier a">продвинутый</span></div>
+    <div class="name">Прогноз сожжённых калорий</div>
+    <div class="type">регрессия</div>
+    <div class="row">🎯 <b>предсказываем:</b> ккал</div>
+    <div class="row">📦 <b>данные:</b> Fitness/Calories (Kaggle)</div>
+    <div class="row">📏 <b>метрика:</b> MAE</div>
+    <div class="row">🖥️ <b>интерфейс:</b> вводишь параметры тренировки → ккал</div>
+    <div class="parent">👀 родителям: личный фитнес-калькулятор на ML</div>
+    
+  </div>
+  <div class="card">
+    <div class="top"><span class="num">#18</span><span class="tier a">продвинутый</span></div>
+    <div class="name">Прогноз очков игрока</div>
+    <div class="type">регрессия</div>
+    <div class="row">🎯 <b>предсказываем:</b> кол-во очков</div>
+    <div class="row">📦 <b>данные:</b> статистика игроков (Kaggle)</div>
+    <div class="row">📏 <b>метрика:</b> MAE</div>
+    <div class="row">🖥️ <b>интерфейс:</b> статы игрока → прогноз очков</div>
+    <div class="parent">👀 родителям: спортивный аналитик-ИИ</div>
+    
+  </div>
+  <div class="card">
+    <div class="top"><span class="num">#19</span><span class="tier a">продвинутый</span></div>
+    <div class="name">Оценка риска диабета</div>
+    <div class="type">классификация</div>
+    <div class="row">🎯 <b>предсказываем:</b> риск: да / нет</div>
+    <div class="row">📦 <b>данные:</b> Pima Diabetes (Kaggle)</div>
+    <div class="row">📏 <b>метрика:</b> recall</div>
+    <div class="row">🖥️ <b>интерфейс:</b> показатели → риск</div>
+    <div class="parent">👀 родителям: учебная модель здоровья</div>
+    <div class="note">⚕ учебная модель, не диагноз</div>
+  </div>
+  <div class="card">
+    <div class="top"><span class="num">#20</span><span class="tier b">база</span></div>
+    <div class="name">Здоровое или нет блюдо</div>
+    <div class="type">классификация</div>
+    <div class="row">🎯 <b>предсказываем:</b> полезно / нет</div>
+    <div class="row">📦 <b>данные:</b> свой мини-датасет по составу</div>
+    <div class="row">📏 <b>метрика:</b> accuracy</div>
+    <div class="row">🖥️ <b>интерфейс:</b> состав → вердикт</div>
+    <div class="parent">👀 родителям: ИИ-нутрициолог для проекта</div>
+    
+  </div>
+</div>
+<h2 id="t151">💰 Деньги, покупки, жильё</h2>
+<div class="grid">
+  <div class="card">
+    <div class="top"><span class="num">#21</span><span class="tier b">база</span></div>
+    <div class="name">Прогноз цены жилья</div>
+    <div class="type">регрессия</div>
+    <div class="row">🎯 <b>предсказываем:</b> цена</div>
+    <div class="row">📦 <b>данные:</b> California Housing (sklearn)</div>
+    <div class="row">📏 <b>метрика:</b> MAE / RMSE</div>
+    <div class="row">🖥️ <b>интерфейс:</b> параметры дома → цена</div>
+    <div class="parent">👀 родителям: оценщик недвижимости как у взрослых</div>
+    
+  </div>
+  <div class="card">
+    <div class="top"><span class="num">#22</span><span class="tier a">продвинутый</span></div>
+    <div class="name">Ценовой класс смартфона</div>
+    <div class="type">классификация</div>
+    <div class="row">🎯 <b>предсказываем:</b> дешёвый…премиум</div>
+    <div class="row">📦 <b>данные:</b> Mobile Price (Kaggle)</div>
+    <div class="row">📏 <b>метрика:</b> accuracy</div>
+    <div class="row">🖥️ <b>интерфейс:</b> RAM, батарея… → класс</div>
+    <div class="parent">👀 родителям: ИИ оценивает телефон по железу</div>
+    
+  </div>
+  <div class="card">
+    <div class="top"><span class="num">#23</span><span class="tier a">продвинутый</span></div>
+    <div class="name">Одобрят ли кредит</div>
+    <div class="type">классификация</div>
+    <div class="row">🎯 <b>предсказываем:</b> одобрен / нет</div>
+    <div class="row">📦 <b>данные:</b> Loan Prediction (Kaggle)</div>
+    <div class="row">📏 <b>метрика:</b> recall</div>
+    <div class="row">🖥️ <b>интерфейс:</b> анкета → решение</div>
+    <div class="parent">👀 родителям: мини банковский скоринг</div>
+    <div class="note">банковская тема — бонус для портфолио</div>
+  </div>
+  <div class="card">
+    <div class="top"><span class="num">#24</span><span class="tier a">продвинутый</span></div>
+    <div class="name">Цена подержанной машины</div>
+    <div class="type">регрессия</div>
+    <div class="row">🎯 <b>предсказываем:</b> цена</div>
+    <div class="row">📦 <b>данные:</b> Used Cars (Kaggle)</div>
+    <div class="row">📏 <b>метрика:</b> MAE</div>
+    <div class="row">🖥️ <b>интерфейс:</b> марка, год, пробег → цена</div>
+    <div class="parent">👀 родителям: авто-оценщик своими руками</div>
+    
+  </div>
+  <div class="card">
+    <div class="top"><span class="num">#25</span><span class="tier b">база</span></div>
+    <div class="name">Прогноз чаевых</div>
+    <div class="type">регрессия</div>
+    <div class="row">🎯 <b>предсказываем:</b> сумма чаевых</div>
+    <div class="row">📦 <b>данные:</b> seaborn 'tips' (встроенный)</div>
+    <div class="row">📏 <b>метрика:</b> MAE</div>
+    <div class="row">🖥️ <b>интерфейс:</b> счёт и день → чаевые</div>
+    <div class="parent">👀 родителям: готовые данные, быстрый старт</div>
+    
+  </div>
+</div>
+<h2 id="t195">🌿 Природа и наука</h2>
+<div class="grid">
+  <div class="card">
+    <div class="top"><span class="num">#26</span><span class="tier b">база</span></div>
+    <div class="name">Вид пингвина по замерам</div>
+    <div class="type">классификация</div>
+    <div class="row">🎯 <b>предсказываем:</b> 3 вида</div>
+    <div class="row">📦 <b>данные:</b> Palmer Penguins (seaborn)</div>
+    <div class="row">📏 <b>метрика:</b> accuracy</div>
+    <div class="row">🖥️ <b>интерфейс:</b> замеры → вид</div>
+    <div class="parent">👀 родителям: наш классический датасет — надёжный старт</div>
+    
+  </div>
+  <div class="card">
+    <div class="top"><span class="num">#27</span><span class="tier a">продвинутый</span></div>
+    <div class="name">Съедобный или ядовитый гриб</div>
+    <div class="type">классификация</div>
+    <div class="row">🎯 <b>предсказываем:</b> съедобный / ядовитый</div>
+    <div class="row">📦 <b>данные:</b> Mushroom (Kaggle/UCI)</div>
+    <div class="row">📏 <b>метрика:</b> accuracy</div>
+    <div class="row">🖥️ <b>интерфейс:</b> признаки гриба → вердикт</div>
+    <div class="parent">👀 родителям: эффектно и наглядно для родителей</div>
+    <div class="note">🍄 учебная модель, не для сбора грибов!</div>
+  </div>
+  <div class="card">
+    <div class="top"><span class="num">#28</span><span class="tier a">продвинутый</span></div>
+    <div class="name">Качество вина по химии</div>
+    <div class="type">классификация</div>
+    <div class="row">🎯 <b>предсказываем:</b> хорошее / обычное</div>
+    <div class="row">📦 <b>данные:</b> Wine Quality (Kaggle/UCI)</div>
+    <div class="row">📏 <b>метрика:</b> accuracy</div>
+    <div class="row">🖥️ <b>интерфейс:</b> показатели → качество</div>
+    <div class="parent">👀 родителям: химия + ML, солидно выглядит</div>
+    
+  </div>
+  <div class="card">
+    <div class="top"><span class="num">#29</span><span class="tier a">продвинутый</span></div>
+    <div class="name">Дождь завтра</div>
+    <div class="type">классификация</div>
+    <div class="row">🎯 <b>предсказываем:</b> дождь / нет</div>
+    <div class="row">📦 <b>данные:</b> Rain in Australia (Kaggle)</div>
+    <div class="row">📏 <b>метрика:</b> accuracy</div>
+    <div class="row">🖥️ <b>интерфейс:</b> погода сегодня → дождь завтра</div>
+    <div class="parent">👀 родителям: личный прогноз погоды на ML</div>
+    
+  </div>
+  <div class="card">
+    <div class="top"><span class="num">#30</span><span class="tier b">база</span></div>
+    <div class="name">Вид цветка (ирис)</div>
+    <div class="type">классификация</div>
+    <div class="row">🎯 <b>предсказываем:</b> 3 вида</div>
+    <div class="row">📦 <b>данные:</b> Iris (sklearn, встроенный)</div>
+    <div class="row">📏 <b>метрика:</b> accuracy</div>
+    <div class="row">🖥️ <b>интерфейс:</b> замеры → вид</div>
+    <div class="parent">👀 родителям: самый простой старт для неуверенных</div>
+    
+  </div>
+</div>
+
+
+ <div class="howto" style="margin-top:24px">
+  <b>Учителю:</b> 30 идей на 10 учеников = минимум 3 варианта каждому даже без пересечений. Советуй распределять по темам, чтобы на Demo Day проекты были разными. Табличные датасеты (sklearn/seaborn/Kaggle) — самый надёжный путь к рабочему приложению; текстовые — через TfidfVectorizer + Pipeline.
+ </div>
+</div></body></html>

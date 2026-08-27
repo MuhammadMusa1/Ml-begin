@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AutoML · Турнир моделей</title>
+<style>
+  :root{
+    --bg:#140F2E; --bg2:#1C1642; --card:#241C4E; --lane:#0E0A22;
+    --violet:#8B7DF5; --violetd:#5B4FC4; --cyan:#27D3EE; --teal:#2DD4BF;
+    --gold:#FFD75E; --silver:#CBD2E0; --bronze:#E08A54;
+    --ink:#EDEAFB; --muted:#9A92C7; --line:#332A63;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  body{
+    font-family:"Segoe UI",Calibri,system-ui,sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(900px 500px at 15% -10%, rgba(139,125,245,.20), transparent 60%),
+      radial-gradient(800px 600px at 100% 0%, rgba(39,211,238,.14), transparent 55%),
+      var(--bg);
+    min-height:100vh; padding:28px 20px; overflow-x:hidden;
+  }
+  .wrap{max-width:840px; margin:0 auto}
+  .kick{color:var(--cyan); font-weight:800; letter-spacing:3px; font-size:12px; text-transform:uppercase; margin-bottom:6px}
+  h1{font-size:34px; line-height:1.1; margin-bottom:6px; letter-spacing:-.5px}
+  h1 .g{background:linear-gradient(90deg,var(--violet),var(--cyan)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent}
+  .sub{color:var(--muted); font-size:15px; max-width:620px}
+
+  .panel{background:linear-gradient(180deg,var(--card),var(--bg2)); border:1px solid var(--line);
+    border-radius:20px; padding:22px; margin-top:20px; box-shadow:0 24px 60px -30px rgba(0,0,0,.8)}
+
+  .bet{display:flex; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:16px}
+  .bet .q{font-weight:700; font-size:15px; margin-right:2px}
+  .chip{border:1.5px solid var(--line); background:#1a1440; color:var(--ink); font:inherit; font-size:14px;
+    padding:7px 13px; border-radius:999px; cursor:pointer; transition:.18s; display:flex; align-items:center; gap:6px}
+  .chip:hover{border-color:var(--violet); transform:translateY(-1px)}
+  .chip.on{background:linear-gradient(90deg,var(--violetd),var(--violet)); border-color:transparent; box-shadow:0 6px 18px -6px var(--violet)}
+
+  .controls{display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:6px}
+  .btn{border:none; border-radius:12px; padding:13px 24px; font:inherit; font-weight:800; font-size:16px; cursor:pointer; transition:.18s}
+  .go{background:linear-gradient(90deg,var(--cyan),var(--teal)); color:#062028; box-shadow:0 10px 26px -10px var(--cyan)}
+  .go:hover{filter:brightness(1.06); transform:translateY(-2px)}
+  .go:disabled{opacity:.5; cursor:default; transform:none; filter:none}
+  .ghost{background:transparent; border:1.5px solid var(--line); color:var(--muted); font-weight:600; padding:12px 18px}
+  .ghost:hover{border-color:var(--violet); color:var(--ink)}
+  .stat{margin-left:auto; font-size:13px; color:var(--muted)}
+
+  .axis{position:relative; height:16px; margin:14px 0 4px 152px}
+  .axis span{position:absolute; transform:translateX(-50%); font-size:11px; color:var(--muted); font-family:Consolas,monospace}
+  .axis .tick{position:absolute; top:14px; width:1px; height:6px; background:var(--line)}
+  .scalenote{margin-left:152px; font-size:11px; color:var(--muted); margin-bottom:10px}
+
+  .track{display:flex; flex-direction:column; gap:11px; position:relative}
+  .lane{display:flex; align-items:center; gap:12px; transition:transform .7s cubic-bezier(.22,1,.36,1)}
+  .who{width:140px; display:flex; align-items:center; gap:9px; flex-shrink:0}
+  .ava{width:34px; height:34px; border-radius:10px; display:grid; place-items:center; font-size:19px;
+    background:#1a1440; border:1px solid var(--line); flex-shrink:0}
+  .nm{font-size:15px; font-weight:600; line-height:1.05}
+  .nm small{display:block; font-size:11px; color:var(--muted); font-weight:400}
+  .rail{flex:1; height:30px; background:var(--lane); border-radius:9px; position:relative; overflow:hidden;
+    box-shadow:inset 0 1px 3px rgba(0,0,0,.5)}
+  .bar{position:absolute; left:0; top:0; bottom:0; width:0; border-radius:9px;
+    background:linear-gradient(90deg,var(--violetd),var(--violet));
+    transition:width 1.15s cubic-bezier(.16,1,.3,1)}
+  .bar.run::after{content:""; position:absolute; inset:0; border-radius:9px;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.28),transparent);
+    animation:sheen 1s linear infinite}
+  @keyframes sheen{from{transform:translateX(-100%)}to{transform:translateX(220%)}}
+  .val{width:58px; text-align:right; font-family:Consolas,monospace; font-weight:700; font-size:16px; color:var(--muted); flex-shrink:0}
+  .medal{width:26px; text-align:center; font-size:18px; flex-shrink:0}
+
+  .lane.win .bar{background:linear-gradient(90deg,var(--teal),var(--cyan)); box-shadow:0 0 22px -2px var(--cyan)}
+  .lane.win .val{color:var(--cyan)}
+  .lane.win .nm{color:var(--cyan)}
+  .lane.bet .who::after{content:"твоя ставка"; font-size:10px; color:var(--teal); background:#123a34;
+    padding:2px 7px; border-radius:999px; margin-left:2px; white-space:nowrap}
+
+  #verdict{margin-top:18px; font-size:16px; min-height:22px; opacity:0; transform:translateY(6px); transition:.4s}
+  #verdict.show{opacity:1; transform:none}
+  #verdict b{color:var(--cyan)}
+  #verdict .betname{color:var(--teal); font-weight:700}
+
+  .explain{margin-top:16px; background:#1a1440; border:1px solid var(--line); border-radius:14px; padding:15px 17px}
+  .explain h3{font-size:13px; letter-spacing:1px; text-transform:uppercase; color:var(--violet); margin-bottom:9px}
+  .steps{display:flex; gap:8px; flex-wrap:wrap}
+  .step{flex:1; min-width:150px; background:var(--lane); border-radius:10px; padding:11px 13px; font-size:13px; color:var(--ink)}
+  .step b{color:var(--cyan)}
+  .foot{margin-top:13px; font-size:13.5px; color:var(--muted); line-height:1.5}
+  .foot b{color:var(--ink)}
+
+  .confetti{position:fixed; top:-12px; width:9px; height:14px; border-radius:2px; z-index:99; pointer-events:none}
+  @keyframes fall{to{transform:translateY(105vh) rotate(720deg); opacity:0}}
+
+  @media(max-width:560px){
+    h1{font-size:26px}
+    .who{width:104px} .nm{font-size:13px} .val{width:50px; font-size:14px}
+    .axis,.scalenote{margin-left:116px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="kick">Урок 19 · демонстрация</div>
+  <h1>AutoML: <span class="g">турнир моделей</span></h1>
+  <p class="sub">AutoML — не магия. Это турнир: он берёт знакомых тебе участников, честно проверяет каждого и коронует лучшего. Ты уже знаешь их всех — KNN, дерево, лес…</p>
+
+  <div class="panel">
+    <div class="bet">
+      <span class="q">🎲 На кого ставишь?</span>
+      <div id="chips"></div>
+    </div>
+
+    <div class="controls">
+      <button class="btn go" id="run">▶ Запустить AutoML</button>
+      <button class="btn ghost" id="reset">Сброс</button>
+      <span class="stat" id="stat">Данные: 🐧 пингвины · честная проверка cross-validation (cv=5)</span>
+    </div>
+
+    <div class="axis" id="axis"></div>
+    <div class="scalenote">↑ шкала точности увеличена (95–100%), чтобы разглядеть разницу между сильными моделями</div>
+
+    <div class="track" id="track"></div>
+
+    <div id="verdict"></div>
+  </div>
+
+  <div class="explain">
+    <h3>Что сделал AutoML за тебя</h3>
+    <div class="steps">
+      <div class="step"><b>1. Перебрал</b> знакомые модели — KNN, дерево, лес, бустинг…</div>
+      <div class="step"><b>2. Проверил</b> каждую честно (cross-validation), а не на глаз</div>
+      <div class="step"><b>3. Выбрал</b> лучшую и показал таблицу от сильной к слабой</div>
+    </div>
+    <p class="foot">Но AutoML <b>не</b> поставит задачу, <b>не</b> заметит утечку данных и <b>не</b> выберет метрику за тебя. Считает он — а думаешь по-прежнему ты.</p>
+  </div>
+</div>
+
+<script>
+// реальные числа: cross_val_score(cv=5) на Palmer Penguins (species), стандарт курса
+const MODELS = [
+  {name:"ЛогРег",       sub:"логистическая регрессия", ava:"📈", score:99.4},
+  {name:"Лес",          sub:"случайный лес",           ava:"🌲", score:99.1},
+  {name:"Extra Trees",  sub:"крайние деревья",         ava:"🌿", score:98.5},
+  {name:"Бустинг",      sub:"градиентный бустинг",     ava:"🚀", score:98.5},
+  {name:"KNN",          sub:"ближайшие соседи",        ava:"👥", score:98.2},
+  {name:"Дерево",       sub:"дерево решений",          ava:"🌳", score:97.9},
+];
+const LO=95, HI=100;
+const pos = s => (s-LO)/(HI-LO)*100;
+const track=document.getElementById('track');
+const chipsBox=document.getElementById('chips');
+const runBtn=document.getElementById('run');
+const resetBtn=document.getElementById('reset');
+const verdict=document.getElementById('verdict');
+let bet="Лес", timers=[], running=false;
+
+(function(){
+  const ax=document.getElementById('axis');
+  for(let v=LO; v<=HI; v++){
+    const left=(v-LO)/(HI-LO)*100;
+    const s=document.createElement('span'); s.textContent=v+'%'; s.style.left=left+'%'; ax.appendChild(s);
+    const t=document.createElement('i'); t.className='tick'; t.style.left=left+'%'; ax.appendChild(t);
+  }
+})();
+
+function buildChips(){
+  chipsBox.innerHTML="";
+  MODELS.forEach(m=>{
+    const c=document.createElement('button');
+    c.className="chip"+(m.name===bet?" on":"");
+    c.innerHTML="<span>"+m.ava+"</span>"+m.name;
+    c.onclick=()=>{ if(running) return; bet=m.name; buildChips(); markBet(); };
+    chipsBox.appendChild(c);
+  });
+}
+
+function build(){
+  track.innerHTML="";
+  MODELS.forEach((m,i)=>{
+    const lane=document.createElement('div');
+    lane.className="lane"+(m.name===bet?" bet":"");
+    lane.dataset.name=m.name; lane.style.order=i;
+    lane.innerHTML=
+      '<div class="medal" data-medal></div>'+
+      '<div class="who"><div class="ava">'+m.ava+'</div>'+
+      '<div class="nm">'+m.name+'<small>'+m.sub+'</small></div></div>'+
+      '<div class="rail"><div class="bar"></div></div>'+
+      '<div class="val">—</div>';
+    track.appendChild(lane);
+  });
+}
+
+function markBet(){
+  [...track.children].forEach(l=>l.classList.toggle('bet', l.dataset.name===bet));
+}
+
+function lane(name){ return [...track.children].find(l=>l.dataset.name===name); }
+
+function countUp(el,to,ms){
+  const t0=performance.now();
+  function tick(t){
+    const p=Math.min(1,(t-t0)/ms);
+    const e=1-Math.pow(1-p,3);
+    el.textContent=(to*e).toFixed(1)+'%';
+    if(p<1) requestAnimationFrame(tick); else el.textContent=to.toFixed(1)+'%';
+  }
+  requestAnimationFrame(tick);
+}
+
+function clearTimers(){ timers.forEach(clearTimeout); timers=[]; }
+
+function reset(){
+  clearTimers(); running=false; runBtn.disabled=false; runBtn.textContent="▶ Запустить AutoML";
+  verdict.className=""; verdict.innerHTML="";
+  build();
+}
+
+function run(){
+  if(running) return;
+  reset(); running=true; runBtn.disabled=true; runBtn.textContent="AutoML обучает модели…";
+
+  MODELS.forEach((m,i)=>{
+    timers.push(setTimeout(()=>{
+      const l=lane(m.name), bar=l.querySelector('.bar'), val=l.querySelector('.val');
+      bar.classList.add('run');
+      bar.style.width=pos(m.score)+'%';
+      countUp(val,m.score,1100);
+      timers.push(setTimeout(()=>bar.classList.remove('run'),1200));
+    }, 250+i*430));
+  });
+
+  const finishAt=250+MODELS.length*430+900;
+  timers.push(setTimeout(reveal, finishAt));
+}
+
+function reveal(){
+  const sorted=[...MODELS].sort((a,b)=>b.score-a.score);
+  const medals=["🥇","🥈","🥉"];
+
+  const first={};
+  [...track.children].forEach(l=>first[l.dataset.name]=l.getBoundingClientRect().top);
+
+  sorted.forEach((m,rank)=> lane(m.name).style.order=rank);
+
+  requestAnimationFrame(()=>{
+    [...track.children].forEach(l=>{
+      const last=l.getBoundingClientRect().top;
+      const dy=first[l.dataset.name]-last;
+      l.style.transition='none'; l.style.transform='translateY('+dy+'px)';
+      requestAnimationFrame(()=>{
+        l.style.transition='transform .7s cubic-bezier(.22,1,.36,1)';
+        l.style.transform='translateY(0)';
+      });
+    });
+  });
+
+  sorted.forEach((m,rank)=>{
+    const l=lane(m.name);
+    if(rank<3) l.querySelector('[data-medal]').textContent=medals[rank];
+    if(rank===0) l.classList.add('win');
+  });
+
+  const winner=sorted[0], myScore=MODELS.find(m=>m.name===bet).score;
+  const diff=(winner.score-myScore).toFixed(1);
+  let html;
+  if(winner.name===bet){
+    html='🎉 Твоя ставка <span class="betname">'+bet+'</span> и есть чемпион — <b>'+winner.name+' '+winner.score+'%</b>! AutoML это подтвердил.';
+  }else{
+    html='🏆 AutoML короновал <b>'+winner.name+' — '+winner.score+'%</b>. Твоя ставка <span class="betname">'+bet+'</span> — '+myScore+'%, отстала всего на '+diff+'%.';
+  }
+  html+='<br><span style="color:var(--muted);font-size:14px">Фотофиниш: на чистых пингвиньих данных все модели ~98–99%. Чем больше и грязнее данные — тем заметнее выигрыш AutoML.</span>';
+  verdict.innerHTML=html; verdict.className="show";
+
+  confetti();
+  running=false; runBtn.disabled=false; runBtn.textContent="▶ Запустить снова";
+}
+
+function confetti(){
+  const colors=["#8B7DF5","#27D3EE","#2DD4BF","#FFD75E","#FF7AA8"];
+  for(let i=0;i<44;i++){
+    const c=document.createElement('div'); c.className='confetti';
+    c.style.left=Math.random()*100+'vw';
+    c.style.background=colors[i%colors.length];
+    c.style.animation='fall '+(1.4+Math.random()*1.4)+'s '+(Math.random()*.4)+'s ease-in forwards';
+    c.style.transform='rotate('+(Math.random()*360)+'deg)';
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),3200);
+  }
+}
+
+buildChips();
+build();
+runBtn.onclick=run;
+resetBtn.onclick=reset;
+</script>
+</body>
+</html>

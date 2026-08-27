@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Урок 16 — Классификатор моих фото (transfer learning): пошагово и без ошибок</title>
+<style>
+  :root{
+    --bg:#14102b; --bg2:#1b1540; --panel:#241a47; --panel2:#2b2050;
+    --indigo:#6366f1; --violet:#8b5cf6; --cyan:#22d3ee;
+    --text:#e8e6f5; --muted:#b9b3e0;
+    --code-bg:#20202e; --code-text:#e6e6ef;
+    --ok:#34d399; --ok-bg:#0f3d33; --bad:#fb7185; --bad-bg:#3d1424;
+    --line:#3a2f66;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1200px 500px at 10% -10%, rgba(139,92,246,.25), transparent 60%),
+      radial-gradient(900px 500px at 100% 0%, rgba(34,211,238,.15), transparent 55%),
+      var(--bg);
+    color:var(--text);
+    font-family:Calibri,"Segoe UI",sans-serif;
+    line-height:1.55; padding:34px 18px 70px;
+  }
+  .wrap{max-width:1000px;margin:0 auto;}
+  header.hero{
+    background:linear-gradient(135deg, rgba(99,102,241,.28), rgba(34,211,238,.14));
+    border:1px solid var(--line); border-radius:18px; padding:26px 30px;
+    position:relative; overflow:hidden;
+  }
+  header.hero:before{
+    content:"TL"; position:absolute; right:26px; top:-18px;
+    font-size:120px; font-weight:800; letter-spacing:2px;
+    color:rgba(139,92,246,.12); font-family:Consolas,monospace;
+  }
+  .tag{display:inline-block; font-size:13px; letter-spacing:2px; text-transform:uppercase;
+    color:var(--cyan); border:1px solid rgba(34,211,238,.4); border-radius:999px;
+    padding:4px 12px; margin-bottom:12px;}
+  h1{margin:6px 0 8px; font-size:29px; color:#fff; font-weight:800;}
+  .sub{color:var(--muted); font-size:17px; max-width:740px;}
+  .lead{display:flex; gap:14px; flex-wrap:wrap; margin:22px 0 8px;}
+  .lead .card{flex:1 1 240px; background:var(--panel); border:1px solid var(--line);
+    border-radius:14px; padding:16px 18px;}
+  .lead .card b{color:var(--violet); display:block; font-size:16px; margin-bottom:4px;}
+  .lead .card span{color:var(--muted); font-size:14.5px;}
+  h2{color:var(--violet); font-size:23px; margin:38px 0 6px;
+    border-left:5px solid var(--cyan); padding-left:12px;}
+  .step-no{display:inline-flex; align-items:center; justify-content:center;
+    width:30px; height:30px; border-radius:9px;
+    background:linear-gradient(135deg,var(--indigo),var(--violet));
+    color:#fff; font-weight:800; margin-right:10px; font-family:Consolas,monospace; font-size:16px;}
+  .why{color:var(--muted); font-size:15.5px; margin:2px 0 12px;}
+  .why b{color:var(--cyan);}
+  .codebox{position:relative; background:var(--code-bg); border:1px solid var(--line);
+    border-radius:12px; padding:16px 18px; margin:10px 0;
+    font-family:Consolas,"Courier New",monospace; font-size:14.5px; color:var(--code-text);
+    overflow-x:auto; white-space:pre; tab-size:4;}
+  .codebox.ok{border-left:5px solid var(--ok);}
+  .codebox.bad{border-left:5px solid var(--bad);}
+  .cmt{color:#8a86b8;} .kw{color:#c4b5fd;} .str{color:#7dd3fc;}
+  .num{color:#f0abfc;} .fn{color:#5eead4;}
+  .badge{font-size:13px; font-weight:700; letter-spacing:.5px; display:block; margin:14px 0 2px;}
+  .badge.ok{color:var(--ok);} .badge.bad{color:var(--bad);}
+  .box{border-radius:12px; padding:12px 16px; margin:8px 0 4px; font-size:15px;}
+  .box.fix{background:var(--ok-bg); border:1px solid rgba(52,211,153,.35);}
+  .box.err{background:var(--bad-bg); border:1px solid rgba(251,113,133,.35);}
+  .box.note{background:var(--panel2); border:1px solid var(--line);}
+  .box b{color:#fff;}
+  .copy{position:absolute; right:10px; top:10px; background:rgba(139,92,246,.25);
+    border:1px solid var(--line); color:var(--muted); font-family:Calibri,sans-serif;
+    font-size:12.5px; padding:4px 10px; border-radius:8px; cursor:pointer;}
+  .copy:hover{background:rgba(139,92,246,.5); color:#fff;}
+  .template{background:linear-gradient(135deg, rgba(34,211,238,.12), rgba(139,92,246,.12));
+    border:1px dashed var(--cyan); border-radius:14px; padding:6px 14px 14px; margin-top:10px;}
+  .template .flag{color:var(--cyan); font-weight:800; font-size:15px; margin:8px 2px 0;}
+  .check{background:var(--panel); border:1px solid var(--line); border-radius:16px;
+    padding:22px 26px; margin-top:34px;}
+  .check h2{border:none; padding:0; margin-top:0;}
+  .check ol{margin:8px 0 0; padding-left:22px;}
+  .check li{margin:10px 0; color:var(--text);}
+  .check code{background:var(--code-bg); padding:1px 6px; border-radius:6px;
+    font-family:Consolas,monospace; color:var(--cyan); font-size:14px;}
+  details.ans{margin-top:16px; background:var(--panel2); border:1px solid var(--line);
+    border-radius:10px; padding:8px 14px;}
+  details.ans summary{cursor:pointer; color:var(--violet); font-weight:700;}
+  details.ans ol{padding-left:20px;}
+  details.ans li{font-size:14.5px; color:var(--muted);}
+  .printbtn{display:inline-block; margin:26px 0 0; cursor:pointer;
+    background:linear-gradient(135deg,var(--indigo),var(--violet)); color:#fff; border:none;
+    border-radius:10px; padding:11px 22px; font-family:Calibri,sans-serif; font-size:15px; font-weight:700;}
+  code.inl{background:var(--code-bg); padding:1px 6px; border-radius:6px;
+    font-family:Consolas,monospace; color:var(--cyan); font-size:13.5px;}
+  .tree{background:var(--code-bg); border:1px solid var(--line); border-radius:12px;
+    padding:14px 18px; font-family:Consolas,monospace; font-size:14px; color:var(--muted);
+    white-space:pre; margin:8px 0;}
+  footer{color:var(--muted); font-size:13.5px; margin-top:30px; text-align:center;}
+  @media print{
+    body{background:#fff; color:#111; padding:0;}
+    header.hero:before{display:none;}
+    .codebox,.check,.lead .card,header.hero,.tree{break-inside:avoid;}
+    .copy,.printbtn{display:none;}
+    h1,h2,.lead .card b,.template .flag{color:#4c1d95 !important;}
+    .codebox,.tree{background:#f3f3f7; color:#111; border:1px solid #ccc;}
+    .cmt{color:#6b7280;} .kw{color:#7c3aed;} .str{color:#0369a1;}
+    .num{color:#a21caf;} .fn{color:#0d9488;}
+    .box.fix{background:#ecfdf5;} .box.err{background:#fef2f2;} .box.note{background:#f5f3ff;}
+    .box b{color:#111;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <span class="tag">Урок 16 · Проект «Классификатор моих фото»</span>
+  <h1>Transfer Learning — пошагово и без ошибок</h1>
+  <p class="sub">Мы не обучаем сеть с нуля — берём готовую MobileNet, которая уже «видела» миллионы картинок,
+  и доучиваем её на СВОИХ двух категориях за 10 минут. Ловушки здесь другие, чем на прошлом уроке.
+  Ниже — правильный код и рядом типичные ошибки: как узнать и как починить.</p>
+</header>
+
+<div class="lead">
+  <div class="card"><b>📐 Размер под модель</b><span>MobileNet ждёт фиксированный размер (напр. 160×160×3). Телефонные фото все разные — их надо привести к одному.</span></div>
+  <div class="card"><b>🎨 Своя предобработка</b><span>На уроке 15 делили на 255. Здесь — НЕТ! У MobileNet своя <code style="color:#7dd3fc">preprocess_input</code>.</span></div>
+  <div class="card"><b>🧊 Заморозка базы</b><span><code style="color:#7dd3fc">base_model.trainable = False</code>. Иначе сотрём готовые знания сети — это сердце transfer learning.</span></div>
+</div>
+<p class="why">Три пункта выше — вся суть урока. Почти все ошибки сегодня = забыли один из них.</p>
+
+<!-- ШАГ 1 -->
+<h2><span class="step-no">1</span>Раскладываем фото по папкам = по классам</h2>
+<p class="why"><b>Зачем:</b> модель узнаёт категорию по <b>имени папки</b>. Одна папка — один класс. Никаких подписей вручную. <b>Что ждём:</b> аккуратная структура ниже.</p>
+
+<div class="tree">my_photos/
+├── еда/          ← сюда 15–20+ фото еды
+│   ├── 1.jpg
+│   └── 2.jpg  ...
+└── не_еда/       ← сюда 15–20+ фото «не еды»
+    ├── 1.jpg
+    └── 2.jpg  ...</div>
+
+<div class="box note"><b>Как загрузить свои фото в Colab:</b> сложи папку <code class="inl">my_photos</code> в архив <code class="inl">my_photos.zip</code>, затем:
+<div class="codebox ok" style="margin-top:8px"><button class="copy" onclick="cp(this)">копировать</button><span class="kw">from</span> google.colab <span class="kw">import</span> files
+files.<span class="fn">upload</span>()             <span class="cmt"># выбери my_photos.zip</span>
+!unzip -q my_photos.zip     <span class="cmt"># распакует папки еда/ и не_еда/</span></div></div>
+
+<span class="badge bad">✗ А ТАК НЕ НАДО</span>
+<div class="tree" style="border-left:5px solid var(--bad)">my_photos/
+├── 1.jpg      ← все фото свалены в одну кучу
+├── 2.jpg
+└── 3.jpg  ...</div>
+<div class="box err"><b>Почему ломается:</b> если фото не разложены по папкам-классам, модель не поймёт, где какая категория, и не сможет учиться. <b>Как чинить:</b> ровно две вложенные папки, по одной на класс.</div>
+
+<!-- ШАГ 2 -->
+<h2><span class="step-no">2</span>Загружаем фото как датасет — и сразу приводим к нужному размеру</h2>
+<p class="why"><b>Зачем:</b> <code class="inl">image_dataset_from_directory</code> сам прочитает папки, проставит метки и <b>приведёт все фото к одному размеру</b>. <b>Что ждём:</b> список классов и «пачки» (батчи) картинок.</p>
+
+<span class="badge ok">✓ ПИШЕМ ТАК</span>
+<div class="codebox ok"><button class="copy" onclick="cp(this)">копировать</button><span class="kw">import</span> tensorflow <span class="kw">as</span> tf
+
+IMG = (<span class="num">160</span>, <span class="num">160</span>)   <span class="cmt"># размер, который ждёт MobileNet</span>
+
+train_ds = tf.keras.utils.<span class="fn">image_dataset_from_directory</span>(
+    <span class="str">"my_photos"</span>, image_size=IMG, batch_size=<span class="num">32</span>,
+    validation_split=<span class="num">0.2</span>, subset=<span class="str">"training"</span>, seed=<span class="num">42</span>)
+
+test_ds = tf.keras.utils.<span class="fn">image_dataset_from_directory</span>(
+    <span class="str">"my_photos"</span>, image_size=IMG, batch_size=<span class="num">32</span>,
+    validation_split=<span class="num">0.2</span>, subset=<span class="str">"validation"</span>, seed=<span class="num">42</span>)
+
+<span class="fn">print</span>(<span class="str">"Классы:"</span>, train_ds.class_names)   <span class="cmt"># ['еда', 'не_еда']</span></div>
+
+<span class="badge bad">✗ ОШИБКА A — забыли <code class="inl">image_size</code></span>
+<div class="codebox bad">train_ds = tf.keras.utils.<span class="fn">image_dataset_from_directory</span>(<span class="str">"my_photos"</span>)
+<span class="cmt"># фото останутся разного размера → на обучении вылезет ошибка формы</span></div>
+<div class="box err"><b>Почему ломается:</b> нейросеть принимает картинки строго одного размера. Без <code class="inl">image_size</code> телефонные фото придут разными — форма не сойдётся. <b>Как чинить:</b> всегда задавай <code class="inl">image_size=IMG</code>.</div>
+
+<span class="badge bad">✗ ОШИБКА B — один и тот же seed забыли, train и test пересеклись</span>
+<div class="box err"><b>Утечка данных (data leakage):</b> если train и test берут случайные фото без одинакового <code class="inl">seed</code>, одна картинка может попасть и туда, и туда. Тогда высокая точность — обман: модель проверяют на том, что она уже видела («зазубрил, а не понял»). <b>Как чинить:</b> одинаковый <code class="inl">seed</code> и <code class="inl">validation_split</code> в обоих вызовах.</div>
+
+<!-- ШАГ 3 -->
+<h2><span class="step-no">3</span>Смотрим глазами — точно ли всё загрузилось</h2>
+<p class="why"><b>Зачем:</b> старое доброе правило — «не доверяй, посмотри на данные». <b>Что ждём:</b> сетку из 6 фото с подписями классов.</p>
+
+<span class="badge ok">✓ ПИШЕМ ТАК</span>
+<div class="codebox ok"><button class="copy" onclick="cp(this)">копировать</button><span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+
+<span class="kw">for</span> images, labels <span class="kw">in</span> train_ds.<span class="fn">take</span>(<span class="num">1</span>):     <span class="cmt"># берём одну пачку</span>
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">6</span>):
+        plt.<span class="fn">subplot</span>(<span class="num">2</span>, <span class="num">3</span>, i+<span class="num">1</span>)
+        plt.<span class="fn">imshow</span>(images[i].numpy().<span class="fn">astype</span>(<span class="str">"uint8"</span>))
+        plt.<span class="fn">title</span>(train_ds.class_names[labels[i]])
+        plt.<span class="fn">axis</span>(<span class="str">"off"</span>)
+    plt.<span class="fn">show</span>()</div>
+
+<!-- ШАГ 4 -->
+<h2><span class="step-no">4</span>Берём готовую MobileNet и ЗАМОРАЖИВАЕМ её</h2>
+<p class="why"><b>Зачем:</b> MobileNet уже умеет распознавать края, формы, текстуры — миллионы картинок за плечами. Мы <b>замораживаем</b> эти знания, чтобы обучение их не испортило, и доучиваем только маленькую «голову» под наши 2 класса. <b>Что ждём:</b> <code class="inl">trainable = False</code>.</p>
+
+<span class="badge ok">✓ ПИШЕМ ТАК</span>
+<div class="codebox ok"><button class="copy" onclick="cp(this)">копировать</button><span class="kw">from</span> tensorflow.keras.applications <span class="kw">import</span> MobileNetV2
+
+base_model = <span class="fn">MobileNetV2</span>(input_shape=IMG + (<span class="num">3</span>,),
+                         include_top=<span class="kw">False</span>,      <span class="cmt"># без «родной» головы на 1000 классов</span>
+                         weights=<span class="str">"imagenet"</span>)   <span class="cmt"># с готовыми знаниями</span>
+
+base_model.trainable = <span class="kw">False</span>   <span class="cmt"># ← СЕРДЦЕ transfer learning: замораживаем базу</span></div>
+
+<span class="badge bad">✗ ГЛАВНАЯ ОШИБКА УРОКА — не заморозили базу</span>
+<div class="codebox bad">base_model = <span class="fn">MobileNetV2</span>(..., weights=<span class="str">"imagenet"</span>)
+<span class="cmt"># base_model.trainable = False  ← забыли эту строку</span></div>
+<div class="box err"><b>Почему ломается:</b> при обучении на паре десятков наших фото сеть начнёт «переучивать» миллионы своих весов — сотрёт готовые знания, будет учиться очень долго и переобучится (запомнит именно наши фото). <b>Как чинить:</b> обязательно <code class="inl">base_model.trainable = False</code>.</div>
+
+<!-- ШАГ 5 -->
+<h2><span class="step-no">5</span>Предобработка: НЕ делим на 255!</h2>
+<p class="why"><b>Зачем:</b> MobileNet обучали на числах в диапазоне [−1; 1], а не [0; 1]. У неё для этого есть своя функция <code class="inl">preprocess_input</code>. <b>Что ждём:</b> предобработка встроена прямо в модель.</p>
+
+<span class="badge ok">✓ ПИШЕМ ТАК</span>
+<div class="codebox ok"><button class="copy" onclick="cp(this)">копировать</button><span class="kw">from</span> tensorflow.keras.applications.mobilenet_v2 <span class="kw">import</span> preprocess_input
+<span class="kw">from</span> tensorflow.keras <span class="kw">import</span> layers, Input, Model
+
+inputs = <span class="fn">Input</span>(shape=IMG + (<span class="num">3</span>,))
+x = <span class="fn">preprocess_input</span>(inputs)        <span class="cmt"># приводит к [-1; 1] — как ждёт MobileNet</span>
+x = base_model(x, training=<span class="kw">False</span>)  <span class="cmt"># база работает, но не учится</span></div>
+
+<span class="badge bad">✗ ОШИБКА — привычка с прошлого урока</span>
+<div class="codebox bad">x = inputs / <span class="num">255.0</span>   <span class="cmt"># на уроке 15 так было верно, здесь — НЕТ</span></div>
+<div class="box err"><b>Почему ломается:</b> сеть ждёт диапазон [−1; 1], а получает [0; 1] — как выучить язык, а услышать похожий, но другой. Точность падает без явной ошибки. <b>Правило:</b> у каждой готовой сети — своя <code class="inl">preprocess_input</code>. Смотри её, а не дели на 255 «по привычке».</div>
+
+<!-- ШАГ 6 -->
+<h2><span class="step-no">6</span>Достраиваем «голову» и обучаем</h2>
+<p class="why"><b>Зачем:</b> заморозили базу — теперь добавляем маленький «мозг» под 2 наших класса. Метки у нас целые числа → используем <code class="inl">sparse_categorical_crossentropy</code> (стандарт курса). <b>Что ждём:</b> обучение за пару эпох, высокая точность.</p>
+
+<span class="badge ok">✓ ПИШЕМ ТАК</span>
+<div class="codebox ok"><button class="copy" onclick="cp(this)">копировать</button>x = layers.<span class="fn">GlobalAveragePooling2D</span>()(x)   <span class="cmt"># сжимаем карты признаков в вектор</span>
+x = layers.<span class="fn">Dropout</span>(<span class="num">0.2</span>)(x)                <span class="cmt"># защита от переобучения</span>
+outputs = layers.<span class="fn">Dense</span>(<span class="num">2</span>, activation=<span class="str">"softmax"</span>)(x)  <span class="cmt"># 2 класса</span>
+
+model = <span class="fn">Model</span>(inputs, outputs)
+model.<span class="fn">compile</span>(optimizer=<span class="str">"adam"</span>,
+              loss=<span class="str">"sparse_categorical_crossentropy"</span>,   <span class="cmt"># метки — числа 0/1</span>
+              metrics=[<span class="str">"accuracy"</span>])
+
+model.<span class="fn">fit</span>(train_ds, validation_data=test_ds, epochs=<span class="num">3</span>)</div>
+
+<span class="badge bad">✗ ОШИБКА — <code class="inl">Flatten</code> вместо <code class="inl">GlobalAveragePooling2D</code></span>
+<div class="box err"><b>Почему плохо:</b> <code class="inl">Flatten</code> после MobileNet раздувает число параметров в сотни тысяч → медленно и легко переобучается. <b>Как чинить:</b> для transfer learning почти всегда <code class="inl">GlobalAveragePooling2D</code> — компактно и стабильно.</div>
+
+<!-- ШАГ 7 -->
+<h2><span class="step-no">7</span>Честная проверка — на НОВОМ фото, которого сеть не видела</h2>
+<p class="why"><b>Зачем:</b> это «вау»-момент урока. Проверяем не на обучающих фото, а на свежем снимке. <b>Важно:</b> предобработка уже встроена в модель — поэтому фото подаём как есть, второй раз <code class="inl">preprocess_input</code> НЕ применяем.</p>
+
+<span class="badge ok">✓ ПИШЕМ ТАК</span>
+<div class="codebox ok"><button class="copy" onclick="cp(this)">копировать</button><span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">from</span> tensorflow.keras.utils <span class="kw">import</span> load_img, img_to_array
+
+img = <span class="fn">load_img</span>(<span class="str">"test.jpg"</span>, target_size=IMG)   <span class="cmt"># тот же размер!</span>
+arr = <span class="fn">img_to_array</span>(img)
+arr = np.<span class="fn">expand_dims</span>(arr, <span class="num">0</span>)   <span class="cmt"># (1, 160, 160, 3): одна картинка в «пачке»</span>
+
+pred = model.<span class="fn">predict</span>(arr)[<span class="num">0</span>]
+<span class="fn">print</span>(<span class="str">"Ответ:"</span>, train_ds.class_names[np.<span class="fn">argmax</span>(pred)],
+      <span class="str">f"({pred.max():.0%} уверенности)"</span>)</div>
+
+<div class="box err"><b>Частые промахи здесь:</b> забыли <code class="inl">target_size</code> → неверная форма; забыли <code class="inl">expand_dims</code> → модель ждёт «пачку», а не одну картинку; проверяют на обучающем фото → результат ничего не доказывает (утечка).</div>
+
+<!-- ГОТОВЫЙ ШАБЛОН -->
+<h2><span class="step-no">★</span>Готовый шаблон — запусти с нуля (демо-датасет 2 класса)</h2>
+<div class="template">
+  <div class="flag">📋 Самодостаточно: скачивает демо-набор кот/собака и обучается. Свои фото — та же структура папок, просто поменяй путь.</div>
+<div class="codebox ok"><button class="copy" onclick="cp(this)">копировать всё</button><span class="cmt"># ===== TRANSFER LEARNING: КЛАССИФИКАТОР ФОТО — ПОЛНЫЙ ШАБЛОН =====</span>
+<span class="kw">import</span> os
+<span class="kw">import</span> tensorflow <span class="kw">as</span> tf
+<span class="kw">from</span> tensorflow.keras <span class="kw">import</span> layers, Input, Model
+<span class="kw">from</span> tensorflow.keras.applications <span class="kw">import</span> MobileNetV2
+<span class="kw">from</span> tensorflow.keras.applications.mobilenet_v2 <span class="kw">import</span> preprocess_input
+
+IMG = (<span class="num">160</span>, <span class="num">160</span>)
+
+<span class="cmt"># 1. Данные: демо-набор из 2 классов (кот/собака). Свои фото — та же структура папок.</span>
+url = <span class="str">"https://storage.googleapis.com/mledu-datasets/cats_and_dogs_filtered.zip"</span>
+zip_path = tf.keras.utils.<span class="fn">get_file</span>(<span class="str">"cats_and_dogs.zip"</span>, origin=url, extract=<span class="kw">True</span>)
+base = os.path.<span class="fn">join</span>(os.path.<span class="fn">dirname</span>(zip_path), <span class="str">"cats_and_dogs_filtered"</span>)
+
+train_ds = tf.keras.utils.<span class="fn">image_dataset_from_directory</span>(
+    os.path.<span class="fn">join</span>(base, <span class="str">"train"</span>), image_size=IMG, batch_size=<span class="num">32</span>, shuffle=<span class="kw">True</span>)
+test_ds = tf.keras.utils.<span class="fn">image_dataset_from_directory</span>(
+    os.path.<span class="fn">join</span>(base, <span class="str">"validation"</span>), image_size=IMG, batch_size=<span class="num">32</span>, shuffle=<span class="kw">True</span>)
+<span class="fn">print</span>(<span class="str">"Классы:"</span>, train_ds.class_names)
+
+<span class="cmt"># 2. Готовая MobileNet + заморозка</span>
+base_model = <span class="fn">MobileNetV2</span>(input_shape=IMG + (<span class="num">3</span>,), include_top=<span class="kw">False</span>, weights=<span class="str">"imagenet"</span>)
+base_model.trainable = <span class="kw">False</span>
+
+<span class="cmt"># 3. Модель: своя предобработка (НЕ /255) + голова</span>
+inputs = <span class="fn">Input</span>(shape=IMG + (<span class="num">3</span>,))
+x = <span class="fn">preprocess_input</span>(inputs)
+x = base_model(x, training=<span class="kw">False</span>)
+x = layers.<span class="fn">GlobalAveragePooling2D</span>()(x)
+x = layers.<span class="fn">Dropout</span>(<span class="num">0.2</span>)(x)
+outputs = layers.<span class="fn">Dense</span>(<span class="num">2</span>, activation=<span class="str">"softmax"</span>)(x)
+model = <span class="fn">Model</span>(inputs, outputs)
+
+<span class="cmt"># 4. Метки — числа → sparse (стандарт курса)</span>
+model.<span class="fn">compile</span>(optimizer=<span class="str">"adam"</span>,
+              loss=<span class="str">"sparse_categorical_crossentropy"</span>, metrics=[<span class="str">"accuracy"</span>])
+
+<span class="cmt"># 5. Обучение (база заморожена → быстро)</span>
+model.<span class="fn">fit</span>(train_ds, validation_data=test_ds, epochs=<span class="num">3</span>)</div>
+</div>
+
+<!-- ПРОВЕРЬ СЕБЯ -->
+<div class="check">
+  <h2>✅ Проверь себя (5 вопросов)</h2>
+  <ol>
+    <li>Что такое transfer learning своими словами? Почему это быстрее, чем учить сеть с нуля?</li>
+    <li>На уроке 15 мы делили картинки на <code>255.0</code>, а здесь — нет. Почему? Что делаем вместо этого?</li>
+    <li>Зачем нужна строка <code>base_model.trainable = False</code>? Что случится, если её забыть?</li>
+    <li>Почему все фото приводим к одному размеру <code>(160, 160)</code>, хотя телефонные снимки разного размера?</li>
+    <li>Друг проверил модель на тех же фото, на которых обучал, и получил 100%. Почему это ничего не доказывает?</li>
+  </ol>
+  <details class="ans">
+    <summary>Показать ответы (для преподавателя)</summary>
+    <ol>
+      <li>Берём сеть, уже обученную на миллионах картинок, и доучиваем маленькую часть под свою задачу. Быстрее, потому что «фундамент» (распознавание краёв, форм, текстур) уже готов — учим только «голову».</li>
+      <li>MobileNet обучали на диапазоне [−1; 1], а не [0; 1]. Поэтому вместо деления на 255 используем её родную <code>preprocess_input</code>. У каждой готовой сети своя предобработка.</li>
+      <li>Она замораживает готовые знания базовой сети. Без неё обучение на паре десятков фото сотрёт эти знания, пойдёт медленно и переобучится.</li>
+      <li>Нейросеть принимает вход строго фиксированной формы. Разные размеры не сойдутся с <code>input_shape</code> модели.</li>
+      <li>Это утечка данных: модель проверяют на том, что она уже «зазубрила». Честная оценка — только на новых, невиданных фото.</li>
+    </ol>
+  </details>
+</div>
+
+<button class="printbtn" onclick="window.print()">🖨️ Распечатать вкладыш</button>
+
+<footer>Курс Machine Learning · Урок 16 «Классификатор моих фото» · вкладыш для учеников · transfer learning · MobileNetV2</footer>
+
+</div>
+
+<script>
+  function cp(btn){
+    const box = btn.parentElement;
+    const text = box.innerText.replace(/^\s*копировать(?: всё)?\s*/,'').trim();
+    navigator.clipboard.writeText(text).then(()=>{
+      const old = btn.textContent;
+      btn.textContent = "скопировано ✓";
+      setTimeout(()=>btn.textContent = old, 1400);
+    }).catch(()=>{ btn.textContent = "выдели вручную"; });
+  }
+</script>
+</body>
+</html>

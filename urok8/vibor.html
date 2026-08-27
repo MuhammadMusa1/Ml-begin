@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Линейно разделимая выборка</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .data-input {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            font-family: monospace;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 30px;
+            background: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        button:hover {
+            background: #1976D2;
+        }
+        .result {
+            margin: 20px 0;
+            padding: 15px;
+            background: #e8f5e9;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .explanation {
+            margin-top: 20px;
+            padding: 15px;
+            background: #fff3e0;
+            border-radius: 5px;
+            border-left: 4px solid #ff9800;
+        }
+        .visualization {
+            margin: 20px 0;
+            padding: 20px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            min-height: 300px;
+        }
+        canvas {
+            border: 1px solid #ccc;
+            max-width: 100%;
+        }
+        .step {
+            padding: 10px;
+            margin: 10px 0;
+            background: #e3f2fd;
+            border-radius: 5px;
+            border-left: 4px solid #1976D2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Линейно разделимая выборка</h1>
+        <h3>Нахождение разделяющей гиперплоскости</h3>
+        
+        <div class="data-input">
+            <p><strong>Введите данные:</strong></p>
+            <p>Первая строка: n m (количество точек и размерность)</p>
+            <p>Далее n строк: координаты точки и класс (+1 или -1)</p>
+            <textarea id="dataInput">3 2
+0 0 -1
+2 2 1
+3 3 1</textarea>
+            <button onclick="solve()">Найти разделяющую плоскость</button>
+        </div>
+        
+        <div id="result" class="result" style="display:none;"></div>
+        
+        <div id="visualization" class="visualization"></div>
+        
+        <div id="explanation" class="explanation"></div>
+    </div>
+
+    <script>
+        function solve() {
+            const text = document.getElementById('dataInput').value;
+            const lines = text.trim().split('\n').filter(line => line.trim());
+            
+            if (lines.length < 2) {
+                alert('Введите корректные данные!');
+                return;
+            }
+            
+            // Парсим данные
+            const [n, m] = lines[0].split(' ').map(Number);
+            const X = [];
+            const y = [];
+            
+            for (let i = 1; i <= n; i++) {
+                const parts = lines[i].split(' ').map(Number);
+                X.push(parts.slice(0, m));
+                y.push(parts[m]);
+            }
+            
+            // ☆☆☆ АЛГОРИТМ ОБУЧЕНИЯ ☆☆☆
+            // Используем метод градиентного спуска (перцептрон)
+            
+            // 1. Инициализация весов
+            let w = Array(m).fill(0);
+            let bias = 0;
+            
+            // 2. Обучение
+            const learningRate = 0.1;
+            const maxEpochs = 1000;
+            
+            let errors = [];
+            
+            for (let epoch = 0; epoch < maxEpochs; epoch++) {
+                let errorCount = 0;
+                
+                for (let i = 0; i < n; i++) {
+                    // Вычисляем предсказание
+                    let prediction = 0;
+                    for (let j = 0; j < m; j++) {
+                        prediction += w[j] * X[i][j];
+                    }
+                    prediction += bias;
+                    
+                    // Проверяем ошибку
+                    if (y[i] * prediction <= 0) {
+                        // Обновляем веса
+                        for (let j = 0; j < m; j++) {
+                            w[j] += learningRate * y[i] * X[i][j];
+                        }
+                        bias += learningRate * y[i];
+                        errorCount++;
+                    }
+                }
+                
+                errors.push(errorCount);
+                
+                // Если ошибок нет - обучение завершено
+                if (errorCount === 0) {
+                    break;
+                }
+            }
+            
+            // ☆☆☆ ОТОБРАЖАЕМ РЕЗУЛЬТАТ ☆☆☆
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = `
+                <strong>Найденная разделяющая гиперплоскость:</strong>
+                ${w.map((val, i) => `w${i+1} = ${val.toFixed(4)}`).join(', ')}
+                ${m > 1 ? '\n' : ''}
+                ${m > 1 ? `Смещение (bias) = ${bias.toFixed(4)}` : ''}
+            `;
+            
+            // Визуализация для 2D
+            if (m === 2) {
+                visualize2D(X, y, w, bias);
+            } else {
+                document.getElementById('visualization').innerHTML = 
+                    `<p>Визуализация доступна только для 2D пространства (m=2)</p>`;
+            }
+            
+            // Объяснение
+            explain(n, m, errors.length);
+        }
+        
+        function visualize2D(X, y, w, bias) {
+            const container = document.getElementById('visualization');
+            
+            // Создаем canvas
+            const canvas = document.createElement('canvas');
+            canvas.width = 500;
+            canvas.height = 500;
+            container.innerHTML = '';
+            container.appendChild(canvas);
+            
+            const ctx = canvas.getContext('2d');
+            const padding = 50;
+            const size = 400;
+            
+            // Находим границы данных
+            let minX = Infinity, maxX = -Infinity;
+            let minY = Infinity, maxY = -Infinity;
+            
+            for (const point of X) {
+                minX = Math.min(minX, point[0]);
+                maxX = Math.max(maxX, point[0]);
+                minY = Math.min(minY, point[1]);
+                maxY = Math.max(maxY, point[1]);
+            }
+            
+            const rangeX = maxX - minX || 1;
+            const rangeY = maxY - minY || 1;
+            
+            // Функция для преобразования координат
+            function toCanvas(x, y) {
+                const canvasX = padding + ((x - minX) / rangeX) * size;
+                const canvasY = padding + ((maxY - y) / rangeY) * size;
+                return [canvasX, canvasY];
+            }
+            
+            // Рисуем сетку
+            ctx.strokeStyle = '#eee';
+            ctx.lineWidth = 0.5;
+            for (let i = 0; i <= 10; i++) {
+                const t = i / 10;
+                const x = minX + t * rangeX;
+                const y = minY + t * rangeY;
+                const [cx, cy] = toCanvas(x, y);
+                ctx.beginPath();
+                ctx.moveTo(cx, padding);
+                ctx.lineTo(cx, padding + size);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(padding, cy);
+                ctx.lineTo(padding + size, cy);
+                ctx.stroke();
+            }
+            
+            // Рисуем разделяющую линию
+            if (Math.abs(w[1]) > 1e-10) {
+                // y = (-w[0]*x - bias) / w[1]
+                const x1 = minX;
+                const y1 = (-w[0] * x1 - bias) / w[1];
+                const x2 = maxX;
+                const y2 = (-w[0] * x2 - bias) / w[1];
+                
+                if (isFinite(y1) && isFinite(y2)) {
+                    const [cx1, cy1] = toCanvas(x1, y1);
+                    const [cx2, cy2] = toCanvas(x2, y2);
+                    
+                    ctx.strokeStyle = '#FF6F00';
+                    ctx.lineWidth = 3;
+                    ctx.setLineDash([5, 5]);
+                    ctx.beginPath();
+                    ctx.moveTo(cx1, cy1);
+                    ctx.lineTo(cx2, cy2);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                }
+            }
+            
+            // Рисуем точки
+            for (let i = 0; i < X.length; i++) {
+                const [cx, cy] = toCanvas(X[i][0], X[i][1]);
+                
+                // Цвет в зависимости от класса
+                if (y[i] === 1) {
+                    ctx.fillStyle = 'rgba(33, 150, 243, 0.8)';
+                    ctx.strokeStyle = '#1976D2';
+                } else {
+                    ctx.fillStyle = 'rgba(244, 67, 54, 0.8)';
+                    ctx.strokeStyle = '#D32F2F';
+                }
+                
+                ctx.beginPath();
+                ctx.arc(cx, cy, 8, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.stroke();
+                
+                // Подпись
+                ctx.fillStyle = '#333';
+                ctx.font = '12px Arial';
+                ctx.fillText(`(${X[i][0].toFixed(1)}, ${X[i][1].toFixed(1)})`, cx + 12, cy + 4);
+            }
+            
+            // Легенда
+            const legendY = 30;
+            ctx.font = '14px Arial';
+            ctx.fillStyle = 'rgba(33, 150, 243, 0.8)';
+            ctx.fillRect(400, legendY, 15, 15);
+            ctx.fillStyle = '#333';
+            ctx.fillText('Класс +1', 420, legendY + 12);
+            
+            ctx.fillStyle = 'rgba(244, 67, 54, 0.8)';
+            ctx.fillRect(400, legendY + 25, 15, 15);
+            ctx.fillStyle = '#333';
+            ctx.fillText('Класс -1', 420, legendY + 37);
+        }
+        
+        function explain(n, m, epochs) {
+            const div = document.getElementById('explanation');
+            div.innerHTML = `
+                <h3>📚 Как работает алгоритм?</h3>
+                
+                <div class="step">
+                    <strong>Шаг 1: Инициализация</strong>
+                    <p>Начинаем с произвольных весов (обычно нулевых).</p>
+                </div>
+                
+                <div class="step">
+                    <strong>Шаг 2: Обучение</strong>
+                    <p>Для каждой точки проверяем, правильно ли она классифицируется.</p>
+                    <p>Если точка классифицирована неверно, корректируем веса:</p>
+                    <p style="text-align:center;font-family:monospace;color:#d32f2f;">
+                        w_new = w_old + η × y × x
+                    </p>
+                    <p>где η - скорость обучения, y - метка класса, x - вектор признаков.</p>
+                </div>
+                
+                <div class="step">
+                    <strong>Шаг 3: Итерации</strong>
+                    <p>Повторяем шаг 2, пока все точки не будут правильно классифицированы.</p>
+                    <p>Потребовалось <strong>${epochs}</strong> эпох обучения.</p>
+                </div>
+                
+                <div class="step" style="background:#fff3e0;border-left-color:#ff9800;">
+                    <strong>🎯 Почему это работает?</strong>
+                    <p>Каждая ошибка "подталкивает" гиперплоскость в правильном направлении.</p>
+                    <p>Поскольку данные линейно разделимы, алгоритм гарантированно найдет решение.</p>
+                </div>
+                
+                <p style="margin-top:15px;padding:10px;background:#e8f5e9;border-radius:5px;">
+                    <strong>💡 Ключевая идея:</strong> Когда мы делаем ошибку, мы перемещаем 
+                    разделяющую линию так, чтобы исправить эту ошибку. Постепенно линия 
+                    "настраивается" на правильное разделение классов.
+                </p>
+            `;
+        }
+        
+        // Загружаем пример при старте
+        window.onload = function() {
+            document.getElementById('dataInput').value = `5 2
+0 0 -1
+1 0 -1
+0 1 -1
+2 2 1
+3 3 1`;
+            solve();
+        };
+    </script>
+</body>
+</html>

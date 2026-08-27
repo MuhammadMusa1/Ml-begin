@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Связь уроков 2-5: Почему это единая цепочка</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0F172A;
+            color: #E2E8F0;
+            padding: 2rem 1rem;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #334155;
+            padding-bottom: 1.5rem;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #60A5FA, #A78BFA);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            color: #94A3B8;
+            margin-top: 0.5rem;
+            font-size: 1.5rem;
+        }
+
+        /* Цепочка уроков */
+        .chain-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.5rem;
+            margin: 2rem 0 3rem;
+            padding: 1rem;
+            background: #1E293B;
+            border-radius: 1.5rem;
+            border: 1px solid #334155;
+        }
+
+        .chain-step {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .chain-badge {
+            background: #3B82F6;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .chain-badge.done {
+            background: #10B981;
+        }
+
+        .chain-badge.warning {
+            background: #F59E0B;
+        }
+
+        .chain-badge.danger {
+            background: #EF4444;
+        }
+
+        .chain-label {
+            font-size: 1.5rem;
+            font-weight: 500;
+            background: #0F172A;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            white-space: nowrap;
+        }
+
+        .chain-arrow {
+            color: #475569;
+            font-size: 1.3rem;
+            padding: 0 0.2rem;
+        }
+
+        /* Карточки уроков */
+        .lessons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .lesson-card {
+            background: #1E293B;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            border: 2px solid #334155;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .lesson-card:hover {
+            transform: translateY(-4px);
+            border-color: #3B82F6;
+        }
+
+        .lesson-card .number {
+            background: #3B82F6;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .lesson-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: #F1F5F9;
+        }
+
+        .lesson-card .desc {
+            font-size: 1.25rem;
+            color: #94A3B8;
+            margin-bottom: 0.8rem;
+        }
+
+        .lesson-card .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+
+        .lesson-card .tag {
+            font-size: 1.25rem;
+            padding: 0.15rem 0.6rem;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+
+        .tag-theory {
+            background: #1E3A5F;
+            color: #60A5FA;
+        }
+
+        .tag-practice {
+            background: #1E3A2A;
+            color: #34D399;
+        }
+
+        .tag-project {
+            background: #3B2D1E;
+            color: #FBBF24;
+        }
+
+        .tag-wow {
+            background: #2D1E3B;
+            color: #A78BFA;
+        }
+
+        .lesson-card .why {
+            margin-top: 0.8rem;
+            padding-top: 0.8rem;
+            border-top: 1px solid #334155;
+            font-size: 1.25rem;
+            color: #CBD5E1;
+        }
+
+        .lesson-card .why strong {
+            color: #FBBF24;
+        }
+
+        /* Блок "Что будет, если пропустить" */
+        .danger-block {
+            background: #2D1A1A;
+            border-left: 4px solid #EF4444;
+            border-radius: 0.75rem;
+            padding: 1.2rem 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .danger-block h3 {
+            color: #FCA5A5;
+            margin-bottom: 0.5rem;
+        }
+
+        .danger-block ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .danger-block li {
+            padding: 0.3rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+            color: #FCA5A5;
+        }
+
+        .danger-block li::before {
+            content: "⚠️";
+            position: absolute;
+            left: 0;
+        }
+
+        .success-block {
+            background: #0B2B1F;
+            border-left: 4px solid #10B981;
+            border-radius: 0.75rem;
+            padding: 1.2rem 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .success-block h3 {
+            color: #6EE7B7;
+            margin-bottom: 0.5rem;
+        }
+
+        .flow-chart {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            background: #0F172A;
+            border-radius: 1rem;
+            border: 1px solid #334155;
+        }
+
+        .flow-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .flow-box {
+            background: #1E293B;
+            padding: 0.6rem 1.2rem;
+            border-radius: 0.5rem;
+            border: 1px solid #334155;
+            font-size: 1.25rem;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .flow-box.highlight {
+            border-color: #3B82F6;
+            background: #1E3A5F;
+        }
+
+        .flow-arrow {
+            color: #475569;
+            font-size: 1.2rem;
+        }
+
+        .flow-label {
+            font-size: 1.25rem;
+            color: #64748B;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        @media (max-width: 700px) {
+            .chain-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            .chain-arrow {
+                transform: rotate(90deg);
+            }
+            .flow-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .flow-arrow {
+                transform: rotate(90deg);
+                text-align: center;
+            }
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #334155;
+            color: #64748B;
+            font-size: 1.25rem;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>🔗 Почему уроки 2–5 — это единая цепочка</h1>
+        <p>Каждый урок — это кирпичик в фундаменте. Если пропустить один — вся конструкция зашатается</p>
+    </div>
+
+    <!-- Визуальная цепочка -->
+    <div class="chain-container">
+        <div class="chain-step">
+            <div class="chain-badge">2</div>
+            <span class="chain-label">Pandas</span>
+        </div>
+        <span class="chain-arrow">→</span>
+        <div class="chain-step">
+            <div class="chain-badge">3</div>
+            <span class="chain-label">Визуализация</span>
+        </div>
+        <span class="chain-arrow">→</span>
+        <div class="chain-step">
+            <div class="chain-badge">4</div>
+            <span class="chain-label">Мини-проект</span>
+        </div>
+        <span class="chain-arrow">→</span>
+        <div class="chain-step">
+            <div class="chain-badge">5</div>
+            <span class="chain-label">KNN</span>
+        </div>
+    </div>
+
+    <!-- Карточки уроков с объяснением связи -->
+    <div class="lessons-grid">
+        <!-- Урок 2 -->
+        <div class="lesson-card">
+            <div class="number">2</div>
+            <h3>Данные вокруг нас · Pandas-старт</h3>
+            <div class="desc">Что такое датасет, признаки, целевая переменная. Открываем датасет про игры (Steam) или кино (IMDB). Первые команды: df.head(), df.describe(), df.info().</div>
+            <div class="tags">
+                <span class="tag tag-theory">Теория</span>
+                <span class="tag tag-practice">Практика</span>
+            </div>
+            <div class="why">
+                <strong>Зачем?</strong> Без этого урока вы не сможете загрузить данные. Это как научиться читать — без этого невозможно работать с текстом.
+            </div>
+            <div class="why" style="border-top-color: #F59E0B;">
+                <strong>Связь с уроком 3:</strong> Чтобы строить графики, нужно сначала загрузить данные через Pandas. Графики строятся из DataFrame.
+            </div>
+        </div>
+
+        <!-- Урок 3 -->
+        <div class="lesson-card">
+            <div class="number">3</div>
+            <h3>Визуализация: гистограммы, scatter, heatmap</h3>
+            <div class="desc">Matplotlib и Seaborn на реальных данных. Что такое корреляция — на примере: рост и вес, оценки и время учёбы.</div>
+            <div class="tags">
+                <span class="tag tag-practice">Практика</span>
+            </div>
+            <div class="why">
+                <strong>Зачем?</strong> Без визуализации вы не увидите, есть ли связь между признаками. Это как пытаться понять карту без картинок — только цифры.
+            </div>
+            <div class="why" style="border-top-color: #F59E0B;">
+                <strong>Связь с уроком 4:</strong> Чтобы рассказать о данных, нужно сначала их увидеть. Графики — это основа вашей презентации.
+            </div>
+        </div>
+
+        <!-- Урок 4 -->
+        <div class="lesson-card">
+            <div class="number">4</div>
+            <h3>Мини-проект: «Расскажи о данных»</h3>
+            <div class="desc">Каждый ученик 3 минуты презентует свой датасет: откуда, что интересного нашёл. Конкурс: кто найдёт самый необычный инсайт.</div>
+            <div class="tags">
+                <span class="tag tag-project">Мини-проект</span>
+            </div>
+            <div class="why">
+                <strong>Зачем?</strong> Без этого урока вы не научитесь объяснять данные словами. Это как собрать пазл, но не рассказать, что на картинке.
+            </div>
+            <div class="why" style="border-top-color: #F59E0B;">
+                <strong>Связь с уроком 5:</strong> Чтобы выбрать правильную модель (KNN), нужно понимать, какие признаки важны. Мини-проект учит анализировать признаки.
+            </div>
+        </div>
+
+        <!-- Урок 5 -->
+        <div class="lesson-card">
+            <div class="number">5</div>
+            <h3>KNN — интуиция без формул</h3>
+            <div class="desc">Объяснение на доске с точками: ты похож на тех, кто рядом. Код: sklearn KNeighborsClassifier на датасете Pokemon или Titanic.</div>
+            <div class="tags">
+                <span class="tag tag-theory">Теория</span>
+                <span class="tag tag-wow">Игра</span>
+            </div>
+            <div class="why">
+                <strong>Зачем?</strong> Это первая настоящая ML-модель. Без неё вы не поймёте, как машина учится. Это как первый раз сесть за руль.
+            </div>
+            <div class="why" style="border-top-color: #F59E0B;">
+                <strong>Связь с уроками 2–4:</strong> KNN работает с табличными данными. Если вы не умеете загружать данные (урок 2), визуализировать их (урок 3) и понимать признаки (урок 4) — KNN станет магией, а не наукой.
+            </div>
+        </div>
+    </div>
+
+    <!-- Что будет, если пропустить -->
+    <div class="danger-block">
+        <h3>❌ Что будет, если пропустить один из уроков?</h3>
+        <ul>
+            <li><strong>Пропустили урок 2 (Pandas):</strong> Вы не сможете загрузить датасет для KNN. Весь урок 5 пройдёт мимо, потому что вы не поймёте, откуда берутся данные.</li>
+            <li><strong>Пропустили урок 3 (Визуализация):</strong> Вы не увидите, какие признаки важны. KNN будет работать хуже, потому что вы выберете неправильные признаки.</li>
+            <li><strong>Пропустили урок 4 (Мини-проект):</strong> Вы не научитесь анализировать данные. KNN станет для вас «чёрным ящиком» — вы не поймёте, почему модель принимает те или иные решения.</li>
+            <li><strong>Пропустили урок 5 (KNN):</strong> Вы пропустите первую настоящую модель. Все следующие уроки (деревья, случайный лес) будут непонятны, потому что вы не знаете основ.</li>
+        </ul>
+    </div>
+
+    <!-- Поток знаний -->
+    <div class="success-block">
+        <h3>✅ Правильный поток знаний (как всё связано)</h3>
+        <div class="flow-chart">
+            <div class="flow-row">
+                <div class="flow-box highlight">
+                    <div class="flow-label">Урок 2</div>
+                    <strong>Загрузка данных</strong>
+                    <div style="font-size:0.8rem;color:#94A3B8;">Pandas: df.head(), df.info()</div>
+                </div>
+                <span class="flow-arrow">↓</span>
+                <div class="flow-box">
+                    <div class="flow-label">Урок 3</div>
+                    <strong>Визуализация</strong>
+                    <div style="font-size:0.8rem;color:#94A3B8;">Matplotlib, Seaborn</div>
+                </div>
+                <span class="flow-arrow">↓</span>
+                <div class="flow-box">
+                    <div class="flow-label">Урок 4</div>
+                    <strong>Анализ данных</strong>
+                    <div style="font-size:0.8rem;color:#94A3B8;">Выбор признаков, поиск инсайтов</div>
+                </div>
+                <span class="flow-arrow">↓</span>
+                <div class="flow-box highlight">
+                    <div class="flow-label">Урок 5</div>
+                    <strong>KNN — первая ML-модель</strong>
+                    <div style="font-size:0.8rem;color:#94A3B8;">sklearn, классификация</div>
+                </div>
+            </div>
+            <div style="text-align:center;color:#64748B;font-size:0.85rem;">
+                ⚡ Без любого из этих шагов KNN становится непонятным. Каждый шаг — это фундамент для следующего.
+            </div>
+        </div>
+    </div>
+
+    <!-- Простая аналогия -->
+    <div style="background: #1E293B; border-radius: 1rem; padding: 1.5rem; border: 1px solid #334155; margin-top: 1.5rem;">
+        <h3 style="color: #F1F5F9; margin-bottom: 0.8rem;">🧱 Простая аналогия</h3>
+        <p style="color: #94A3B8;">
+            Представьте, что вы строите дом (ML-модель KNN):
+        </p>
+        <ul style="color: #CBD5E1; list-style: none; padding: 0; margin-top: 0.5rem;">
+            <li style="padding: 0.3rem 0;">🏗️ <strong>Урок 2 (Pandas)</strong> — это фундамент. Без него дом рухнет.</li>
+            <li style="padding: 0.3rem 0;">📐 <strong>Урок 3 (Визуализация)</strong> — это план дома. Вы видите, где что будет.</li>
+            <li style="padding: 0.3rem 0;">🔍 <strong>Урок 4 (Мини-проект)</strong> — это проверка материалов. Вы убеждаетесь, что всё правильно.</li>
+            <li style="padding: 0.3rem 0;">🔨 <strong>Урок 5 (KNN)</strong> — это возведение стен. Это и есть ваш дом.</li>
+        </ul>
+        <p style="color: #FCA5A5; margin-top: 0.8rem; font-size: 0.9rem;">
+            ❌ Пропустите фундамент — дом рухнет. Пропустите план — построите кривой дом.
+        </p>
+    </div>
+
+    <div class="footer">
+        <strong>Вывод:</strong> Уроки 2, 3, 4 и 5 — это одна цепочка. Каждый следующий урок опирается на предыдущий. <br>
+        Не пропускайте занятия, и вы поймёте машинное обучение на уровне интуиции!
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Урок 15 — Готовим данные для CNN: пошагово и без ошибок</title>
+<style>
+  :root{
+    --bg:#14102b;
+    --bg2:#1b1540;
+    --panel:#241a47;
+    --panel2:#2b2050;
+    --indigo:#6366f1;
+    --violet:#8b5cf6;
+    --cyan:#22d3ee;
+    --text:#e8e6f5;
+    --muted:#b9b3e0;
+    --code-bg:#20202e;
+    --code-text:#e6e6ef;
+    --ok:#34d399;
+    --ok-bg:#0f3d33;
+    --bad:#fb7185;
+    --bad-bg:#3d1424;
+    --line:#3a2f66;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1200px 500px at 10% -10%, rgba(139,92,246,.25), transparent 60%),
+      radial-gradient(900px 500px at 100% 0%, rgba(34,211,238,.15), transparent 55%),
+      var(--bg);
+    color:var(--text);
+    font-family:Calibri,"Segoe UI",sans-serif;
+    line-height:1.55;
+    padding:34px 18px 70px;
+  }
+  .wrap{max-width:1000px;margin:0 auto;}
+
+  header.hero{
+    background:linear-gradient(135deg, rgba(99,102,241,.28), rgba(34,211,238,.14));
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:26px 30px;
+    position:relative;
+    overflow:hidden;
+  }
+  header.hero:before{
+    content:"CNN";
+    position:absolute; right:18px; top:-22px;
+    font-size:120px; font-weight:800; letter-spacing:2px;
+    color:rgba(139,92,246,.12);
+    font-family:Consolas,monospace;
+  }
+  .tag{
+    display:inline-block; font-size:13px; letter-spacing:2px;
+    text-transform:uppercase; color:var(--cyan);
+    border:1px solid rgba(34,211,238,.4); border-radius:999px;
+    padding:4px 12px; margin-bottom:12px;
+  }
+  h1{margin:6px 0 8px; font-size:30px; color:#fff; font-weight:800;}
+  .sub{color:var(--muted); font-size:17px; max-width:720px;}
+
+  .lead{
+    display:flex; gap:14px; flex-wrap:wrap; margin:22px 0 8px;
+  }
+  .lead .card{
+    flex:1 1 240px; background:var(--panel); border:1px solid var(--line);
+    border-radius:14px; padding:16px 18px;
+  }
+  .lead .card b{color:var(--violet); display:block; font-size:16px; margin-bottom:4px;}
+  .lead .card span{color:var(--muted); font-size:14.5px;}
+
+  h2{
+    color:var(--violet); font-size:23px; margin:38px 0 6px;
+    border-left:5px solid var(--cyan); padding-left:12px;
+  }
+  .step-no{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:30px; height:30px; border-radius:9px;
+    background:linear-gradient(135deg,var(--indigo),var(--violet));
+    color:#fff; font-weight:800; margin-right:10px; font-family:Consolas,monospace;
+    font-size:16px;
+  }
+  .why{color:var(--muted); font-size:15.5px; margin:2px 0 12px;}
+  .why b{color:var(--cyan);}
+
+  .codebox{
+    position:relative;
+    background:var(--code-bg); border:1px solid var(--line);
+    border-radius:12px; padding:16px 18px; margin:10px 0;
+    font-family:Consolas,"Courier New",monospace; font-size:14.5px;
+    color:var(--code-text); overflow-x:auto; white-space:pre;
+    tab-size:4;
+  }
+  .codebox.ok{border-left:5px solid var(--ok);}
+  .codebox.bad{border-left:5px solid var(--bad);}
+  .cmt{color:#8a86b8;}
+  .kw{color:#c4b5fd;}
+  .str{color:#7dd3fc;}
+  .num{color:#f0abfc;}
+  .fn{color:#5eead4;}
+
+  .badge{font-size:13px; font-weight:700; letter-spacing:.5px; display:block; margin:14px 0 2px;}
+  .badge.ok{color:var(--ok);}
+  .badge.bad{color:var(--bad);}
+
+  .box{
+    border-radius:12px; padding:12px 16px; margin:8px 0 4px; font-size:15px;
+  }
+  .box.fix{background:var(--ok-bg); border:1px solid rgba(52,211,153,.35);}
+  .box.err{background:var(--bad-bg); border:1px solid rgba(251,113,133,.35);}
+  .box b{color:#fff;}
+
+  .copy{
+    position:absolute; right:10px; top:10px;
+    background:rgba(139,92,246,.25); border:1px solid var(--line);
+    color:var(--muted); font-family:Calibri,sans-serif; font-size:12.5px;
+    padding:4px 10px; border-radius:8px; cursor:pointer;
+  }
+  .copy:hover{background:rgba(139,92,246,.5); color:#fff;}
+
+  .template{
+    background:linear-gradient(135deg, rgba(34,211,238,.12), rgba(139,92,246,.12));
+    border:1px dashed var(--cyan); border-radius:14px; padding:6px 14px 14px;
+    margin-top:10px;
+  }
+  .template .flag{color:var(--cyan); font-weight:800; font-size:15px; margin:8px 2px 0;}
+
+  .check{
+    background:var(--panel); border:1px solid var(--line);
+    border-radius:16px; padding:22px 26px; margin-top:34px;
+  }
+  .check h2{border:none; padding:0; margin-top:0;}
+  .check ol{margin:8px 0 0; padding-left:22px;}
+  .check li{margin:10px 0; color:var(--text);}
+  .check code{background:var(--code-bg); padding:1px 6px; border-radius:6px;
+    font-family:Consolas,monospace; color:var(--cyan); font-size:14px;}
+
+  details.ans{margin-top:16px; background:var(--panel2); border:1px solid var(--line);
+    border-radius:10px; padding:8px 14px;}
+  details.ans summary{cursor:pointer; color:var(--violet); font-weight:700;}
+  details.ans ol{padding-left:20px;}
+  details.ans li{font-size:14.5px; color:var(--muted);}
+
+  .printbtn{
+    display:inline-block; margin:26px 0 0; cursor:pointer;
+    background:linear-gradient(135deg,var(--indigo),var(--violet));
+    color:#fff; border:none; border-radius:10px; padding:11px 22px;
+    font-family:Calibri,sans-serif; font-size:15px; font-weight:700;
+  }
+  code.inl{background:var(--code-bg); padding:1px 6px; border-radius:6px;
+    font-family:Consolas,monospace; color:var(--cyan); font-size:13.5px;}
+
+  footer{color:var(--muted); font-size:13.5px; margin-top:30px; text-align:center;}
+
+  @media print{
+    body{background:#fff; color:#111; padding:0;}
+    header.hero:before{display:none;}
+    .codebox,.check,.lead .card,header.hero{break-inside:avoid;}
+    .copy,.printbtn{display:none;}
+    h1,h2,.lead .card b,.template .flag{color:#4c1d95 !important;}
+    .codebox{background:#f3f3f7; color:#111; border:1px solid #ccc;}
+    .cmt{color:#6b7280;} .kw{color:#7c3aed;} .str{color:#0369a1;}
+    .num{color:#a21caf;} .fn{color:#0d9488;}
+    .box.fix{background:#ecfdf5;} .box.err{background:#fef2f2;}
+    .box b{color:#111;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <span class="tag">Урок 15 · Свёрточные сети</span>
+  <h1>Готовим данные для CNN — пошагово и без ошибок</h1>
+  <p class="sub">Сама сеть — это 20% работы. Остальные 80% — правильно подготовить данные.
+  Здесь мы пишем код шаг за шагом, и рядом с каждым правильным блоком показываем типичную ошибку: как её узнать и как починить.</p>
+</header>
+
+<div class="lead">
+  <div class="card"><b>📐 Форма (shape)</b><span>Сколько картинок, какого размера, сколько цветовых каналов.</span></div>
+  <div class="card"><b>🔢 Диапазон значений</b><span>Пиксели идут от 0 до 255. Сеть любит от 0 до 1.</span></div>
+  <div class="card"><b>🏷️ Метки (labels)</b><span>Правильные ответы: числа 0–9. Их не нормализуем!</span></div>
+</div>
+<p class="why">Три вещи выше держим в голове ВСЕГДА. 90% ошибок на этом уроке — это когда одну из них перепутали с другой.</p>
+
+<!-- ШАГ 1 -->
+<h2><span class="step-no">1</span>Загружаем готовый датасет картинок</h2>
+<p class="why"><b>Зачем:</b> нам не нужно вручную открывать тысячи файлов. В Keras уже есть набор CIFAR-10 — 60 000 маленьких фото по 10 категориям (самолёт, кот, собака, корабль…). <b>Что ждём:</b> четыре переменные — картинки и ответы, отдельно для обучения и для проверки.</p>
+
+<span class="badge ok">✓ ПИШЕМ ТАК</span>
+<div class="codebox ok"><button class="copy" onclick="cp(this)">копировать</button><span class="kw">from</span> tensorflow.keras.datasets <span class="kw">import</span> cifar10
+
+<span class="cmt"># распаковываем сразу в 4 переменные: (картинки, ответы) для train и test</span>
+(X_train, y_train), (X_test, y_test) = cifar10.load_data()
+
+<span class="fn">print</span>(<span class="str">"Картинок для обучения:"</span>, <span class="fn">len</span>(X_train))
+<span class="fn">print</span>(<span class="str">"Картинок для проверки:"</span>, <span class="fn">len</span>(X_test))</div>
+
+<span class="badge bad">✗ А ТАК НЕ НАДО</span>
+<div class="codebox bad">data = cifar10.load_data()   <span class="cmt"># получили «матрёшку» из кортежей…</span>
+X_train = data[<span class="num">0</span>]           <span class="cmt"># …и теперь X_train — это (картинки, ответы) вместе!</span></div>
+<div class="box err"><b>Почему ломается:</b> <code class="inl">load_data()</code> возвращает вложенную структуру <code class="inl">((X_train, y_train), (X_test, y_test))</code>. Если распаковать «наполовину», картинки и ответы слипнутся, и на обучении вылезет непонятная ошибка формы.
+<b>Как чинить:</b> распаковывай сразу в 4 переменные, ровно как в правильном блоке.</div>
+
+<!-- ШАГ 2 -->
+<h2><span class="step-no">2</span>Смотрим на форму — что вообще внутри</h2>
+<p class="why"><b>Зачем:</b> прежде чем что-то делать с данными, надо понять их размер. Первое, что делает опытный человек — печатает <code class="inl">.shape</code>. <b>Что ждём:</b> <code class="inl">(50000, 32, 32, 3)</code>.</p>
+
+<span class="badge ok">✓ ПИШЕМ ТАК</span>
+<div class="codebox ok"><button class="copy" onclick="cp(this)">копировать</button><span class="fn">print</span>(<span class="str">"Форма картинок:"</span>, X_train.shape)   <span class="cmt"># (50000, 32, 32, 3)</span>
+<span class="fn">print</span>(<span class="str">"Форма ответов:"</span>, y_train.shape)    <span class="cmt"># (50000, 1)</span></div>
+
+<div class="box fix"><b>Читаем <code class="inl">(50000, 32, 32, 3)</code> по частям:</b><br>
+• <b>50000</b> — сколько картинок<br>
+• <b>32</b> — высота в пикселях<br>
+• <b>32</b> — ширина в пикселях<br>
+• <b>3</b> — три цветовых канала: красный, зелёный, синий (RGB)<br>
+Каждая картинка — это стопка из 3 табличек 32×32, где в каждой клетке число яркости.</div>
+
+<span class="badge bad">✗ ЧАСТОЕ ЗАБЛУЖДЕНИЕ</span>
+<div class="box err"><b>«Картинка — это просто список из 3072 чисел».</b> Нет! Для CNN важна именно объёмная форма <code class="inl">(32, 32, 3)</code> — сеть смотрит на соседние пиксели, ищет края и формы («лупа»). Если сплющить картинку в плоский список <code class="inl">Flatten</code> ДО свёрточных слоёв — сеть перестанет «видеть» соседей, и весь смысл CNN пропадёт. Сплющивать будем, но <b>позже</b> и <b>внутри модели</b>.</div>
+
+<!-- ШАГ 3 -->
+<h2><span class="step-no">3</span>Проверяем диапазон значений</h2>
+<p class="why"><b>Зачем:</b> чтобы понять, нужна ли нормализация. Смотрим на минимум и максимум. <b>Что ждём:</b> от 0 до 255.</p>
+
+<span class="badge ok">✓ ПИШЕМ ТАК</span>
+<div class="codebox ok"><button class="copy" onclick="cp(this)">копировать</button><span class="fn">print</span>(<span class="str">"Минимум:"</span>, X_train.<span class="fn">min</span>(), <span class="str">" Максимум:"</span>, X_train.<span class="fn">max</span>())
+<span class="cmt"># Минимум: 0  Максимум: 255  → значит, это яркость пикселей, надо нормализовать</span></div>
+
+<!-- ШАГ 4 -->
+<h2><span class="step-no">4</span>Нормализация — самый частый источник ошибок</h2>
+<p class="why"><b>Зачем:</b> сеть учится стабильнее и быстрее, когда числа маленькие и в одном диапазоне [0; 1]. Делим все пиксели на 255. <b>Что ждём:</b> тот же <code class="inl">.shape</code>, но значения теперь от 0.0 до 1.0.</p>
+
+<span class="badge ok">✓ ПИШЕМ ТАК</span>
+<div class="codebox ok"><button class="copy" onclick="cp(this)">копировать</button><span class="cmt"># ОБЯЗАТЕЛЬНО и train, и test — одинаково!</span>
+X_train = X_train / <span class="num">255.0</span>
+X_test  = X_test  / <span class="num">255.0</span>
+
+<span class="fn">print</span>(<span class="str">"Теперь максимум:"</span>, X_train.<span class="fn">max</span>())  <span class="cmt"># 1.0</span></div>
+
+<span class="badge bad">✗ ОШИБКА A — нормализовали только train</span>
+<div class="codebox bad">X_train = X_train / <span class="num">255.0</span>
+<span class="cmt"># про X_test забыли…</span></div>
+<div class="box err"><b>Почему ломается:</b> модель училась на числах [0;1], а на проверке получает [0;255] — как будто выучил язык, а спрашивают на другом. Точность на тесте резко «проседает» без видимой причины. <b>Правило:</b> что сделал с train — то же сделай с test.</div>
+
+<span class="badge bad">✗ ОШИБКА B — нормализовали ответы</span>
+<div class="codebox bad">y_train = y_train / <span class="num">255.0</span>   <span class="cmt"># НЕТ! это метки классов 0–9, а не пиксели</span></div>
+<div class="box err"><b>Почему ломается:</b> <code class="inl">y</code> — это номера категорий (0 = самолёт, 3 = кот…). Делить их на 255 бессмысленно, модель не сможет обучиться. <b>Нормализуем только картинки <code class="inl">X</code>, метки <code class="inl">y</code> не трогаем.</b></div>
+
+<span class="badge bad">✗ ОШИБКА C — «делёж на месте» на целых числах</span>
+<div class="codebox bad">X_train /= <span class="num">255</span>   <span class="cmt"># массив целых → результат обрежется до нулей</span></div>
+<div class="box err"><b>Почему ломается:</b> исходные пиксели — целые числа. Деление «на месте» без точки может обрезать всё до 0. <b>Как чинить:</b> пиши через новую переменную и с точкой — <code class="inl">X_train = X_train / 255.0</code>.</div>
+
+<!-- ШАГ 5 -->
+<h2><span class="step-no">5</span>Разбираемся с метками (labels)</h2>
+<p class="why"><b>Зачем:</b> модель должна знать правильные ответы. У CIFAR-10 это числа 0–9 в форме <code class="inl">(50000, 1)</code>. В нашем курсе мы держим их как <b>целые числа</b> и используем функцию потерь <code class="inl">sparse_categorical_crossentropy</code> — тогда one-hot кодирование НЕ нужно.</p>
+
+<span class="badge ok">✓ ПИШЕМ ТАК (наш стандарт курса)</span>
+<div class="codebox ok"><button class="copy" onclick="cp(this)">копировать</button><span class="cmt"># метки оставляем как есть — целые числа 0..9</span>
+<span class="fn">print</span>(<span class="str">"Пример ответов:"</span>, y_train[:<span class="num">5</span>].ravel())  <span class="cmt"># [6 9 9 4 1]</span>
+<span class="cmt"># в модели используем loss="sparse_categorical_crossentropy"</span></div>
+
+<span class="badge bad">✗ ЛИШНЯЯ РАБОТА</span>
+<div class="codebox bad"><span class="kw">from</span> tensorflow.keras.utils <span class="kw">import</span> to_categorical
+y_train = to_categorical(y_train)   <span class="cmt"># one-hot… а loss всё ещё sparse — конфликт!</span></div>
+<div class="box err"><b>Почему путаница:</b> есть два способа — либо метки-числа + <code class="inl">sparse_categorical_crossentropy</code>, либо one-hot + <code class="inl">categorical_crossentropy</code>. Их нельзя смешивать. Мы всегда выбираем <b>первый</b>: проще, меньше кода, меньше ошибок.</div>
+
+<!-- ШАГ 6 -->
+<h2><span class="step-no">6</span>Проверяем глазами — а точно ли это картинки?</h2>
+<p class="why"><b>Зачем:</b> лучший способ убедиться, что данные живые — нарисовать одну картинку. <b>Что ждём:</b> увидим маленькое цветное фото.</p>
+
+<span class="badge ok">✓ ПИШЕМ ТАК</span>
+<div class="codebox ok"><button class="copy" onclick="cp(this)">копировать</button><span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+
+plt.<span class="fn">imshow</span>(X_train[<span class="num">0</span>])          <span class="cmt"># первая картинка (значения уже 0..1 — imshow это понимает)</span>
+plt.<span class="fn">title</span>(<span class="str">f"Класс: {y_train[0][0]}"</span>)
+plt.<span class="fn">axis</span>(<span class="str">"off"</span>)
+plt.<span class="fn">show</span>()</div>
+<div class="box fix"><b>Мини-правило хорошего дата-сайентиста:</b> «Не доверяй форме — посмотри на данные». Один <code class="inl">imshow</code> экономит час отладки.</div>
+
+<!-- ГОТОВЫЙ ШАБЛОН -->
+<h2><span class="step-no">★</span>Готовый шаблон — скопируй и запусти с нуля</h2>
+<div class="template">
+  <div class="flag">📋 Эта ячейка самодостаточна: запускается в свежем Colab без предыдущих ячеек.</div>
+<div class="codebox ok"><button class="copy" onclick="cp(this)">копировать всё</button><span class="cmt"># ===== ПОДГОТОВКА ДАННЫХ ДЛЯ CNN — ПОЛНЫЙ ШАБЛОН =====</span>
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+<span class="kw">from</span> tensorflow.keras.datasets <span class="kw">import</span> cifar10
+<span class="kw">from</span> tensorflow.keras <span class="kw">import</span> layers, models
+
+<span class="cmt"># 1. Загрузка</span>
+(X_train, y_train), (X_test, y_test) = cifar10.load_data()
+
+<span class="cmt"># 2. Смотрим форму</span>
+<span class="fn">print</span>(<span class="str">"Форма:"</span>, X_train.shape, <span class="str">"| диапазон:"</span>, X_train.<span class="fn">min</span>(), X_train.<span class="fn">max</span>())
+
+<span class="cmt"># 3. Нормализация — только картинки, и train, и test</span>
+X_train = X_train / <span class="num">255.0</span>
+X_test  = X_test  / <span class="num">255.0</span>
+
+<span class="cmt"># 4. Проверяем глазами</span>
+plt.<span class="fn">imshow</span>(X_train[<span class="num">0</span>]); plt.<span class="fn">axis</span>(<span class="str">"off"</span>); plt.<span class="fn">show</span>()
+
+<span class="cmt"># 5. Модель ждёт РОВНО такую форму, как у одной картинки: (32, 32, 3)</span>
+model = models.<span class="fn">Sequential</span>([
+    layers.<span class="fn">Input</span>(shape=(<span class="num">32</span>, <span class="num">32</span>, <span class="num">3</span>)),   <span class="cmt"># ← совпадает с X_train.shape[1:]</span>
+    layers.<span class="fn">Conv2D</span>(<span class="num">32</span>, <span class="num">3</span>, activation=<span class="str">"relu"</span>),
+    layers.<span class="fn">MaxPooling2D</span>(),
+    layers.<span class="fn">Flatten</span>(),                    <span class="cmt"># сплющиваем ТОЛЬКО здесь, после свёрток</span>
+    layers.<span class="fn">Dense</span>(<span class="num">64</span>, activation=<span class="str">"relu"</span>),
+    layers.<span class="fn">Dense</span>(<span class="num">10</span>, activation=<span class="str">"softmax"</span>)  <span class="cmt"># 10 классов</span>
+])
+
+<span class="cmt"># 6. Метки — целые числа → sparse (наш стандарт курса)</span>
+model.<span class="fn">compile</span>(optimizer=<span class="str">"adam"</span>,
+              loss=<span class="str">"sparse_categorical_crossentropy"</span>,
+              metrics=[<span class="str">"accuracy"</span>])
+
+model.<span class="fn">fit</span>(X_train, y_train, epochs=<span class="num">1</span>, validation_data=(X_test, y_test))</div>
+</div>
+
+<!-- ПРОВЕРЬ СЕБЯ -->
+<div class="check">
+  <h2>✅ Проверь себя (5 вопросов)</h2>
+  <ol>
+    <li>Что означает каждое число в форме <code>(50000, 32, 32, 3)</code>? Расшифруй все четыре.</li>
+    <li>Почему картинки делим на <code>255.0</code>, а метки <code>y</code> — нет?</li>
+    <li>Друг нормализовал только <code>X_train</code>, а <code>X_test</code> забыл. Что случится с точностью на проверке и почему?</li>
+    <li>Почему <code>Flatten</code> нельзя ставить в самом начале, до свёрточных слоёв?</li>
+    <li>Мы держим метки как числа 0–9. Какую функцию потерь тогда нужно указать в <code>compile</code>?</li>
+  </ol>
+
+  <details class="ans">
+    <summary>Показать ответы (для преподавателя)</summary>
+    <ol>
+      <li>50000 — число картинок; 32 — высота; 32 — ширина; 3 — цветовые каналы RGB.</li>
+      <li><code>X</code> — это яркости пикселей 0–255, их приводим к [0;1] для устойчивого обучения. <code>y</code> — это номера классов, деление их на 255 разрушает смысл меток.</li>
+      <li>Точность на тесте резко упадёт: модель училась на [0;1], а проверяется на [0;255] — разные «языки» данных.</li>
+      <li>CNN ищет закономерности среди соседних пикселей (края, формы). <code>Flatten</code> в начале уничтожает эту 2D-структуру, и свёртки теряют смысл. Сплющиваем только после свёрток.</li>
+      <li><code>sparse_categorical_crossentropy</code> — работает с целочисленными метками без one-hot.</li>
+    </ol>
+  </details>
+</div>
+
+<button class="printbtn" onclick="window.print()">🖨️ Распечатать вкладыш</button>
+
+<footer>Курс Machine Learning · Урок 15 «Как компьютер видит» · вкладыш для учеников · датасет CIFAR-10</footer>
+
+</div>
+
+<script>
+  function cp(btn){
+    const box = btn.parentElement;
+    const text = box.innerText.replace(/^\s*копировать(?: всё)?\s*/,'').trim();
+    navigator.clipboard.writeText(text).then(()=>{
+      const old = btn.textContent;
+      btn.textContent = "скопировано ✓";
+      setTimeout(()=>btn.textContent = old, 1400);
+    }).catch(()=>{ btn.textContent = "выдели вручную"; });
+  }
+</script>
+</body>
+</html>

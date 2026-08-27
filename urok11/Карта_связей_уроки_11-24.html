@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Как связаны уроки 11–24</title>
+<style>
+  :root{--bg:#17132E;--card:#241E42;--card2:#2C2552;--violet:#8B7DF5;--violetd:#5B4FC4;
+    --cyan:#27D3EE;--teal:#2DD4BF;--lav:#D9D4F2;--muted:#9E96C8;--warn:#FF7A8A;--green:#6EE7B7;--gold:#FFD36E;--white:#fff;}
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1200px 700px at 20% -10%, #221a44 0%, var(--bg) 55%);
+    color:var(--lav);font-family:"Segoe UI",Calibri,system-ui,sans-serif;padding:24px;line-height:1.5}
+  .wrap{max-width:1160px;margin:0 auto}
+  h1{color:var(--white);font-size:28px;margin:0 0 4px}
+  .kick{color:var(--cyan);font-weight:700;letter-spacing:2px;font-size:13px;text-transform:uppercase}
+  .sub{color:var(--muted);margin:6px 0 16px;max-width:800px}
+  .legend{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+  .legend .lbl{font-size:13px;color:var(--muted);margin-right:4px}
+  .chip{background:var(--card2);border:2px solid transparent;border-radius:20px;padding:6px 12px;color:var(--lav);
+    cursor:pointer;font-size:13px;font-weight:600;transition:.15s;display:inline-flex;gap:6px;align-items:center}
+  .chip:hover{border-color:var(--violetd)}
+  .chip.sel{border-color:var(--cyan);background:#0E3540;color:var(--white)}
+  .dot{width:10px;height:10px;border-radius:50%}
+  .layout{display:grid;grid-template-columns:1fr 330px;gap:18px;align-items:start}
+  @media(max-width:900px){.layout{grid-template-columns:1fr}}
+  .mapwrap{background:var(--card);border-radius:16px;padding:8px;overflow-x:auto}
+  .map{position:relative;width:100%;min-width:860px;height:720px}
+  svg.edges{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
+  .node{position:absolute;transform:translate(-50%,-50%);width:150px;background:var(--card2);
+    border:2px solid #3a3466;border-radius:14px;padding:10px 12px;cursor:pointer;z-index:2;transition:.18s}
+  .node:hover{border-color:var(--violet);transform:translate(-50%,-50%) scale(1.04)}
+  .node .num{position:absolute;top:-11px;left:-11px;width:28px;height:28px;border-radius:50%;
+    color:#fff;font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center;border:2px solid var(--bg)}
+  .node .tt{font-size:13px;font-weight:700;color:var(--white);line-height:1.25}
+  .node .tag{font-size:10px;color:var(--muted);margin-top:3px;text-transform:uppercase;letter-spacing:.5px}
+  .node.active{border-color:var(--cyan);box-shadow:0 0 0 4px rgba(39,211,238,.15)}
+  .node.dim{opacity:.26}
+  .node.thread{border-color:var(--teal);box-shadow:0 0 0 3px rgba(45,212,191,.18)}
+  .edges path{stroke:#3a3466;stroke-width:2;fill:none;transition:.18s}
+  .edges path.hi{stroke:var(--cyan);stroke-width:3}
+  .edges path.dim{opacity:.12}
+  .panel{background:var(--card);border-radius:16px;padding:18px;position:sticky;top:20px}
+  .panel h3{margin:0 0 2px;color:var(--white);font-size:18px}
+  .panel .ph{font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
+  .panel .row{margin:12px 0}
+  .panel .row .h{font-size:12px;color:var(--cyan);text-transform:uppercase;letter-spacing:.5px;font-weight:700;margin-bottom:3px}
+  .panel .row .v{font-size:14px;color:var(--lav)}
+  .ana{background:var(--card2);border-radius:10px;padding:10px 12px;font-size:14px;font-style:italic;color:var(--teal)}
+  .code{background:#0E0B22;border-radius:10px;padding:10px 12px;font-family:Consolas,monospace;font-size:12.5px;color:var(--cyan);white-space:pre-wrap;word-break:break-word}
+  .lnk{color:var(--violet);font-weight:600;cursor:pointer}
+  .lnk:hover{text-decoration:underline}
+  .hint{color:var(--muted);font-size:13px}
+  .footer{color:var(--muted);font-size:13px;margin-top:14px}
+  .phases{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-bottom:12px}
+  .phases span{display:inline-flex;gap:5px;align-items:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="kick">Machine Learning для подростков · Фазы 2–6</div>
+  <h1>🧭 Как связаны уроки 11–24</h1>
+  <p class="sub">Вторая половина курса: от честной оценки моделей — через нейросети, LLM и AutoML — к финальному проекту. Нажми на урок: концепция, ключевой код, на что опирается и что готовит. Включи «нить» — увидишь сквозную линию.</p>
+
+  <div class="phases">
+    <span><span class="dot" style="background:var(--violet)"></span>Фаза 2 · Оценка и проект</span>
+    <span><span class="dot" style="background:var(--cyan)"></span>Фаза 3 · Глубокое обучение</span>
+    <span><span class="dot" style="background:var(--green)"></span>Фаза 4 · LLM</span>
+    <span><span class="dot" style="background:var(--teal)"></span>Фаза 5 · AutoML и деплой</span>
+    <span><span class="dot" style="background:var(--gold)"></span>Фаза 6 · Финальный проект</span>
+  </div>
+
+  <div class="legend">
+    <span class="lbl">Сквозные нити:</span>
+    <button class="chip" data-thread="eval"><span class="dot" style="background:var(--cyan)"></span>Честная оценка</button>
+    <button class="chip" data-thread="dl"><span class="dot" style="background:var(--violet)"></span>Глубокое обучение</button>
+    <button class="chip" data-thread="llm"><span class="dot" style="background:var(--green)"></span>Языковые модели</button>
+    <button class="chip" data-thread="deploy"><span class="dot" style="background:var(--gold)"></span>Деплой / продукт</button>
+    <button class="chip" data-thread="project"><span class="dot" style="background:var(--warn)"></span>Линия проекта</button>
+    <button class="chip" id="reset">↺ Сбросить</button>
+  </div>
+
+  <div class="layout">
+    <div class="mapwrap"><div class="map" id="map"><svg class="edges" id="edges" preserveAspectRatio="none"></svg></div></div>
+    <div class="panel" id="panel"></div>
+  </div>
+
+  <div class="footer">Совет: включи нить «Линия проекта» — увидишь, как навыки со всех фаз (12, 16, 19) сходятся в финальный проект (21→24).</div>
+</div>
+
+<script>
+const PHASE_COLOR={2:'var(--violet)',3:'var(--cyan)',4:'var(--green)',5:'var(--teal)',6:'var(--gold)'};
+const PHASE_DARK={3:true,4:true,5:true,6:true}; // тёмный текст на светлом бейдже
+const PHASE_NAME={2:'Фаза 2 · Оценка и проект',3:'Фаза 3 · Глубокое обучение',4:'Фаза 4 · LLM',5:'Фаза 5 · AutoML и деплой',6:'Фаза 6 · Финальный проект'};
+const LESSONS={
+ 11:{t:'Метрики и матрица ошибок',tag:'Оценка',phase:2,concept:'Confusion matrix, precision/recall/F1, выбор метрики. Accuracy врёт на несбалансированных данных.',
+    ana:'«99% точности» — и модель бесполезна',code:'confusion_matrix(y, p)   # precision, recall, F1',base:[],feeds:[12],tools:'confusion_matrix, classification_report',threads:['eval']},
+ 12:{t:'Мини-проект «Предсказатель»',tag:'Оценивается',phase:2,concept:'Полный цикл: данные → Pipeline → оценка → вывод. Сравнение с baseline.',
+    ana:null,code:'Pipeline([...]) + baseline  →  честная оценка',base:[11],feeds:[13,19,21],tools:'Pipeline, baseline',threads:['eval','project']},
+ 13:{t:'Нейросети: интуиция',tag:'Deep Learning',phase:3,concept:'Нейрон = взвешенная сумма + активация. Эпохи. Первая сеть на Keras.',
+    ana:'Сеть = ученик, исправляющий ошибки',code:"keras.Sequential([Dense(8,'relu'), Dense(1,'sigmoid')])",base:[12],feeds:[14],tools:'TensorFlow / Keras',threads:['dl']},
+ 14:{t:'MNIST: сеть узнаёт цифры',tag:'Deep Learning',phase:3,concept:'Картинка = матрица чисел. Обучение ~97%. Сеть уверенно ошибается на шуме.',
+    ana:null,code:"Flatten(); Dense(10, 'softmax')",base:[13],feeds:[15,17],tools:'Keras, MNIST',threads:['dl']},
+ 15:{t:'Свёрточные сети (CNN)',tag:'Deep Learning',phase:3,concept:'Свёртка-фильтр, пулинг, карты признаков, transfer learning.',
+    ana:'Свёртка = окошко скользит по картинке',code:'Conv2D(32,(3,3)); MaxPooling2D()',base:[14],feeds:[16],tools:'Conv2D, MobileNet',threads:['dl']},
+ 16:{t:'Проект: классификатор фото',tag:'Оценивается',phase:3,concept:'Свои фото, аугментация, transfer learning, интерфейс Gradio с ссылкой.',
+    ana:null,code:'MobileNetV2(...); gr.Interface(...).launch(share=True)',base:[15],feeds:[20,21],tools:'MobileNet, Gradio',threads:['dl','deploy','project']},
+ 17:{t:'Токены, эмбеддинги, внимание',tag:'LLM',phase:4,concept:'Текст → числа (токены, эмбеддинги). Внимание. Природа галлюцинаций.',
+    ana:'LLM = очень умный автодополнитель',code:'attention;  cosine(эмбеддинги)   # токены',base:[14],feeds:[18],tools:'эмбеддинги, attention, BertViz',threads:['llm']},
+ 18:{t:'LLM на практике',tag:'LLM',phase:4,concept:'Промптинг (роль, примеры, шаги). Классификация тональности. Свой бот. Критическая оценка.',
+    ana:'Промпт = точная постановка задачи',code:"pipeline('sentiment-analysis')  # + промпт с ролью",base:[17],feeds:[21],tools:'Hugging Face, LLM API',threads:['llm']},
+ 19:{t:'AutoML',tag:'Инструменты',phase:5,concept:'AutoML сам перебирает модели и выбирает лучшую. Сравнение с ручной. Hugging Face Hub.',
+    ana:null,code:"TabularPredictor(label='y').fit(train)",base:[12],feeds:[21],tools:'AutoGluon, HF Hub',threads:['eval']},
+ 20:{t:'Gradio и деплой',tag:'Продукт',phase:5,concept:'Веб-интерфейс из Python. Деплой на Hugging Face Spaces. Постоянная ссылка.',
+    ana:'share=True — временно, Spaces — навсегда',code:'gr.Interface(...).launch()   # app.py на Spaces',base:[16],feeds:[22],tools:'Gradio, Spaces',threads:['deploy']},
+ 21:{t:'Проект: питч и старт',tag:'Финал',phase:6,concept:'Реализуемая задача, поиск и подготовка данных, первичная модель в Pipeline.',
+    ana:null,code:'Pipeline([...]) + baseline   # старт проекта',base:[12,16,18,19],feeds:[22],tools:'Pipeline, baseline',threads:['project','eval']},
+ 22:{t:'Проект: модель и интерфейс',tag:'Финал',phase:6,concept:'Улучшить и честно оценить модель. Веб-интерфейс. Структура презентации и README.',
+    ana:null,code:'GridSearchCV(...); gr.Interface(...)',base:[21,20],feeds:[23],tools:'GridSearchCV, Gradio',threads:['project','deploy','eval']},
+ 23:{t:'Проект: репетиция',tag:'Финал',phase:6,concept:'Понятная нетехническая презентация. Обратная связь. Финальный деплой и README.',
+    ana:null,code:'# рассказ 5 мин + финальный README + деплой',base:[22],feeds:[24],tools:'презентация, README',threads:['project','deploy']},
+ 24:{t:'Demo Day',tag:'Защита',phase:6,concept:'Публичная защита готового приложения перед родителями. Ответы на вопросы. Дальнейшие шаги.',
+    ana:'Финиш — проект для портфолио',code:'# живое приложение + защита проекта',base:[23],feeds:[],tools:'публичная презентация',threads:['project']},
+};
+const POS={11:[12,9],12:[33,9],
+  13:[12,31],14:[35,31],15:[57,31],16:[80,31],
+  17:[12,55],18:[31,55],19:[57,55],20:[80,55],
+  21:[20,82],22:[43,82],23:[65,82],24:[87,82]};
+const EDGES=[[11,12],[12,13],[13,14],[14,15],[15,16],[14,17],[17,18],[12,19],[16,20],
+  [16,21],[18,21],[19,21],[20,22],[21,22],[22,23],[23,24]];
+const THREAD_INFO={
+  eval:['Честная оценка','Метрики и матрица ошибок (11) → мини-проект с baseline (12) → AutoML тоже проверяем (19) → и финальный проект оценивается честно (21, 22).'],
+  dl:['Глубокое обучение','Интуиция нейросети (13) → MNIST (14) → свёрточные сети (15) → проект классификатора фото (16). Эта же идея «текст в числа» ведёт к LLM (17).'],
+  llm:['Языковые модели','Как устроен ChatGPT: токены, эмбеддинги, внимание, галлюцинации (17) → управление моделью через промпты и реальные задачи (18).'],
+  deploy:['Деплой / продукт','Первый Gradio-интерфейс в проекте фото (16) → настоящий деплой на Spaces (20) → интерфейс финального проекта (22) и его финальная публикация (23).'],
+  project:['Линия проекта','Мини-проект (12) тренирует полный цикл. Навыки со всех фаз — классика (12), зрение (16), LLM (18), AutoML (19) — сходятся в финальный проект: старт (21) → модель и интерфейс (22) → репетиция (23) → Demo Day (24).']};
+
+/* ==== движок карты ==== */
+const map=document.getElementById('map'), svg=document.getElementById('edges'), panel=document.getElementById('panel');
+const nodeEls={}, pathEls={};
+for(const id in LESSONS){
+  const L=LESSONS[id],[x,y]=POS[id];
+  const el=document.createElement('div');
+  el.className='node'; el.style.left=x+'%'; el.style.top=y+'%';
+  el.innerHTML=`<div class="num" style="background:${PHASE_COLOR[L.phase]};${PHASE_DARK[L.phase]?'color:var(--bg)':''}">${id}</div><div class="tt">${L.t}</div><div class="tag">${L.tag}</div>`;
+  el.onclick=e=>{e.stopPropagation();select(+id);};
+  map.appendChild(el); nodeEls[id]=el;
+}
+EDGES.forEach(([a,b])=>{const p=document.createElementNS('http://www.w3.org/2000/svg','path');svg.appendChild(p);pathEls[a+'-'+b]=p;});
+function center(id){const[x,y]=POS[id];return{x:x/100*map.clientWidth,y:y/100*map.clientHeight};}
+function drawEdges(){
+  svg.setAttribute('viewBox',`0 0 ${map.clientWidth} ${map.clientHeight}`);
+  EDGES.forEach(([a,b])=>{const s=center(a),e=center(b);const mx=(s.x+e.x)/2,my=(s.y+e.y)/2;
+    const dx=e.x-s.x,dy=e.y-s.y,off=0.1;const cx=mx-dy*off,cy=my+dx*off;
+    pathEls[a+'-'+b].setAttribute('d',`M ${s.x} ${s.y} Q ${cx} ${cy} ${e.x} ${e.y}`);});
+}
+new ResizeObserver(drawEdges).observe(map); drawEdges();
+function clearClasses(){for(const id in nodeEls)nodeEls[id].classList.remove('active','dim','thread');
+  EDGES.forEach(([a,b])=>pathEls[a+'-'+b].classList.remove('hi','dim'));}
+function names(ids){return ids.map(i=>`<span class="lnk" data-go="${i}">${i}. ${LESSONS[i].t}</span>`).join(', ')||'—';}
+function bindLinks(){panel.querySelectorAll('[data-go]').forEach(a=>a.onclick=()=>select(+a.dataset.go));}
+function select(id){
+  document.querySelectorAll('.chip[data-thread]').forEach(c=>c.classList.remove('sel'));
+  clearClasses(); const L=LESSONS[id]; const inc=new Set();
+  EDGES.forEach(([a,b])=>{if(a===id||b===id){pathEls[a+'-'+b].classList.add('hi');inc.add(a);inc.add(b);}else pathEls[a+'-'+b].classList.add('dim');});
+  for(const nid in nodeEls){if(+nid===id)nodeEls[nid].classList.add('active');else if(!inc.has(+nid))nodeEls[nid].classList.add('dim');}
+  panel.innerHTML=`<div class="ph" style="color:${PHASE_COLOR[L.phase]}">Урок ${id} · ${PHASE_NAME[L.phase]}</div>
+    <h3>${L.t}</h3>
+    <div class="row"><div class="v">${L.concept}</div></div>
+    ${L.ana?`<div class="row"><div class="ana">«${L.ana}»</div></div>`:''}
+    <div class="row"><div class="h">Ключевой код</div><div class="code">${L.code}</div></div>
+    <div class="row"><div class="h">Опирается на</div><div class="v">${names(L.base)}</div></div>
+    <div class="row"><div class="h">Готовит к</div><div class="v">${names(L.feeds)}</div></div>
+    <div class="row"><div class="h">Инструменты</div><div class="v">${L.tools}</div></div>`;
+  bindLinks();
+}
+function showThread(key){
+  clearClasses();
+  const members=Object.keys(LESSONS).filter(id=>LESSONS[id].threads.includes(key)).map(Number);
+  for(const id in nodeEls){if(members.includes(+id))nodeEls[id].classList.add('thread');else nodeEls[id].classList.add('dim');}
+  EDGES.forEach(([a,b])=>pathEls[a+'-'+b].classList.add('dim'));
+  const info=THREAD_INFO[key];
+  panel.innerHTML=`<div class="ph" style="color:var(--teal)">Сквозная нить</div><h3>${info[0]}</h3>
+    <div class="row"><div class="v">${info[1]}</div></div>
+    <div class="row"><div class="h">Проходит через уроки</div><div class="v">${names(members)}</div></div>`;
+  bindLinks();
+}
+function resetPanel(){clearClasses();document.querySelectorAll('.chip[data-thread]').forEach(c=>c.classList.remove('sel'));
+  panel.innerHTML=`<div class="ph" style="color:var(--muted)">Наведи и нажми</div><h3>Выбери урок на карте</h3>
+    <div class="row"><div class="v hint">Стрелки показывают, что на чём строится. Вся вторая половина курса сходится в финальный проект (21–24).</div></div>
+    <div class="row"><div class="h">Подсказка</div><div class="v">У каждого урока есть «Ключевой код» — строчка, которую этот урок добавляет в арсенал.</div></div>`;}
+document.querySelectorAll('.chip[data-thread]').forEach(c=>c.onclick=()=>{
+  document.querySelectorAll('.chip[data-thread]').forEach(x=>x.classList.remove('sel'));c.classList.add('sel');showThread(c.dataset.thread);});
+document.getElementById('reset').onclick=resetPanel;
+resetPanel();
+</script>
+</body>
+</html>
