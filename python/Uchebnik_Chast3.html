@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Учебник Python · Часть 3 · Графика и большой проект</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+  :root{
+    --blue:#0050C8; --blue-soft:#91BEEB; --blue-wash:#EAF1FB;
+    --sand:#FFCDAA; --sand-wash:#FFF3E9; --ink:#1A2333; --muted:#5B6472;
+    --line:#E2E8F2; --green:#1E8449; --green-wash:#E9F5EE;
+    --red:#C0392B; --red-wash:#FBEDEB; --page:#FFFFFF;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#D8DEE9;font-family:'Manrope',sans-serif;color:var(--ink);padding:28px 14px;line-height:1.55;}
+  .page{background:var(--page);width:820px;max-width:100%;margin:0 auto 26px;box-shadow:0 12px 40px rgba(26,35,51,.16);border-radius:4px;overflow:hidden;}
+
+  .cover{min-height:1000px;position:relative;overflow:hidden;background:linear-gradient(160deg,#0050C8 0%,#0A61E0 55%,#1E74F0 100%);color:#fff;}
+  .cover-inner{padding:70px 56px;position:relative;z-index:2;display:flex;flex-direction:column;min-height:1000px;}
+  .cover .kicker{font-size:14px;letter-spacing:.24em;text-transform:uppercase;font-weight:700;opacity:.9;}
+  .cover h1{font-size:50px;font-weight:800;line-height:1.05;margin-top:20px;letter-spacing:-.02em;}
+  .cover .sub{font-size:20px;font-weight:500;opacity:.92;margin-top:18px;max-width:82%;}
+  .cover .part-badge{display:inline-block;margin-top:38px;background:var(--sand);color:#5A3410;font-weight:800;font-size:15px;padding:10px 22px;border-radius:30px;}
+  .cover .lesson-list{margin-top:auto;background:rgba(6,17,38,.5);border:1px solid rgba(255,255,255,.16);border-radius:14px;padding:22px 26px;max-width:80%;}
+  .cover .lesson-list h4{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--sand);margin-bottom:12px;}
+  .cover .lesson-list ol{margin-left:18px;display:grid;gap:6px;}
+  .cover .lesson-list li{font-size:14px;color:#DCE8FF;}
+  .cover .lesson-list li b{color:#fff;}
+  .cover .who{margin-top:24px;font-size:14px;opacity:.85;}
+  .cover .who b{opacity:1;}
+  .cover-deco{position:absolute;right:-120px;top:-120px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(145,190,235,.35),transparent 70%);z-index:1;}
+
+  .lesson-head{background:var(--blue);color:#fff;padding:26px 44px 24px;position:relative;display:flex;align-items:baseline;justify-content:space-between;}
+  .lesson-head::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:var(--sand);}
+  .lesson-num{font-size:13px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;opacity:.85;}
+  .lesson-title{font-size:25px;font-weight:800;line-height:1.15;margin-top:6px;max-width:90%;}
+  .lesson-quarter{font-size:12px;font-weight:600;opacity:.8;text-align:right;letter-spacing:.04em;flex:none;}
+  .body{padding:30px 44px 0;}
+
+  .goal{background:var(--sand-wash);border-left:5px solid var(--sand);border-radius:0 10px 10px 0;padding:16px 20px;margin-bottom:26px;}
+  .goal h3{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#B9770E;font-weight:700;margin-bottom:8px;}
+  .goal ul{list-style:none;display:grid;gap:5px;}
+  .goal li{padding-left:22px;position:relative;font-size:15px;}
+  .goal li::before{content:"→";position:absolute;left:0;color:#B9770E;font-weight:700;}
+
+  .sec{display:flex;align-items:center;gap:11px;margin:28px 0 14px;}
+  .sec .dot{width:30px;height:30px;border-radius:8px;flex:none;background:var(--blue-wash);color:var(--blue);display:grid;place-items:center;font-size:16px;font-weight:800;}
+  .sec h2{font-size:19px;font-weight:800;letter-spacing:-.01em;}
+
+  p{font-size:15px;margin-bottom:13px;color:#28303D;}
+  strong{font-weight:700;color:var(--ink);}
+  .term{color:var(--blue);font-weight:700;}
+  code{font-family:'JetBrains Mono',monospace;font-size:.92em;background:#EEF2F8;padding:1px 6px;border-radius:5px;color:#324;}
+
+  .analogy{background:var(--blue-wash);border-radius:12px;padding:16px 20px 16px 52px;position:relative;margin:16px 0 20px;font-size:14.5px;}
+  .analogy::before{content:"💡";position:absolute;left:16px;top:15px;font-size:20px;}
+  .analogy b{color:var(--blue);}
+
+  .code{background:#0E1A2E;border-radius:12px;margin:16px 0 8px;overflow:hidden;box-shadow:0 6px 18px rgba(14,26,46,.28);}
+  .code-bar{background:#152238;padding:9px 16px;display:flex;align-items:center;gap:7px;border-bottom:1px solid #22344F;}
+  .code-bar i{width:11px;height:11px;border-radius:50%;display:inline-block;}
+  .code-bar .r{background:#FF5F57;} .code-bar .y{background:#FEBC2E;} .code-bar .g{background:#28C840;}
+  .code-bar span{margin-left:8px;color:#7B8BA5;font:500 12px 'JetBrains Mono',monospace;}
+  .code pre{padding:16px 20px;margin:0;font-family:'JetBrains Mono',monospace;font-size:13.5px;line-height:1.7;color:#E6ECF5;overflow-x:auto;}
+  .c-key{color:#FF9D7A;} .c-str{color:#8FD98F;} .c-num{color:#7FB4FF;} .c-com{color:#6B7B93;font-style:italic;} .c-fn{color:#FFD479;}
+
+  .output{background:#F4F7FB;border:1px dashed var(--blue-soft);border-radius:0 0 12px 12px;margin:-8px 0 20px;padding:12px 20px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#2A3647;}
+  .output .lbl{display:block;font:700 11px 'Manrope',sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+
+  /* превью рисунка turtle */
+  .draw-preview{background:#F4F7FB;border:1px dashed var(--blue-soft);border-radius:12px;padding:18px;margin:16px 0;text-align:center;}
+  .draw-preview .lbl{display:block;font:700 11px 'Manrope';letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+  .draw-preview svg{max-width:100%;}
+
+  .task{border:1.5px solid var(--line);border-radius:14px;padding:18px 20px;margin:18px 0;background:#fff;}
+  .task-tag{display:inline-flex;align-items:center;gap:6px;background:var(--green-wash);color:var(--green);font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:4px 11px;border-radius:20px;margin-bottom:10px;}
+  .task h4{font-size:15.5px;font-weight:700;margin-bottom:7px;}
+  .task p{font-size:14px;margin-bottom:0;color:#3A4351;}
+  .task .pair{font-size:12.5px;color:var(--muted);margin-top:9px;font-style:italic;}
+
+  .keybox{background:#0E1A2E;color:#DCE6F5;border-radius:12px;padding:16px 20px;margin:18px 0;}
+  .keybox h4{color:var(--sand);font-size:12px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;}
+  .keybox p{color:#C6D3E8;font-size:14.5px;margin:0;}
+  .keybox code{background:rgba(255,255,255,.1);color:#FFD479;}
+
+  .errors{margin:20px 0;}
+  .err-head{display:grid;grid-template-columns:1fr 1fr;gap:1px;margin-bottom:1px;background:var(--line);border-radius:12px 12px 0 0;overflow:hidden;}
+  .err-head > div{padding:8px 15px;font:700 11px 'Manrope';letter-spacing:.08em;text-transform:uppercase;}
+  .err-head .h-bad{background:#F7D9D5;color:var(--red);} .err-head .h-good{background:#D6EEDF;color:var(--green);}
+  .err-row{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);overflow:hidden;margin-bottom:1px;}
+  .err-row:last-child{border-radius:0 0 12px 12px;}
+  .err-row > div{padding:11px 15px;font-family:'JetBrains Mono',monospace;font-size:12.5px;}
+  .err-bad{background:var(--red-wash);color:var(--red);} .err-good{background:var(--green-wash);color:var(--green);}
+
+  .home{background:var(--blue);color:#fff;border-radius:14px;padding:20px 24px;margin:24px 0 0;}
+  .home h3{font-size:13px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px;opacity:.9;}
+  .home ol{margin-left:18px;display:grid;gap:8px;}
+  .home li{font-size:14.5px;}
+  .home .star{margin-top:14px;padding-top:13px;border-top:1px solid rgba(255,255,255,.22);font-size:13.5px;}
+  .home .star b{color:var(--sand);}
+
+  .steps{counter-reset:st;margin:8px 0 4px;}
+  .step{display:flex;gap:14px;margin-bottom:16px;}
+  .step .sn{counter-increment:st;flex:none;width:30px;height:30px;border-radius:50%;background:var(--blue);color:#fff;font-weight:800;font-size:14px;display:grid;place-items:center;}
+  .step .sn::before{content:counter(st);}
+  .step .sc{flex:1;}
+  .step .sc h4{font-size:15px;font-weight:700;margin-bottom:4px;}
+  .step .sc p{font-size:13.5px;margin-bottom:6px;color:#3A4351;}
+
+  .foot{display:flex;justify-content:space-between;align-items:center;padding:16px 44px 30px;margin-top:8px;font-size:11.5px;color:var(--muted);}
+  .foot .brand{font-weight:700;color:var(--blue);}
+
+  @media print{body{background:#fff;padding:0;}.page{box-shadow:none;margin:0;border-radius:0;page-break-after:always;width:100%;}}
+</style>
+</head>
+<body>
+
+  <!-- ТИТУЛ ЧАСТИ 3 -->
+  <div class="page cover">
+    <div class="cover-deco"></div>
+    <div class="cover-inner">
+      <div class="kicker">Учебник · Часть 3</div>
+      <h1>Графика<br>и большой<br>проект</h1>
+      <div class="sub">Черепашка рисует на экране, программы запоминают данные в файлах. А в финале — своя «Змейка».</div>
+      <span class="part-badge">Четверть 3 · 9 уроков</span>
+      <div class="lesson-list">
+        <h4>Что в этой части</h4>
+        <ol>
+          <li><b>Урок 15.</b> Черепашка turtle: первые линии</li>
+          <li><b>Урок 16.</b> Циклы и turtle: узоры</li>
+          <li><b>Урок 17.</b> Функции и turtle: рисуем имя</li>
+          <li><b>Урок 18.</b> Файлы: программа запоминает</li>
+          <li><b>Урок 19.</b> 📇 Проект «Записная книжка»</li>
+          <li><b>Урок 20.</b> Защита и разбор ошибок</li>
+          <li><b>Урок 21.</b> Готовимся к «Змейке»</li>
+          <li><b>Урок 22.</b> 🐍 Проект «Змейка»: начало</li>
+          <li><b>Урок 23.</b> 🐍 «Змейка»: финал и защита</li>
+        </ol>
+      </div>
+      <div class="who">9 класс · субботний курс · <b>Эсхата Академия</b></div>
+    </div>
+  </div>
+
+  <!-- УРОК 15 — turtle основы -->
+  <div class="page">
+    <div class="lesson-head">
+      <div><div class="lesson-num">Урок 15</div><div class="lesson-title">Черепашка turtle: первые линии</div></div>
+      <div class="lesson-quarter">Часть 3<br>Графика и проект</div>
+    </div>
+    <div class="body">
+      <div class="goal"><h3>Чему научимся</h3><ul>
+        <li>Запускать графику модулем <b>turtle</b></li>
+        <li>Двигать черепашку: вперёд, поворот</li>
+        <li>Нарисовать квадрат и треугольник</li>
+      </ul></div>
+
+      <div class="sec"><div class="dot">📚</div><h2>Программа умеет рисовать</h2></div>
+      <p>До сих пор наши программы работали с текстом и числами. Но Python умеет и <strong>рисовать</strong>. В нём есть встроенный модуль <span class="term">turtle</span> — «черепашка». Она ползает по экрану и оставляет линию. Командуешь ей — получаешь рисунок.</p>
+      <div class="analogy"><b>На пальцах.</b> Представь черепашку с кисточкой на спине. Куда она ползёт — там остаётся краска. Ты говоришь «вперёд на 100», «повернись направо» — и из этих команд складывается картинка.</div>
+
+      <div class="sec"><div class="dot">💻</div><h2>Разбираем код</h2></div>
+      <p>Рисуем квадрат — четыре раза «вперёд и поворот»:</p>
+      <div class="code"><div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>kvadrat.py</span></div>
+<pre><span class="c-key">import</span> turtle
+
+t = turtle.<span class="c-fn">Turtle</span>()
+
+t.<span class="c-fn">forward</span>(<span class="c-num">100</span>)    <span class="c-com"># вперёд на 100</span>
+t.<span class="c-fn">right</span>(<span class="c-num">90</span>)       <span class="c-com"># поворот направо на 90°</span>
+t.<span class="c-fn">forward</span>(<span class="c-num">100</span>)
+t.<span class="c-fn">right</span>(<span class="c-num">90</span>)
+t.<span class="c-fn">forward</span>(<span class="c-num">100</span>)
+t.<span class="c-fn">right</span>(<span class="c-num">90</span>)
+t.<span class="c-fn">forward</span>(<span class="c-num">100</span>)
+
+turtle.<span class="c-fn">done</span>()       <span class="c-com"># оставить окно открытым</span></pre></div>
+
+      <div class="draw-preview"><span class="lbl">На экране появится</span>
+        <svg width="150" height="150" viewBox="0 0 150 150"><rect x="30" y="30" width="90" height="90" fill="none" stroke="#0050C8" stroke-width="3"/><circle cx="30" cy="120" r="5" fill="#1E8449"/></svg>
+      </div>
+
+      <p>Команда <code>forward</code> ведёт черепашку вперёд, <code>right</code> поворачивает на угол. Четыре стороны по 100 с поворотами на 90° — получается квадрат. <code>turtle.done()</code> в конце не даёт окну закрыться сразу.</p>
+
+      <div class="keybox"><h4>Команды черепашки</h4><p><code>forward(n)</code> / <code>backward(n)</code> — вперёд / назад. <code>right(угол)</code> / <code>left(угол)</code> — поворот. <code>t.color("red")</code> — цвет линии. Углы в градусах: полный круг — 360°.</p></div>
+
+      <div class="task"><span class="task-tag">✋ Задание в паре</span><h4>Треугольник</h4>
+        <p>Нарисуйте треугольник. Подсказка: три стороны, а поворачивать нужно на 120° (потому что 360 ÷ 3 = 120).</p>
+        <p class="pair">Водитель за клавиатурой, штурман сверяется с учебником. Через 10 минут — меняетесь.</p></div>
+
+      <div class="sec"><div class="dot">⚠️</div><h2>Частые ошибки</h2></div>
+      <div class="errors">
+        <div class="err-head"><div class="h-bad">Так не работает</div><div class="h-good">А так правильно</div></div>
+        <div class="err-row"><div class="err-bad">import turtle<br>forward(100)</div><div class="err-good">t = turtle.Turtle()<br>t.forward(100)</div></div>
+        <div class="err-row"><div class="err-bad"># окно мгновенно закрылось</div><div class="err-good">turtle.done() # в конце</div></div>
+      </div>
+      <p style="font-size:13.5px;color:var(--muted);">Сначала создай черепашку <code>t = turtle.Turtle()</code>, потом командуй ей. И <code>turtle.done()</code> в конце, чтобы окно не закрылось.</p>
+
+      <div class="home"><h3>🏠 Домашнее задание</h3><ol>
+        <li>Нарисуй прямоугольник (стороны разной длины).</li>
+        <li>Нарисуй свои инициалы (буквы из прямых линий: Л, Т, Г).</li>
+      </ol><div class="star"><b>★ Со звёздочкой:</b> нарисуй домик — квадрат и треугольник-крышу.</div></div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+  <!-- УРОК 16 — циклы + turtle -->
+  <div class="page">
+    <div class="lesson-head">
+      <div><div class="lesson-num">Урок 16</div><div class="lesson-title">Циклы и turtle: рисуем узоры</div></div>
+      <div class="lesson-quarter">Часть 3<br>Графика и проект</div>
+    </div>
+    <div class="body">
+      <div class="goal"><h3>Чему научимся</h3><ul>
+        <li>Соединять цикл <b>for</b> с черепашкой</li>
+        <li>Рисовать фигуры коротким кодом</li>
+        <li>Создавать спирали и узоры</li>
+      </ul></div>
+
+      <div class="sec"><div class="dot">📚</div><h2>Цикл экономит команды</h2></div>
+      <p>Квадрат на прошлом уроке занял 7 строк. Но ведь мы повторяли одно и то же: «вперёд, поворот». А что повторяется — просится в <strong>цикл</strong>. Соединим то, что уже знаем: <code>for</code> из четверти 1 и черепашку.</p>
+      <div class="analogy"><b>На пальцах.</b> Вместо того чтобы 4 раза писать «вперёд, направо», говоришь: «повтори 4 раза: вперёд, направо». Короче, понятнее, и легко поменять 4 на 5 — получится пятиугольник.</div>
+
+      <div class="sec"><div class="dot">💻</div><h2>Разбираем код</h2></div>
+      <p>Квадрат в цикле — всего 3 строки вместо 7:</p>
+      <div class="code"><div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>uzory.py</span></div>
+<pre><span class="c-key">import</span> turtle
+t = turtle.<span class="c-fn">Turtle</span>()
+
+<span class="c-com"># квадрат в цикле</span>
+<span class="c-key">for</span> i <span class="c-key">in</span> <span class="c-fn">range</span>(<span class="c-num">4</span>):
+    t.<span class="c-fn">forward</span>(<span class="c-num">100</span>)
+    t.<span class="c-fn">right</span>(<span class="c-num">90</span>)
+
+turtle.<span class="c-fn">done</span>()</pre></div>
+
+      <p>Хочешь другую фигуру — поменяй число повторов и угол. Правило простое: <strong>угол = 360 ÷ число сторон</strong>. Для шестиугольника: 6 сторон, поворот 60°.</p>
+
+      <p>А вот узор-спираль — черепашка рисует и каждый раз чуть-чуть увеличивает шаг и угол:</p>
+      <div class="code"><div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>spiral.py</span></div>
+<pre>t = turtle.<span class="c-fn">Turtle</span>()
+<span class="c-key">for</span> i <span class="c-key">in</span> <span class="c-fn">range</span>(<span class="c-num">100</span>):
+    t.<span class="c-fn">forward</span>(i)      <span class="c-com"># шаг растёт: 0,1,2,3...</span>
+    t.<span class="c-fn">right</span>(<span class="c-num">91</span>)        <span class="c-com"># чуть больше 90 — закрутка</span>
+turtle.<span class="c-fn">done</span>()</pre></div>
+
+      <div class="draw-preview"><span class="lbl">Примерно так</span>
+        <svg width="160" height="150" viewBox="0 0 160 150"><g fill="none" stroke="#0050C8" stroke-width="2"><path d="M80 75 L90 75 L90 65 L70 65 L70 90 L110 90 L110 45 L45 45 L45 115 L130 115"/></g></svg>
+      </div>
+
+      <div class="keybox"><h4>Формула фигуры</h4><p>Правильная фигура: <code>for i in range(число_сторон)</code>, внутри <code>forward(длина)</code> и <code>right(360 / число_сторон)</code>. Меняешь одно число — меняется фигура.</p></div>
+
+      <div class="task"><span class="task-tag">✋ Задание в паре</span><h4>Пятиугольник и звезда</h4>
+        <p>Нарисуйте правильный пятиугольник (5 сторон, поворот 72°). Потом попробуйте звезду: 5 повторов, но поворот 144°.</p>
+        <p class="pair">Через 10 минут поменяйтесь ролями.</p></div>
+
+      <div class="sec"><div class="dot">⚠️</div><h2>Частые ошибки</h2></div>
+      <div class="errors">
+        <div class="err-head"><div class="h-bad">Так не работает</div><div class="h-good">А так правильно</div></div>
+        <div class="err-row"><div class="err-bad">for i in range(4):<br>t.forward(100)<br>t.right(90)</div><div class="err-good">for i in range(4):<br>&nbsp;&nbsp;t.forward(100)<br>&nbsp;&nbsp;t.right(90)</div></div>
+      </div>
+      <p style="font-size:13.5px;color:var(--muted);">Обе команды должны быть с отступом — тогда они повторяются вместе. Без отступа цикл «не увидит» вторую строку.</p>
+
+      <div class="home"><h3>🏠 Домашнее задание</h3><ol>
+        <li>Нарисуй шестиугольник и восьмиугольник (посчитай углы по формуле).</li>
+        <li>Нарисуй ряд из трёх квадратов (подсказка: между ними подними перо <code>t.penup()</code>).</li>
+      </ol><div class="star"><b>★ Со звёздочкой:</b> нарисуй «цветок» — повтори круг 12 раз, каждый раз поворачивая на 30°.</div></div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+  <!-- УРОК 17 — функции + turtle -->
+  <div class="page">
+    <div class="lesson-head">
+      <div><div class="lesson-num">Урок 17</div><div class="lesson-title">Функции и turtle: рисуем имя</div></div>
+      <div class="lesson-quarter">Часть 3<br>Графика и проект</div>
+    </div>
+    <div class="body">
+      <div class="goal"><h3>Чему научимся</h3><ul>
+        <li>Выносить рисование фигуры в функцию</li>
+        <li>Управлять пером: поднять и опустить</li>
+        <li>Рисовать много фигур в разных местах</li>
+      </ul></div>
+
+      <div class="sec"><div class="dot">📚</div><h2>Функция-художник</h2></div>
+      <p>Соединяем ещё две знакомые вещи: <strong>функции</strong> из четверти 2 и черепашку. Опишем «как рисовать квадрат» один раз в функции — и будем рисовать квадраты где угодно одной командой.</p>
+      <div class="analogy"><b>На пальцах.</b> Это как штамп. Вырезал штамп «квадрат» один раз — и ставишь его на бумаге сколько хочешь, в любом месте. Функция <code>kvadrat()</code> — такой штамп.</div>
+
+      <div class="sec"><div class="dot">💻</div><h2>Разбираем код</h2></div>
+      <p>Функция рисует квадрат заданного размера, а перо помогает переходить без линии:</p>
+      <div class="code"><div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>imya.py</span></div>
+<pre><span class="c-key">import</span> turtle
+t = turtle.<span class="c-fn">Turtle</span>()
+
+<span class="c-key">def</span> <span class="c-fn">kvadrat</span>(size):
+    <span class="c-key">for</span> i <span class="c-key">in</span> <span class="c-fn">range</span>(<span class="c-num">4</span>):
+        t.<span class="c-fn">forward</span>(size)
+        t.<span class="c-fn">right</span>(<span class="c-num">90</span>)
+
+<span class="c-fn">kvadrat</span>(<span class="c-num">50</span>)          <span class="c-com"># маленький</span>
+
+t.<span class="c-fn">penup</span>()             <span class="c-com"># поднять перо — не рисуем</span>
+t.<span class="c-fn">forward</span>(<span class="c-num">120</span>)
+t.<span class="c-fn">pendown</span>()           <span class="c-com"># опустить — снова рисуем</span>
+
+<span class="c-fn">kvadrat</span>(<span class="c-num">80</span>)          <span class="c-com"># большой, в новом месте</span>
+
+turtle.<span class="c-fn">done</span>()</pre></div>
+
+      <div class="steps">
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Функция принимает размер</h4><p><code>kvadrat(size)</code> рисует квадрат любого размера — передаём число при вызове.</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>penup / pendown — перо</h4><p>Поднятое перо не оставляет линию. Так черепашка переходит в новое место, не соединяя фигуры чертой.</p></div></div>
+      </div>
+
+      <div class="keybox"><h4>Управление пером</h4><p><code>penup()</code> — поднять (двигаемся без линии). <code>pendown()</code> — опустить (снова рисуем). Незаменимо, когда рисуешь несколько отдельных фигур: буквы имени, ряд домиков.</p></div>
+
+      <div class="task"><span class="task-tag">✋ Задание в паре</span><h4>Три квадрата в ряд</h4>
+        <p>Используя функцию <code>kvadrat</code> и перо, нарисуйте три квадрата разного размера в ряд, не соединённые линиями.</p>
+        <p class="pair">Через 10 минут поменяйтесь ролями.</p></div>
+
+      <div class="sec"><div class="dot">⚠️</div><h2>Частые ошибки</h2></div>
+      <div class="errors">
+        <div class="err-head"><div class="h-bad">Так не работает</div><div class="h-good">А так правильно</div></div>
+        <div class="err-row"><div class="err-bad"># перешёл, но забыл penup<br>t.forward(120)</div><div class="err-good">t.penup()<br>t.forward(120)<br>t.pendown()</div></div>
+      </div>
+      <p style="font-size:13.5px;color:var(--muted);">Если не поднять перо, черепашка нарисует лишнюю линию между фигурами. Не забудь опустить перо обратно.</p>
+
+      <div class="home"><h3>🏠 Домашнее задание</h3><ol>
+        <li>Напиши функцию <code>treugolnik(size)</code> и нарисуй два треугольника рядом.</li>
+        <li>Нарисуй первую букву своего имени из линий и фигур.</li>
+      </ol><div class="star"><b>★ Со звёздочкой:</b> напиши функцию, рисующую квадрат заданного цвета — цвет передавай аргументом.</div></div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+  <!-- УРОК 18 — файлы -->
+  <div class="page">
+    <div class="lesson-head">
+      <div><div class="lesson-num">Урок 18</div><div class="lesson-title">Файлы: программа запоминает</div></div>
+      <div class="lesson-quarter">Часть 3<br>Графика и проект</div>
+    </div>
+    <div class="body">
+      <div class="goal"><h3>Чему научимся</h3><ul>
+        <li>Сохранять данные в файл .txt</li>
+        <li>Читать данные из файла обратно</li>
+        <li>Понять, почему это важно для настоящих программ</li>
+      </ul></div>
+
+      <div class="sec"><div class="dot">📚</div><h2>Проблема забывчивости</h2></div>
+      <p>Все наши программы <strong>забывали</strong> всё, как только закрывались. Ввёл данные, программа посчитала — закрыл, и всё пропало. Настоящие программы так не делают: заметки, игры, контакты сохраняются. Секрет — в <span class="term">файлах</span>.</p>
+      <div class="analogy"><b>На пальцах.</b> Память программы — как разговор: закончился и забылся. Файл — как записная книжка: закрыл, убрал, а завтра открыл — всё на месте. Файл переживает закрытие программы.</div>
+
+      <div class="sec"><div class="dot">💻</div><h2>Записываем в файл</h2></div>
+      <div class="code"><div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>zapis.py</span></div>
+<pre><span class="c-com"># "w" — режим записи (write)</span>
+file = <span class="c-fn">open</span>(<span class="c-str">"zametki.txt"</span>, <span class="c-str">"w"</span>)
+file.<span class="c-fn">write</span>(<span class="c-str">"Купить хлеб\n"</span>)
+file.<span class="c-fn">write</span>(<span class="c-str">"Позвонить бабушке\n"</span>)
+file.<span class="c-fn">close</span>()
+
+<span class="c-fn">print</span>(<span class="c-str">"Заметки сохранены!"</span>)</pre></div>
+      <p><code>open</code> открывает файл, <code>"w"</code> означает «для записи». <code>write</code> записывает строку, а <code>\n</code> — это переход на новую строку. <code>close</code> обязательно закрывает файл — как закрыть кран.</p>
+
+      <div class="sec"><div class="dot">📖</div><h2>Читаем из файла</h2></div>
+      <div class="code"><div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>chtenie.py</span></div>
+<pre><span class="c-com"># "r" — режим чтения (read)</span>
+file = <span class="c-fn">open</span>(<span class="c-str">"zametki.txt"</span>, <span class="c-str">"r"</span>)
+text = file.<span class="c-fn">read</span>()
+file.<span class="c-fn">close</span>()
+
+<span class="c-fn">print</span>(text)</pre></div>
+      <div class="output"><span class="lbl">На экране появится</span>Купить хлеб<br>Позвонить бабушке</div>
+
+      <div class="keybox"><h4>Важно запомнить</h4><p><code>open(имя, "w")</code> — записать (стирает старое!). <code>open(имя, "r")</code> — прочитать. <code>write</code> пишет, <code>read</code> читает, <code>close</code> закрывает. <code>\n</code> — новая строка. Есть ещё <code>"a"</code> — дописать в конец, не стирая.</p></div>
+
+      <div class="task"><span class="task-tag">✋ Задание в паре</span><h4>Дневник</h4>
+        <p>Программа спрашивает, как прошёл день, и сохраняет ответ в файл <code>dnevnik.txt</code>. Затем отдельная программа читает файл и показывает запись.</p>
+        <p class="pair">Через 10 минут поменяйтесь ролями.</p></div>
+
+      <div class="sec"><div class="dot">⚠️</div><h2>Частые ошибки</h2></div>
+      <div class="errors">
+        <div class="err-head"><div class="h-bad">Так не работает</div><div class="h-good">А так правильно</div></div>
+        <div class="err-row"><div class="err-bad">file = open("f.txt", "w")<br>file.write("текст")<br># забыли close</div><div class="err-good">file = open("f.txt", "w")<br>file.write("текст")<br>file.close()</div></div>
+        <div class="err-row"><div class="err-bad">write("привет")\n # это не перенос</div><div class="err-good">write("привет\n")</div></div>
+      </div>
+      <p style="font-size:13.5px;color:var(--muted);">Всегда закрывай файл через close. И помни: режим "w" стирает старое содержимое — для дописывания используй "a".</p>
+
+      <div class="home"><h3>🏠 Домашнее задание</h3><ol>
+        <li>Сохрани в файл список из трёх любимых фильмов, потом прочитай и выведи.</li>
+        <li>Программа дописывает (режим "a") новую строку в файл при каждом запуске.</li>
+      </ol><div class="star"><b>★ Со звёздочкой:</b> счётчик запусков — программа читает число из файла, увеличивает и записывает обратно.</div></div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+  <!-- УРОК 19 — ПРОЕКТ Записная книжка -->
+  <div class="page">
+    <div class="lesson-head">
+      <div><div class="lesson-num">Урок 19 · Проект</div><div class="lesson-title">📇 «Записная книжка»</div></div>
+      <div class="lesson-quarter">Часть 3<br>Графика и проект</div>
+    </div>
+    <div class="body">
+      <div class="goal"><h3>Что построим</h3><ul>
+        <li>Программу, которая хранит контакты между запусками</li>
+        <li>Соединим словари, циклы и файлы</li>
+        <li>Меню с выбором действия</li>
+      </ul></div>
+
+      <div class="sec"><div class="dot">🎯</div><h2>Первая полезная программа</h2></div>
+      <p>«Угадай число» и «Виселица» были играми. А это — <strong>полезная</strong> программа, которой можно реально пользоваться: добавлять контакты, искать их, и всё сохраняется в файл. Здесь соберётся много знакомого: словари, циклы, условия, файлы.</p>
+
+      <div class="sec"><div class="dot">💻</div><h2>Собираем книжку</h2></div>
+      <div class="code"><div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>knizhka.py</span></div>
+<pre><span class="c-com"># читаем контакты из файла в начале</span>
+contacts = {}
+<span class="c-key">try</span>:
+    file = <span class="c-fn">open</span>(<span class="c-str">"contacts.txt"</span>, <span class="c-str">"r"</span>)
+    <span class="c-key">for</span> line <span class="c-key">in</span> file:
+        name, phone = line.<span class="c-fn">strip</span>().<span class="c-fn">split</span>(<span class="c-str">","</span>)
+        contacts[name] = phone
+    file.<span class="c-fn">close</span>()
+<span class="c-key">except</span>:
+    <span class="c-key">pass</span>   <span class="c-com"># файла ещё нет — не страшно</span>
+
+<span class="c-key">while</span> <span class="c-key">True</span>:
+    <span class="c-fn">print</span>(<span class="c-str">"1-добавить  2-найти  3-выход"</span>)
+    choice = <span class="c-fn">input</span>(<span class="c-str">"Выбор: "</span>)
+
+    <span class="c-key">if</span> choice == <span class="c-str">"1"</span>:
+        name = <span class="c-fn">input</span>(<span class="c-str">"Имя: "</span>)
+        phone = <span class="c-fn">input</span>(<span class="c-str">"Телефон: "</span>)
+        contacts[name] = phone
+    <span class="c-key">elif</span> choice == <span class="c-str">"2"</span>:
+        name = <span class="c-fn">input</span>(<span class="c-str">"Кого ищем? "</span>)
+        <span class="c-fn">print</span>(contacts.<span class="c-fn">get</span>(name, <span class="c-str">"Не найдено"</span>))
+    <span class="c-key">else</span>:
+        <span class="c-key">break</span>
+
+<span class="c-com"># сохраняем всё обратно в файл</span>
+file = <span class="c-fn">open</span>(<span class="c-str">"contacts.txt"</span>, <span class="c-str">"w"</span>)
+<span class="c-key">for</span> name, phone <span class="c-key">in</span> contacts.<span class="c-fn">items</span>():
+    file.<span class="c-fn">write</span>(name + <span class="c-str">","</span> + phone + <span class="c-str">"\n"</span>)
+file.<span class="c-fn">close</span>()</pre></div>
+
+      <div class="steps">
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Загрузка при старте</h4><p>В начале читаем файл и складываем контакты в словарь. <code>split(",")</code> разделяет строку «имя,телефон» на две части.</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Меню в цикле</h4><p>Цикл показывает меню снова и снова, пока не выберешь выход. Знакомый приём из «Угадай число».</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Сохранение при выходе</h4><p>Перед выходом записываем весь словарь обратно в файл — чтобы контакты не потерялись.</p></div></div>
+      </div>
+
+      <div class="task"><span class="task-tag">✋ Задание в паре</span><h4>Соберите и проверьте</h4>
+        <p>Наберите программу. Добавьте пару контактов, выйдите, запустите снова — контакты на месте? Значит, файл работает!</p>
+        <p class="pair">Разбирайте по частям: сначала меню, потом файл.</p></div>
+
+      <div class="home"><h3>🏠 Домашнее задание</h3><ol>
+        <li>Добавь в меню пункт «показать все контакты».</li>
+        <li>Сделай, чтобы при поиске несуществующего имени программа предлагала добавить его.</li>
+      </ol><div class="star"><b>★ Со звёздочкой:</b> добавь удаление контакта по имени.</div></div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+  <!-- УРОК 20 — защита и разбор ошибок -->
+  <div class="page">
+    <div class="lesson-head">
+      <div><div class="lesson-num">Урок 20</div><div class="lesson-title">Защита проекта и разбор ошибок</div></div>
+      <div class="lesson-quarter">Часть 3<br>Графика и проект</div>
+    </div>
+    <div class="body">
+      <div class="goal"><h3>Чему научимся</h3><ul>
+        <li>Читать сообщения об ошибках и понимать их</li>
+        <li>Находить и исправлять чужие ошибки</li>
+        <li>Рассказывать о своей программе на защите</li>
+      </ul></div>
+
+      <div class="sec"><div class="dot">📚</div><h2>Ошибка — это подсказка</h2></div>
+      <p>За три четверти вы много раз видели красные сообщения об ошибках. Пора научиться <strong>читать</strong> их спокойно. Python всегда подсказывает, что не так и в какой строке — надо просто присмотреться.</p>
+      <div class="analogy"><b>На пальцах.</b> Ошибка — не «ты плохой программист», а навигатор, который говорит «поверни, ты не туда». Опытные программисты ошибаются постоянно — просто быстро читают подсказку и правят.</div>
+
+      <div class="sec"><div class="dot">🔍</div><h2>Три частые ошибки в лицо</h2></div>
+      <div class="code"><div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>oshibki.py</span></div>
+<pre><span class="c-com"># SyntaxError — забыл двоеточие или скобку</span>
+<span class="c-key">if</span> x &gt; <span class="c-num">5</span>
+    <span class="c-fn">print</span>(<span class="c-str">"много"</span>)
+
+<span class="c-com"># NameError — имя не создано (опечатка)</span>
+<span class="c-fn">print</span>(nmae)
+
+<span class="c-com"># IndentationError — неправильный отступ</span>
+<span class="c-key">for</span> i <span class="c-key">in</span> <span class="c-fn">range</span>(<span class="c-num">3</span>):
+<span class="c-fn">print</span>(i)</pre></div>
+
+      <div class="keybox"><h4>Читаем ошибку</h4><p><b>SyntaxError</b> — синтаксис: забыл двоеточие, скобку, кавычку. <b>NameError</b> — имя не существует, чаще опечатка. <b>IndentationError</b> — отступы. <b>TypeError</b> — смешал текст и число. Последняя строка ошибки — самая важная.</p></div>
+
+      <div class="task"><span class="task-tag">✋ Задание в паре</span><h4>Охота на баги</h4>
+        <p>Учитель даст программу с 3–4 ошибками. Ваша задача — запустить, прочитать каждую ошибку, исправить и добиться, чтобы программа заработала. Кто быстрее?</p>
+        <p class="pair">Читайте ошибки вслух друг другу — так быстрее находится причина.</p></div>
+
+      <div class="sec"><div class="dot">🎤</div><h2>Как защищать проект</h2></div>
+      <p>Защита — это 2 минуты у проектора. Расскажи по простому плану:</p>
+      <div class="steps">
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Что делает программа</h4><p>Одним предложением: «это записная книжка, хранит контакты в файле».</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Как она работает</h4><p>Покажи главное: «меню в цикле, контакты в словаре, сохранение в файл».</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Что было сложно</h4><p>Честно расскажи, где застрял и как решил. Это ценят больше всего.</p></div></div>
+      </div>
+
+      <div class="home"><h3>🏠 Домашнее задание</h3><ol>
+        <li>Подготовь защиту «Записной книжки» по плану из трёх пунктов.</li>
+        <li>Найди в своём старом коде любую ошибку, которую делал, и запиши, как её узнать.</li>
+      </ol><div class="star"><b>★ Со звёздочкой:</b> составь свою «шпаргалку ошибок» — 5 самых частых и как их чинить.</div></div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+  <!-- УРОК 21 — подготовка к Змейке -->
+  <div class="page">
+    <div class="lesson-head">
+      <div><div class="lesson-num">Урок 21</div><div class="lesson-title">Готовимся к «Змейке»: разбор идеи</div></div>
+      <div class="lesson-quarter">Часть 3<br>Графика и проект</div>
+    </div>
+    <div class="body">
+      <div class="goal"><h3>Чему научимся</h3><ul>
+        <li>Разбирать большой проект на части до начала кода</li>
+        <li>Понимать, из чего состоит игра «Змейка»</li>
+        <li>Планировать — главный навык программиста</li>
+      </ul></div>
+
+      <div class="sec"><div class="dot">📚</div><h2>Сначала думаем, потом кодим</h2></div>
+      <p>«Змейка» — самый большой проект года. Бросаться писать код сразу — плохая идея. Сначала <strong>разберём игру на части</strong>: что в ней есть, что за чем происходит. Это называется планированием, и это отличает хорошего программиста.</p>
+      <div class="analogy"><b>На пальцах.</b> Строитель не начинает класть кирпичи наугад — сначала чертёж. Наш чертёж «Змейки»: понять, из каких кусочков состоит игра, до того как писать первую строку.</div>
+
+      <div class="sec"><div class="dot">🧩</div><h2>Из чего состоит «Змейка»</h2></div>
+      <p>Разберём игру на понятные части:</p>
+      <div class="steps">
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Змейка — это список</h4><p>Тело змейки — список координат. Голова — первый элемент. Двигается — добавляем клетку спереди, убираем сзади.</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Еда — случайная точка</h4><p>Яблоко появляется в случайном месте (знакомый <code>random</code>). Съела — растёт, появляется новое.</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Управление — клавиши</h4><p>turtle умеет ловить нажатия стрелок и менять направление движения.</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Проигрыш — врезалась</h4><p>Если голова столкнулась со стеной или своим хвостом — игра окончена.</p></div></div>
+      </div>
+
+      <div class="keybox"><h4>Что мы уже умеем для «Змейки»</h4><p>Списки (тело змейки), циклы (главный цикл игры), функции (движение, проверки), random (еда), условия (столкновения), turtle (рисование). Вся игра — это сборка того, что вы уже знаете!</p></div>
+
+      <div class="task"><span class="task-tag">✋ Задание в паре</span><h4>Нарисуйте план на бумаге</h4>
+        <p>Не за компьютером, а на листе: нарисуйте, как выглядит игра, и запишите словами, что происходит на каждом шаге (голова двигается → проверяем еду → проверяем столкновение). Это ваш чертёж.</p>
+        <p class="pair">Обсуждайте вслух — так рождается понимание.</p></div>
+
+      <div class="home"><h3>🏠 Домашнее задание</h3><ol>
+        <li>Запиши по шагам, что происходит за один «тик» игры (одно движение змейки).</li>
+        <li>Подумай: где в «Змейке» пригодится список, а где словарь? Обоснуй.</li>
+      </ol><div class="star"><b>★ Со звёздочкой:</b> придумай, как добавить в игру подсчёт очков, и запиши идею.</div></div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+  <!-- УРОК 22 — ПРОЕКТ Змейка начало -->
+  <div class="page">
+    <div class="lesson-head">
+      <div><div class="lesson-num">Урок 22 · Проект</div><div class="lesson-title">🐍 «Змейка»: начало</div></div>
+      <div class="lesson-quarter">Часть 3<br>Графика и проект</div>
+    </div>
+    <div class="body">
+      <div class="goal"><h3>Что построим сегодня</h3><ul>
+        <li>Окно игры и змейку из одного сегмента</li>
+        <li>Движение по нажатию стрелок</li>
+        <li>Основу главного цикла игры</li>
+      </ul></div>
+
+      <div class="sec"><div class="dot">🎯</div><h2>Собираем каркас</h2></div>
+      <p>По нашему плану строим постепенно. Сегодня — <strong>окно, змейка и управление</strong>. На следующем уроке добавим еду, рост и проигрыш. Не пугайся длины кода — мы разберём его по кусочкам, и каждый кусочек знакомый.</p>
+
+      <div class="sec"><div class="dot">💻</div><h2>Каркас игры</h2></div>
+      <div class="code"><div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>snake.py</span></div>
+<pre><span class="c-key">import</span> turtle
+
+screen = turtle.<span class="c-fn">Screen</span>()
+screen.<span class="c-fn">setup</span>(<span class="c-num">400</span>, <span class="c-num">400</span>)
+screen.<span class="c-fn">title</span>(<span class="c-str">"Змейка"</span>)
+
+<span class="c-com"># голова змейки</span>
+head = turtle.<span class="c-fn">Turtle</span>()
+head.<span class="c-fn">shape</span>(<span class="c-str">"square"</span>)
+head.<span class="c-fn">color</span>(<span class="c-str">"green"</span>)
+head.<span class="c-fn">penup</span>()
+
+direction = <span class="c-str">"stop"</span>
+
+<span class="c-key">def</span> <span class="c-fn">go_up</span>():
+    <span class="c-key">global</span> direction
+    direction = <span class="c-str">"up"</span>
+
+<span class="c-key">def</span> <span class="c-fn">go_down</span>():
+    <span class="c-key">global</span> direction
+    direction = <span class="c-str">"down"</span>
+
+<span class="c-com"># ловим нажатия стрелок</span>
+screen.<span class="c-fn">listen</span>()
+screen.<span class="c-fn">onkey</span>(go_up, <span class="c-str">"Up"</span>)
+screen.<span class="c-fn">onkey</span>(go_down, <span class="c-str">"Down"</span>)
+
+<span class="c-com"># главный цикл игры</span>
+<span class="c-key">while</span> <span class="c-key">True</span>:
+    screen.<span class="c-fn">update</span>()
+    <span class="c-key">if</span> direction == <span class="c-str">"up"</span>:
+        head.<span class="c-fn">sety</span>(head.<span class="c-fn">ycor</span>() + <span class="c-num">20</span>)
+    <span class="c-key">if</span> direction == <span class="c-str">"down"</span>:
+        head.<span class="c-fn">sety</span>(head.<span class="c-fn">ycor</span>() - <span class="c-num">20</span>)</pre></div>
+
+      <div class="steps">
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Окно и голова</h4><p><code>Screen</code> создаёт окно игры. Голова — черепашка в форме квадрата. <code>penup</code>, чтобы не рисовала линию.</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Функции направления</h4><p>Каждая клавиша меняет переменную <code>direction</code>. Слово <code>global</code> позволяет функции менять переменную снаружи.</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Главный цикл</h4><p><code>while True</code> — сердце игры. Каждый повтор: обновить экран и подвинуть голову в текущем направлении.</p></div></div>
+      </div>
+
+      <div class="task"><span class="task-tag">✋ Задание в паре</span><h4>Запустите и подвигайте</h4>
+        <p>Наберите каркас и добавьте функции <code>go_left</code> и <code>go_right</code> по образцу (меняют x через <code>setx</code>). Запустите — квадрат должен двигаться стрелками.</p>
+        <p class="pair">На следующем уроке добавим еду и проигрыш.</p></div>
+
+      <div class="home"><h3>🏠 Домашнее задание</h3><ol>
+        <li>Допиши движение влево и вправо, чтобы змейка слушалась всех четырёх стрелок.</li>
+        <li>Поменяй цвет и размер окна на свой вкус.</li>
+      </ol><div class="star"><b>★ Со звёздочкой:</b> сделай, чтобы змейка не могла развернуться на 180° (вверх нельзя, если едет вниз).</div></div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+  <!-- УРОК 23 — ПРОЕКТ Змейка финал -->
+  <div class="page">
+    <div class="lesson-head">
+      <div><div class="lesson-num">Урок 23 · Проект</div><div class="lesson-title">🐍 «Змейка»: финал и защита</div></div>
+      <div class="lesson-quarter">Часть 3<br>Графика и проект</div>
+    </div>
+    <div class="body">
+      <div class="goal"><h3>Что доделаем</h3><ul>
+        <li>Еду, которую змейка ест</li>
+        <li>Проигрыш при столкновении со стеной</li>
+        <li>Готовую игру для портфолио — и защиту</li>
+      </ul></div>
+
+      <div class="sec"><div class="dot">💻</div><h2>Добавляем еду и проигрыш</h2></div>
+      <p>К каркасу с прошлого урока добавляем еду и проверку столкновений. Показываю ключевые части — вставьте их в главный цикл:</p>
+      <div class="code"><div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>snake_final.py</span></div>
+<pre><span class="c-key">import</span> random
+
+<span class="c-com"># создаём еду (яблоко)</span>
+food = turtle.<span class="c-fn">Turtle</span>()
+food.<span class="c-fn">shape</span>(<span class="c-str">"circle"</span>)
+food.<span class="c-fn">color</span>(<span class="c-str">"red"</span>)
+food.<span class="c-fn">penup</span>()
+food.<span class="c-fn">goto</span>(<span class="c-num">0</span>, <span class="c-num">100</span>)
+
+score = <span class="c-num">0</span>
+
+<span class="c-com"># --- эти проверки идут ВНУТРИ главного цикла ---</span>
+
+<span class="c-com"># съели еду?</span>
+<span class="c-key">if</span> head.<span class="c-fn">distance</span>(food) &lt; <span class="c-num">20</span>:
+    x = random.<span class="c-fn">randint</span>(-<span class="c-num">180</span>, <span class="c-num">180</span>)
+    y = random.<span class="c-fn">randint</span>(-<span class="c-num">180</span>, <span class="c-num">180</span>)
+    food.<span class="c-fn">goto</span>(x, y)
+    score = score + <span class="c-num">1</span>
+    <span class="c-fn">print</span>(<span class="c-str">"Очки:"</span>, score)
+
+<span class="c-com"># врезались в стену?</span>
+<span class="c-key">if</span> <span class="c-fn">abs</span>(head.<span class="c-fn">xcor</span>()) &gt; <span class="c-num">190</span> <span class="c-key">or</span> <span class="c-fn">abs</span>(head.<span class="c-fn">ycor</span>()) &gt; <span class="c-num">190</span>:
+    <span class="c-fn">print</span>(<span class="c-str">"Игра окончена! Очки:"</span>, score)
+    <span class="c-key">break</span></pre></div>
+
+      <div class="steps">
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Еда — красный круг</h4><p>Отдельная черепашка в форме круга. <code>head.distance(food)</code> измеряет расстояние до неё.</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Съели — новая еда и очко</h4><p>Если голова близко к еде — переносим еду в случайное место и добавляем очко.</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Стена — конец игры</h4><p><code>abs()</code> берёт число без знака. Ушли за 190 по любой оси — <code>break</code>, игра окончена.</p></div></div>
+      </div>
+
+      <div class="task"><span class="task-tag">🏆 Главный проект года</span><h4>Доделайте и защитите «Змейку»</h4>
+        <p>Соберите игру целиком. Сделайте её своей: свой цвет, счёт на экране, ускорение. Это ваш лучший проект — сохраните его в портфолио. На защите (3 минуты) покажите игру в действии и расскажите, как она устроена.</p>
+        <p class="pair">Оба должны уметь объяснить главный цикл и проверку столкновений.</p></div>
+
+      <div class="home"><h3>🏠 Что показать на защите</h3><ol>
+        <li>Змейка двигается стрелками, ест еду, растёт счёт.</li>
+        <li>Игра заканчивается при столкновении со стеной.</li>
+        <li>Вы добавили минимум одно своё улучшение.</li>
+      </ol><div class="star"><b>★ Со звёздочкой:</b> сделай, чтобы змейка росла (хвост из сегментов) и проигрывала, врезавшись в себя.</div></div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+</body>
+</html>

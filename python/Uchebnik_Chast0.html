@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Учебник Python · Часть 0 · Вводный блок</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+  :root{
+    --blue:#0050C8; --blue-soft:#91BEEB; --blue-wash:#EAF1FB;
+    --sand:#FFCDAA; --sand-wash:#FFF3E9; --ink:#1A2333; --muted:#5B6472;
+    --line:#E2E8F2; --green:#1E8449; --green-wash:#E9F5EE;
+    --red:#C0392B; --red-wash:#FBEDEB; --page:#FFFFFF;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#D8DEE9;font-family:'Manrope',sans-serif;color:var(--ink);padding:28px 14px;line-height:1.55;}
+
+  .page{background:var(--page);width:820px;max-width:100%;margin:0 auto 26px;
+    box-shadow:0 12px 40px rgba(26,35,51,.16);border-radius:4px;overflow:hidden;}
+
+  /* ---------- Титул ---------- */
+  .cover{min-height:1000px;padding:0;position:relative;overflow:hidden;
+    background:linear-gradient(160deg,#0050C8 0%,#0A61E0 55%,#1E74F0 100%);color:#fff;}
+  .cover-inner{padding:70px 56px;position:relative;z-index:2;height:100%;display:flex;flex-direction:column;}
+  .cover .kicker{font-size:14px;letter-spacing:.24em;text-transform:uppercase;font-weight:700;opacity:.9;}
+  .cover h1{font-size:52px;font-weight:800;line-height:1.05;margin-top:20px;letter-spacing:-.02em;}
+  .cover .sub{font-size:21px;font-weight:500;opacity:.92;margin-top:18px;max-width:80%;}
+  .cover .part-badge{display:inline-block;margin-top:40px;background:var(--sand);color:#5A3410;
+    font-weight:800;font-size:15px;padding:10px 22px;border-radius:30px;letter-spacing:.03em;}
+  .cover .cover-code{margin-top:auto;background:rgba(6,17,38,.55);border:1px solid rgba(255,255,255,.16);
+    border-radius:14px;padding:20px 24px;font-family:'JetBrains Mono',monospace;font-size:15px;
+    color:#CFE0FF;backdrop-filter:blur(2px);max-width:70%;}
+  .cover .cover-code .c-fn{color:#FFD479;} .cover .cover-code .c-str{color:#8FD98F;}
+  .cover .who{margin-top:26px;font-size:14px;opacity:.85;}
+  .cover .who b{opacity:1;}
+  .cover-deco{position:absolute;right:-120px;top:-120px;width:420px;height:420px;border-radius:50%;
+    background:radial-gradient(circle,rgba(145,190,235,.35),transparent 70%);z-index:1;}
+  .cover-deco2{position:absolute;right:60px;bottom:180px;width:200px;height:200px;border-radius:50%;
+    background:radial-gradient(circle,rgba(255,205,170,.25),transparent 70%);z-index:1;}
+
+  /* ---------- Оглавление ---------- */
+  .toc{padding:56px 56px 64px;}
+  .toc h2{font-size:15px;letter-spacing:.18em;text-transform:uppercase;color:var(--blue);
+    font-weight:800;margin-bottom:6px;}
+  .toc .toc-title{font-size:32px;font-weight:800;margin-bottom:30px;letter-spacing:-.01em;}
+  .toc-part{margin-bottom:26px;}
+  .toc-part .ph{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+  .toc-part .ph .pn{background:var(--blue);color:#fff;font-weight:800;font-size:14px;
+    width:34px;height:34px;border-radius:9px;display:grid;place-items:center;flex:none;}
+  .toc-part .ph .pt{font-size:18px;font-weight:800;}
+  .toc-part.now .ph .pn{background:var(--sand);color:#5A3410;}
+  .toc-row{display:flex;justify-content:space-between;padding:8px 0 8px 46px;font-size:15px;
+    border-bottom:1px solid var(--line);color:#2A3647;}
+  .toc-row .st{color:var(--muted);font-size:13px;}
+  .toc-part.soon{opacity:.5;}
+  .toc-note{margin-top:14px;padding:14px 18px;background:var(--sand-wash);border-radius:10px;
+    font-size:13.5px;color:#7A5326;}
+
+  /* ---------- Урок ---------- */
+  .lesson-head{background:var(--blue);color:#fff;padding:26px 44px 24px;position:relative;
+    display:flex;align-items:baseline;justify-content:space-between;}
+  .lesson-head::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:var(--sand);}
+  .lesson-num{font-size:13px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;opacity:.85;}
+  .lesson-title{font-size:26px;font-weight:800;line-height:1.15;margin-top:6px;}
+  .lesson-quarter{font-size:12px;font-weight:600;opacity:.8;text-align:right;letter-spacing:.04em;}
+  .body{padding:30px 44px 0;}
+
+  .goal{background:var(--sand-wash);border-left:5px solid var(--sand);border-radius:0 10px 10px 0;
+    padding:16px 20px;margin-bottom:26px;}
+  .goal h3{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#B9770E;font-weight:700;margin-bottom:8px;}
+  .goal ul{list-style:none;display:grid;gap:5px;}
+  .goal li{padding-left:22px;position:relative;font-size:15px;}
+  .goal li::before{content:"→";position:absolute;left:0;color:#B9770E;font-weight:700;}
+
+  .sec{display:flex;align-items:center;gap:11px;margin:28px 0 14px;}
+  .sec .dot{width:30px;height:30px;border-radius:8px;flex:none;background:var(--blue-wash);color:var(--blue);
+    display:grid;place-items:center;font-size:16px;font-weight:800;}
+  .sec h2{font-size:19px;font-weight:800;letter-spacing:-.01em;}
+
+  p{font-size:15px;margin-bottom:13px;color:#28303D;}
+  strong{font-weight:700;color:var(--ink);}
+  .term{color:var(--blue);font-weight:700;}
+  code{font-family:'JetBrains Mono',monospace;font-size:.92em;background:#EEF2F8;padding:1px 6px;border-radius:5px;color:#324}
+
+  .analogy{background:var(--blue-wash);border-radius:12px;padding:16px 20px 16px 52px;position:relative;
+    margin:16px 0 20px;font-size:14.5px;}
+  .analogy::before{content:"💡";position:absolute;left:16px;top:15px;font-size:20px;}
+  .analogy b{color:var(--blue);}
+
+  .code{background:#0E1A2E;border-radius:12px;margin:16px 0 8px;overflow:hidden;box-shadow:0 6px 18px rgba(14,26,46,.28);}
+  .code-bar{background:#152238;padding:9px 16px;display:flex;align-items:center;gap:7px;border-bottom:1px solid #22344F;}
+  .code-bar i{width:11px;height:11px;border-radius:50%;display:inline-block;}
+  .code-bar .r{background:#FF5F57;} .code-bar .y{background:#FEBC2E;} .code-bar .g{background:#28C840;}
+  .code-bar span{margin-left:8px;color:#7B8BA5;font:500 12px 'JetBrains Mono',monospace;}
+  .code pre{padding:16px 20px;margin:0;font-family:'JetBrains Mono',monospace;font-size:13.5px;line-height:1.7;color:#E6ECF5;overflow-x:auto;}
+  .c-key{color:#FF9D7A;} .c-str{color:#8FD98F;} .c-num{color:#7FB4FF;} .c-com{color:#6B7B93;font-style:italic;} .c-fn{color:#FFD479;}
+
+  .output{background:#F4F7FB;border:1px dashed var(--blue-soft);border-radius:0 0 12px 12px;margin:-8px 0 20px;
+    padding:12px 20px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#2A3647;}
+  .output .lbl{display:block;font:700 11px 'Manrope',sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+
+  .task{border:1.5px solid var(--line);border-radius:14px;padding:18px 20px;margin:18px 0;background:#fff;}
+  .task-tag{display:inline-flex;align-items:center;gap:6px;background:var(--green-wash);color:var(--green);
+    font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:4px 11px;border-radius:20px;margin-bottom:10px;}
+  .task h4{font-size:15.5px;font-weight:700;margin-bottom:7px;}
+  .task p{font-size:14px;margin-bottom:0;color:#3A4351;}
+  .task .pair{font-size:12.5px;color:var(--muted);margin-top:9px;font-style:italic;}
+
+  .keybox{background:#0E1A2E;color:#DCE6F5;border-radius:12px;padding:16px 20px;margin:18px 0;}
+  .keybox h4{color:var(--sand);font-size:12px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;}
+  .keybox p{color:#C6D3E8;font-size:14.5px;margin:0;}
+  .keybox code{background:rgba(255,255,255,.1);color:#FFD479;}
+
+  .errors{margin:20px 0;}
+  .err-head{display:grid;grid-template-columns:1fr 1fr;gap:1px;margin-bottom:1px;background:var(--line);border-radius:12px 12px 0 0;overflow:hidden;}
+  .err-head > div{padding:8px 15px;font:700 11px 'Manrope';letter-spacing:.08em;text-transform:uppercase;}
+  .err-head .h-bad{background:#F7D9D5;color:var(--red);} .err-head .h-good{background:#D6EEDF;color:var(--green);}
+  .err-row{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);overflow:hidden;margin-bottom:1px;}
+  .err-row:last-child{border-radius:0 0 12px 12px;}
+  .err-row > div{padding:11px 15px;font-family:'JetBrains Mono',monospace;font-size:12.5px;}
+  .err-bad{background:var(--red-wash);color:var(--red);} .err-good{background:var(--green-wash);color:var(--green);}
+
+  .home{background:var(--blue);color:#fff;border-radius:14px;padding:20px 24px;margin:24px 0 0;}
+  .home h3{font-size:13px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px;opacity:.9;}
+  .home ol{margin-left:18px;display:grid;gap:8px;}
+  .home li{font-size:14.5px;}
+  .home .star{margin-top:14px;padding-top:13px;border-top:1px solid rgba(255,255,255,.22);font-size:13.5px;}
+  .home .star b{color:var(--sand);}
+
+  .foot{display:flex;justify-content:space-between;align-items:center;padding:16px 44px 30px;margin-top:8px;font-size:11.5px;color:var(--muted);}
+  .foot .brand{font-weight:700;color:var(--blue);}
+
+  @media print{
+    body{background:#fff;padding:0;}
+    .page{box-shadow:none;margin:0;border-radius:0;page-break-after:always;width:100%;}
+  }
+</style>
+</head>
+<body>
+
+  <!-- ============ ТИТУЛ ============ -->
+  <div class="page cover">
+    <div class="cover-deco"></div>
+    <div class="cover-deco2"></div>
+    <div class="cover-inner">
+      <div class="kicker">Учебник для начинающих</div>
+      <h1>Основы<br>программирования<br>на Python</h1>
+      <div class="sub">С нуля до своих программ и игр. Для тех, кто ещё ни разу не писал код.</div>
+      <span class="part-badge">Часть 0 · Как думает программа</span>
+      <div class="cover-code">
+        <span class="c-fn">print</span>(<span class="c-str">"Привет! Я начинаю учить Python."</span>)
+      </div>
+      <div class="who">9 класс · субботний курс · <b>Эсхата Академия</b></div>
+    </div>
+  </div>
+
+  <!-- ============ ОГЛАВЛЕНИЕ ============ -->
+  <div class="page">
+    <div class="toc">
+      <h2>Содержание курса</h2>
+      <div class="toc-title">Весь путь за год</div>
+
+      <div class="toc-part now">
+        <div class="ph"><div class="pn">0</div><div class="pt">Как думает программа</div></div>
+        <div class="toc-row"><span>Урок 0.1 — Первые команды. print и кавычки</span><span class="st">эта часть</span></div>
+        <div class="toc-row"><span>Урок 0.2 — Переменные: ящики для данных</span><span class="st">эта часть</span></div>
+        <div class="toc-note">👋 Вы держите Часть 0. Это два коротких урока, которые объясняют самое главное — как вообще работает программа. После них всё остальное пойдёт легко.</div>
+      </div>
+
+      <div class="toc-part soon">
+        <div class="ph"><div class="pn">1</div><div class="pt">Первые программы</div></div>
+        <div class="toc-row"><span>Ввод, числа, условия, циклы, строки</span><span class="st">скоро</span></div>
+        <div class="toc-row"><span>Проекты: «Угадай число», «Виселица»</span><span class="st">скоро</span></div>
+      </div>
+
+      <div class="toc-part soon">
+        <div class="ph"><div class="pn">2</div><div class="pt">Структуры и функции</div></div>
+        <div class="toc-row"><span>Списки, функции, словари</span><span class="st">скоро</span></div>
+        <div class="toc-row"><span>Проект: «Крестики-нолики»</span><span class="st">скоро</span></div>
+      </div>
+
+      <div class="toc-part soon">
+        <div class="ph"><div class="pn">3</div><div class="pt">Графика и большой проект</div></div>
+        <div class="toc-row"><span>turtle, файлы</span><span class="st">скоро</span></div>
+        <div class="toc-row"><span>Проект: «Змейка»</span><span class="st">скоро</span></div>
+      </div>
+
+      <div class="toc-part soon">
+        <div class="ph"><div class="pn">4</div><div class="pt">Данные и свой проект</div></div>
+        <div class="toc-row"><span>Анализ текста, обработка ошибок, финальный проект</span><span class="st">скоро</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ УРОК 0.1 ============ -->
+  <div class="page">
+    <div class="lesson-head">
+      <div>
+        <div class="lesson-num">Урок 0.1</div>
+        <div class="lesson-title">Первые команды: программа делает то, что сказано</div>
+      </div>
+      <div class="lesson-quarter">Часть 0<br>Как думает программа</div>
+    </div>
+    <div class="body">
+
+      <div class="goal">
+        <h3>Чему научимся</h3>
+        <ul>
+          <li>Понять, что программа — это команды, которые компьютер выполняет по порядку</li>
+          <li>Написать первую команду <b>print</b> и увидеть результат</li>
+          <li>Разобраться, зачем нужны кавычки</li>
+        </ul>
+      </div>
+
+      <div class="sec"><div class="dot">📚</div><h2>Что такое программа</h2></div>
+      <p>Программа — это <strong>список команд для компьютера</strong>. Компьютер читает их сверху вниз, одну за другой, и выполняет ровно то, что написано. Он не догадывается и не додумывает — делает буквально.</p>
+
+      <div class="analogy">
+        <b>На пальцах.</b> Представь, что объясняешь другу, как заварить чай: налей воду, вскипяти, положи заварку, подожди. Это команды по порядку. Если перепутать шаги — чай не получится. Программа — то же самое, только компьютер ещё строже: он не поймёт намёков, ему нужна точность.
+      </div>
+
+      <div class="sec"><div class="dot">💻</div><h2>Первая команда — print</h2></div>
+      <p>Команда <span class="term">print</span> означает «покажи на экране». То, что стоит в скобках и кавычках, компьютер выведет как есть:</p>
+
+      <div class="code">
+        <div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>privet.py</span></div>
+<pre><span class="c-fn">print</span>(<span class="c-str">"Привет!"</span>)
+<span class="c-fn">print</span>(<span class="c-str">"Меня зовут Python."</span>)
+<span class="c-fn">print</span>(<span class="c-str">"Я выполняю команды по порядку."</span>)</pre>
+      </div>
+      <div class="output">
+        <span class="lbl">На экране появится</span>
+        Привет!<br>Меня зовут Python.<br>Я выполняю команды по порядку.
+      </div>
+
+      <p>Три команды — три строки на экране, ровно в том порядке, как написаны. Поменяешь строки местами — изменится и порядок вывода. Вот что значит «программа = команды по порядку».</p>
+
+      <div class="task">
+        <span class="task-tag">✋ Задание в паре</span>
+        <h4>Расскажи о себе</h4>
+        <p>Напишите программу из трёх команд <code>print</code>: пусть она выведет твоё имя, твой город и твой возраст — каждое на своей строке.</p>
+        <p class="pair">Водитель печатает, штурман диктует. Каждую строку сразу запускайте клавишей F5.</p>
+      </div>
+
+      <div class="sec"><div class="dot">🔑</div><h2>Главное открытие: кавычки</h2></div>
+      <p>А теперь фокус. Наберите две очень похожие строки и запустите:</p>
+
+      <div class="code">
+        <div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>kavychki.py</span></div>
+<pre><span class="c-fn">print</span>(<span class="c-str">"2 + 2"</span>)
+<span class="c-fn">print</span>(<span class="c-num">2</span> + <span class="c-num">2</span>)</pre>
+      </div>
+      <div class="output">
+        <span class="lbl">На экране появится</span>
+        2 + 2<br>4
+      </div>
+
+      <div class="keybox">
+        <h4>Запомни это правило</h4>
+        <p>Кавычки говорят: <code>"покажи ровно эти значки"</code>. Без кавычек компьютер думает, что это задачка, и <b>решает</b> её. Кавычки = «как есть», без кавычек = «посчитай».</p>
+      </div>
+
+      <div class="sec"><div class="dot">⚠️</div><h2>Частые ошибки</h2></div>
+      <div class="errors">
+        <div class="err-head"><div class="h-bad">Так не работает</div><div class="h-good">А так правильно</div></div>
+        <div class="err-row"><div class="err-bad">print(Привет)</div><div class="err-good">print("Привет")</div></div>
+        <div class="err-row"><div class="err-bad">print("Привет')</div><div class="err-good">print("Привет")</div></div>
+        <div class="err-row"><div class="err-bad">prin("Привет")</div><div class="err-good">print("Привет")</div></div>
+      </div>
+      <p style="font-size:13.5px;color:var(--muted);">Компьютер не догадается, что ты имел в виду. Ошибка — это не провал, а подсказка: прочитай, что он пишет, и поправь.</p>
+
+      <div class="home">
+        <h3>🏠 Домашнее задание</h3>
+        <ol>
+          <li>Программа выводит твоё имя и три факта о тебе (три команды print).</li>
+          <li>Программа выводит расписание твоих уроков на завтра.</li>
+        </ol>
+        <div class="star"><b>★ Со звёздочкой:</b> нарисуй рамку из символов * и напиши внутри «Я учу Python».</div>
+      </div>
+
+    </div>
+    <div class="foot">
+      <span>Основы программирования на Python · 9 класс</span>
+      <span class="brand">Эсхата Академия</span>
+    </div>
+  </div>
+
+  <!-- ============ УРОК 0.2 ============ -->
+  <div class="page">
+    <div class="lesson-head">
+      <div>
+        <div class="lesson-num">Урок 0.2</div>
+        <div class="lesson-title">Переменные: ящики для данных</div>
+      </div>
+      <div class="lesson-quarter">Часть 0<br>Как думает программа</div>
+    </div>
+    <div class="body">
+
+      <div class="goal">
+        <h3>Чему научимся</h3>
+        <ul>
+          <li>Понять, что такое переменная и зачем она нужна</li>
+          <li>Класть значение в «ящик» и доставать его по имени</li>
+          <li>Считать с помощью переменных</li>
+        </ul>
+      </div>
+
+      <div class="sec"><div class="dot">📚</div><h2>Зачем нужны переменные</h2></div>
+      <p>На прошлом уроке мы писали всё прямо в <code>print</code>. Но что делать, если одно значение нужно использовать много раз? Каждый раз печатать заново? Нет — его можно <strong>сохранить</strong>.</p>
+
+      <div class="analogy">
+        <b>На пальцах.</b> Переменная — это <b>ящик с наклейкой</b>. На наклейке — имя, внутри — значение. Ты кладёшь что-то один раз, а достаёшь столько раз, сколько нужно. Захотел поменять содержимое — положил новое, старое пропало.
+      </div>
+
+      <div class="sec"><div class="dot">💻</div><h2>Кладём в ящик</h2></div>
+      <p>Знак <span class="term">=</span> здесь означает не «равно», как в математике, а «<strong>положи в ящик</strong>». Слева — имя ящика, справа — что кладём:</p>
+
+      <div class="code">
+        <div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>yaschiki.py</span></div>
+<pre>age = <span class="c-num">15</span>
+<span class="c-fn">print</span>(age)
+
+name = <span class="c-str">"Алишер"</span>
+<span class="c-fn">print</span>(name)</pre>
+      </div>
+      <div class="output">
+        <span class="lbl">На экране появится</span>
+        15<br>Алишер
+      </div>
+
+      <p>Мы написали имя ящика — и компьютер достал из него значение. Читается так: «ящик <code>age</code> получает значение 15».</p>
+
+      <div class="sec"><div class="dot">🔧</div><h2>Зачем это удобно</h2></div>
+      <p>Один раз положил — используешь сколько угодно раз:</p>
+
+      <div class="code">
+        <div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>privet_imya.py</span></div>
+<pre>name = <span class="c-str">"Алишер"</span>
+<span class="c-fn">print</span>(<span class="c-str">"Привет,"</span>)
+<span class="c-fn">print</span>(name)
+<span class="c-fn">print</span>(<span class="c-str">"тебе лет:"</span>)
+<span class="c-fn">print</span>(age)</pre>
+      </div>
+
+      <p>И самое полезное — с числами в ящиках можно <strong>считать</strong>. Вот расчёт покупки:</p>
+
+      <div class="code">
+        <div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>pokupka.py</span></div>
+<pre>price = <span class="c-num">25</span>        <span class="c-com"># сомони за штуку</span>
+count = <span class="c-num">4</span>         <span class="c-com"># сколько штук</span>
+<span class="c-fn">print</span>(price * count)</pre>
+      </div>
+      <div class="output">
+        <span class="lbl">На экране появится</span>
+        100
+      </div>
+
+      <div class="keybox">
+        <h4>Запомни это правило</h4>
+        <p>Знак <code>=</code> — это «положи в ящик», а не «равно». Пишешь имя ящика — компьютер достаёт значение. Новое значение стирает старое.</p>
+      </div>
+
+      <div class="task">
+        <span class="task-tag">✋ Задание в паре</span>
+        <h4>Средний балл</h4>
+        <p>Положите пять своих оценок в ящики <code>g1</code>…<code>g5</code>, а потом выведите средний балл: сумму разделите на 5. Подсказка: <code>print((g1 + g2 + g3 + g4 + g5) / 5)</code></p>
+        <p class="pair">Через 10 минут поменяйтесь ролями — теперь печатает штурман.</p>
+      </div>
+
+      <div class="sec"><div class="dot">⚠️</div><h2>Частые ошибки</h2></div>
+      <div class="errors">
+        <div class="err-head"><div class="h-bad">Так не работает</div><div class="h-good">А так правильно</div></div>
+        <div class="err-row"><div class="err-bad">print(Name)</div><div class="err-good">print(name)</div></div>
+        <div class="err-row"><div class="err-bad">age = "15"<br>print(age + 1)</div><div class="err-good">age = 15<br>print(age + 1)</div></div>
+        <div class="err-row"><div class="err-bad">print(age)<br>age = 15</div><div class="err-good">age = 15<br>print(age)</div></div>
+      </div>
+      <p style="font-size:13.5px;color:var(--muted);">Python различает большие и маленькие буквы: <code>name</code> и <code>Name</code> — разные ящики. И сначала клади в ящик, потом доставай — не наоборот.</p>
+
+      <div class="home">
+        <h3>🏠 Домашнее задание</h3>
+        <ol>
+          <li>Создай ящики для профиля: ник, город, любимый предмет. Выведи их красиво.</li>
+          <li>Есть цена товара и количество — посчитай общую стоимость в сомони.</li>
+        </ol>
+        <div class="star"><b>★ Со звёздочкой:</b> положи в ящики цены трёх покупок и выведи, сколько всего денег нужно.</div>
+      </div>
+
+    </div>
+    <div class="foot">
+      <span>Основы программирования на Python · 9 класс</span>
+      <span class="brand">Эсхата Академия</span>
+    </div>
+  </div>
+
+</body>
+</html>

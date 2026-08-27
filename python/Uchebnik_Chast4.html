@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Учебник Python · Часть 4 · Данные и свой проект</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+  :root{
+    --blue:#0050C8; --blue-soft:#91BEEB; --blue-wash:#EAF1FB;
+    --sand:#FFCDAA; --sand-wash:#FFF3E9; --ink:#1A2333; --muted:#5B6472;
+    --line:#E2E8F2; --green:#1E8449; --green-wash:#E9F5EE;
+    --red:#C0392B; --red-wash:#FBEDEB; --page:#FFFFFF;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#D8DEE9;font-family:'Manrope',sans-serif;color:var(--ink);padding:28px 14px;line-height:1.55;}
+  .page{background:var(--page);width:820px;max-width:100%;margin:0 auto 26px;box-shadow:0 12px 40px rgba(26,35,51,.16);border-radius:4px;overflow:hidden;}
+
+  .cover{min-height:1000px;position:relative;overflow:hidden;background:linear-gradient(160deg,#0050C8 0%,#0A61E0 55%,#1E74F0 100%);color:#fff;}
+  .cover-inner{padding:70px 56px;position:relative;z-index:2;display:flex;flex-direction:column;min-height:1000px;}
+  .cover .kicker{font-size:14px;letter-spacing:.24em;text-transform:uppercase;font-weight:700;opacity:.9;}
+  .cover h1{font-size:50px;font-weight:800;line-height:1.05;margin-top:20px;letter-spacing:-.02em;}
+  .cover .sub{font-size:20px;font-weight:500;opacity:.92;margin-top:18px;max-width:82%;}
+  .cover .part-badge{display:inline-block;margin-top:38px;background:var(--sand);color:#5A3410;font-weight:800;font-size:15px;padding:10px 22px;border-radius:30px;}
+  .cover .lesson-list{margin-top:auto;background:rgba(6,17,38,.5);border:1px solid rgba(255,255,255,.16);border-radius:14px;padding:22px 26px;max-width:80%;}
+  .cover .lesson-list h4{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--sand);margin-bottom:12px;}
+  .cover .lesson-list ol{margin-left:18px;display:grid;gap:6px;}
+  .cover .lesson-list li{font-size:14px;color:#DCE8FF;}
+  .cover .lesson-list li b{color:#fff;}
+  .cover .who{margin-top:24px;font-size:14px;opacity:.85;}
+  .cover .who b{opacity:1;}
+  .cover-deco{position:absolute;right:-120px;top:-120px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(145,190,235,.35),transparent 70%);z-index:1;}
+
+  .lesson-head{background:var(--blue);color:#fff;padding:26px 44px 24px;position:relative;display:flex;align-items:baseline;justify-content:space-between;}
+  .lesson-head::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:var(--sand);}
+  .lesson-num{font-size:13px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;opacity:.85;}
+  .lesson-title{font-size:25px;font-weight:800;line-height:1.15;margin-top:6px;max-width:90%;}
+  .lesson-quarter{font-size:12px;font-weight:600;opacity:.8;text-align:right;letter-spacing:.04em;flex:none;}
+  .body{padding:30px 44px 0;}
+
+  .goal{background:var(--sand-wash);border-left:5px solid var(--sand);border-radius:0 10px 10px 0;padding:16px 20px;margin-bottom:26px;}
+  .goal h3{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#B9770E;font-weight:700;margin-bottom:8px;}
+  .goal ul{list-style:none;display:grid;gap:5px;}
+  .goal li{padding-left:22px;position:relative;font-size:15px;}
+  .goal li::before{content:"→";position:absolute;left:0;color:#B9770E;font-weight:700;}
+
+  .sec{display:flex;align-items:center;gap:11px;margin:28px 0 14px;}
+  .sec .dot{width:30px;height:30px;border-radius:8px;flex:none;background:var(--blue-wash);color:var(--blue);display:grid;place-items:center;font-size:16px;font-weight:800;}
+  .sec h2{font-size:19px;font-weight:800;letter-spacing:-.01em;}
+
+  p{font-size:15px;margin-bottom:13px;color:#28303D;}
+  strong{font-weight:700;color:var(--ink);}
+  .term{color:var(--blue);font-weight:700;}
+  code{font-family:'JetBrains Mono',monospace;font-size:.92em;background:#EEF2F8;padding:1px 6px;border-radius:5px;color:#324;}
+
+  .analogy{background:var(--blue-wash);border-radius:12px;padding:16px 20px 16px 52px;position:relative;margin:16px 0 20px;font-size:14.5px;}
+  .analogy::before{content:"💡";position:absolute;left:16px;top:15px;font-size:20px;}
+  .analogy b{color:var(--blue);}
+
+  .code{background:#0E1A2E;border-radius:12px;margin:16px 0 8px;overflow:hidden;box-shadow:0 6px 18px rgba(14,26,46,.28);}
+  .code-bar{background:#152238;padding:9px 16px;display:flex;align-items:center;gap:7px;border-bottom:1px solid #22344F;}
+  .code-bar i{width:11px;height:11px;border-radius:50%;display:inline-block;}
+  .code-bar .r{background:#FF5F57;} .code-bar .y{background:#FEBC2E;} .code-bar .g{background:#28C840;}
+  .code-bar span{margin-left:8px;color:#7B8BA5;font:500 12px 'JetBrains Mono',monospace;}
+  .code pre{padding:16px 20px;margin:0;font-family:'JetBrains Mono',monospace;font-size:13.5px;line-height:1.7;color:#E6ECF5;overflow-x:auto;}
+  .c-key{color:#FF9D7A;} .c-str{color:#8FD98F;} .c-num{color:#7FB4FF;} .c-com{color:#6B7B93;font-style:italic;} .c-fn{color:#FFD479;}
+
+  .output{background:#F4F7FB;border:1px dashed var(--blue-soft);border-radius:0 0 12px 12px;margin:-8px 0 20px;padding:12px 20px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#2A3647;}
+  .output .lbl{display:block;font:700 11px 'Manrope',sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+
+  .task{border:1.5px solid var(--line);border-radius:14px;padding:18px 20px;margin:18px 0;background:#fff;}
+  .task-tag{display:inline-flex;align-items:center;gap:6px;background:var(--green-wash);color:var(--green);font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:4px 11px;border-radius:20px;margin-bottom:10px;}
+  .task h4{font-size:15.5px;font-weight:700;margin-bottom:7px;}
+  .task p{font-size:14px;margin-bottom:0;color:#3A4351;}
+  .task .pair{font-size:12.5px;color:var(--muted);margin-top:9px;font-style:italic;}
+
+  .keybox{background:#0E1A2E;color:#DCE6F5;border-radius:12px;padding:16px 20px;margin:18px 0;}
+  .keybox h4{color:var(--sand);font-size:12px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;}
+  .keybox p{color:#C6D3E8;font-size:14.5px;margin:0;}
+  .keybox code{background:rgba(255,255,255,.1);color:#FFD479;}
+
+  .errors{margin:20px 0;}
+  .err-head{display:grid;grid-template-columns:1fr 1fr;gap:1px;margin-bottom:1px;background:var(--line);border-radius:12px 12px 0 0;overflow:hidden;}
+  .err-head > div{padding:8px 15px;font:700 11px 'Manrope';letter-spacing:.08em;text-transform:uppercase;}
+  .err-head .h-bad{background:#F7D9D5;color:var(--red);} .err-head .h-good{background:#D6EEDF;color:var(--green);}
+  .err-row{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);overflow:hidden;margin-bottom:1px;}
+  .err-row:last-child{border-radius:0 0 12px 12px;}
+  .err-row > div{padding:11px 15px;font-family:'JetBrains Mono',monospace;font-size:12.5px;}
+  .err-bad{background:var(--red-wash);color:var(--red);} .err-good{background:var(--green-wash);color:var(--green);}
+
+  .home{background:var(--blue);color:#fff;border-radius:14px;padding:20px 24px;margin:24px 0 0;}
+  .home h3{font-size:13px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px;opacity:.9;}
+  .home ol{margin-left:18px;display:grid;gap:8px;}
+  .home li{font-size:14.5px;}
+  .home .star{margin-top:14px;padding-top:13px;border-top:1px solid rgba(255,255,255,.22);font-size:13.5px;}
+  .home .star b{color:var(--sand);}
+
+  .steps{counter-reset:st;margin:8px 0 4px;}
+  .step{display:flex;gap:14px;margin-bottom:16px;}
+  .step .sn{counter-increment:st;flex:none;width:30px;height:30px;border-radius:50%;background:var(--blue);color:#fff;font-weight:800;font-size:14px;display:grid;place-items:center;}
+  .step .sn::before{content:counter(st);}
+  .step .sc{flex:1;}
+  .step .sc h4{font-size:15px;font-weight:700;margin-bottom:4px;}
+  .step .sc p{font-size:13.5px;margin-bottom:6px;color:#3A4351;}
+
+  /* карточки тем проекта */
+  .themes{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0;}
+  .theme{border:1.5px solid var(--line);border-radius:12px;padding:14px 16px;}
+  .theme .ti{font-size:22px;margin-bottom:6px;}
+  .theme h4{font-size:14.5px;font-weight:700;margin-bottom:4px;}
+  .theme p{font-size:12.5px;color:var(--muted);margin:0;}
+
+  /* приложения */
+  .app-head{background:linear-gradient(135deg,#152238,#0E1A2E);color:#fff;padding:30px 44px;position:relative;}
+  .app-head::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:var(--sand);}
+  .app-head .an{font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--sand);font-weight:700;}
+  .app-head h2{font-size:28px;font-weight:800;margin-top:6px;}
+  .cheat{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0;}
+  .cheat .cc{border:1px solid var(--line);border-radius:10px;overflow:hidden;}
+  .cheat .cc .cch{background:var(--blue-wash);color:var(--blue);font-size:12px;font-weight:700;padding:7px 12px;letter-spacing:.05em;text-transform:uppercase;}
+  .cheat .cc pre{margin:0;padding:11px 12px;font-family:'JetBrains Mono',monospace;font-size:11.5px;line-height:1.6;color:#28303D;background:#fff;white-space:pre-wrap;}
+  .cheat .cc .cm{color:#8794A8;}
+  .gloss{margin:6px 0;}
+  .gloss .gr{display:flex;gap:14px;padding:10px 0;border-bottom:1px solid var(--line);}
+  .gloss .gt{flex:none;width:150px;font-weight:700;color:var(--blue);font-size:14px;}
+  .gloss .gd{font-size:14px;color:#28303D;}
+  .ans{margin:6px 0;}
+  .ans .al{font-size:13px;font-weight:800;color:var(--blue);letter-spacing:.06em;text-transform:uppercase;margin:16px 0 8px;}
+  .ans .aq{border-left:3px solid var(--blue-soft);padding:6px 0 6px 14px;margin-bottom:10px;}
+  .ans .aq b{font-size:13.5px;color:var(--ink);}
+  .ans .aq pre{margin:6px 0 0;padding:10px 12px;background:#0E1A2E;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:11.5px;line-height:1.6;color:#E6ECF5;white-space:pre-wrap;overflow-x:auto;}
+  .ans .ak{color:#FF9D7A;} .ans .as{color:#8FD98F;} .ans .anum{color:#7FB4FF;} .ans .af{color:#FFD479;} .ans .acm{color:#6B7B93;font-style:italic;}
+
+  .foot{display:flex;justify-content:space-between;align-items:center;padding:16px 44px 30px;margin-top:8px;font-size:11.5px;color:var(--muted);}
+  .foot .brand{font-weight:700;color:var(--blue);}
+
+  @media print{body{background:#fff;padding:0;}.page{box-shadow:none;margin:0;border-radius:0;page-break-after:always;width:100%;}}
+</style>
+</head>
+<body>
+
+  <!-- ТИТУЛ ЧАСТИ 4 -->
+  <div class="page cover">
+    <div class="cover-deco"></div>
+    <div class="cover-inner">
+      <div class="kicker">Учебник · Часть 4 · Финал</div>
+      <h1>Данные<br>и твой<br>проект</h1>
+      <div class="sub">Анализ текста, защита от ошибок — и твой собственный проект, который ты придумаешь и защитишь сам.</div>
+      <span class="part-badge">Четверть 4 · 7 уроков + приложения</span>
+      <div class="lesson-list">
+        <h4>Что в этой части</h4>
+        <ol>
+          <li><b>Урок 24.</b> Анализ текста: считаем слова</li>
+          <li><b>Урок 25.</b> Защита от ошибок: try / except</li>
+          <li><b>Урок 26.</b> Повторение: код-битвы</li>
+          <li><b>Урок 27.</b> Выбираем финальный проект</li>
+          <li><b>Уроки 28–30.</b> 🚀 Финальный проект и защита</li>
+          <li><b>Приложения.</b> Шпаргалка, глоссарий, ответы</li>
+        </ol>
+      </div>
+      <div class="who">9 класс · субботний курс · <b>Эсхата Академия</b></div>
+    </div>
+  </div>
+
+  <!-- УРОК 24 — анализ текста -->
+  <div class="page">
+    <div class="lesson-head">
+      <div><div class="lesson-num">Урок 24</div><div class="lesson-title">Анализ текста: считаем слова</div></div>
+      <div class="lesson-quarter">Часть 4<br>Данные и проект</div>
+    </div>
+    <div class="body">
+      <div class="goal"><h3>Чему научимся</h3><ul>
+        <li>Разбивать текст на слова командой <b>split</b></li>
+        <li>Считать количество слов и находить самое частое</li>
+        <li>Соединять строки, списки и словари для анализа</li>
+      </ul></div>
+
+      <div class="sec"><div class="dot">📚</div><h2>Текст как данные</h2></div>
+      <p>Программы умеют не только хранить текст, но и <strong>анализировать</strong> его: сколько слов, какое встречается чаще всего. Так работают поисковики и умные помощники. У тебя уже есть все инструменты — строки, списки, словари. Осталось соединить.</p>
+      <div class="analogy"><b>На пальцах.</b> Представь, что рассыпал текст на отдельные слова-карточки. Теперь можно их посчитать, разложить по стопкам, найти самую большую стопку. Именно это делает анализ текста.</div>
+
+      <div class="sec"><div class="dot">💻</div><h2>Разбираем код</h2></div>
+      <p><code>split</code> разбивает строку на список слов:</p>
+      <div class="code"><div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>analiz.py</span></div>
+<pre>text = <span class="c-str">"кот пёс кот рыба кот пёс"</span>
+words = text.<span class="c-fn">split</span>()      <span class="c-com"># список слов</span>
+
+<span class="c-fn">print</span>(<span class="c-str">"Всего слов:"</span>, <span class="c-fn">len</span>(words))
+
+<span class="c-com"># считаем каждое слово в словарь</span>
+count = {}
+<span class="c-key">for</span> word <span class="c-key">in</span> words:
+    <span class="c-key">if</span> word <span class="c-key">in</span> count:
+        count[word] = count[word] + <span class="c-num">1</span>
+    <span class="c-key">else</span>:
+        count[word] = <span class="c-num">1</span>
+
+<span class="c-fn">print</span>(count)</pre></div>
+      <div class="output"><span class="lbl">На экране появится</span>Всего слов: 6<br>{'кот': 3, 'пёс': 2, 'рыба': 1}</div>
+
+      <p>Цикл идёт по словам. Если слово уже в словаре — прибавляем 1, если нет — начинаем с 1. В итоге словарь показывает, сколько раз встретилось каждое слово. «кот» — 3 раза, чемпион.</p>
+
+      <div class="keybox"><h4>Важно запомнить</h4><p><code>split()</code> — разбивает строку на список слов по пробелам. Приём «считать в словарь» (есть ключ — прибавь, нет — создай) очень частый: так считают что угодно — слова, голоса, товары.</p></div>
+
+      <div class="task"><span class="task-tag">✋ Задание в паре</span><h4>Анализатор предложения</h4>
+        <p>Программа спрашивает предложение и выводит: сколько всего слов и сколько среди них разных (подсказка: разных — это <code>len(count)</code>).</p>
+        <p class="pair">Через 10 минут поменяйтесь ролями.</p></div>
+
+      <div class="sec"><div class="dot">⚠️</div><h2>Частые ошибки</h2></div>
+      <div class="errors">
+        <div class="err-head"><div class="h-bad">Так не работает</div><div class="h-good">А так правильно</div></div>
+        <div class="err-row"><div class="err-bad">count[word] = count[word] + 1<br># для нового слова — ошибка</div><div class="err-good">if word in count: ...<br>else: count[word] = 1</div></div>
+      </div>
+      <p style="font-size:13.5px;color:var(--muted);">Нельзя прибавлять к слову, которого ещё нет в словаре. Сначала проверь, есть ли оно.</p>
+
+      <div class="home"><h3>🏠 Домашнее задание</h3><ol>
+        <li>Найди самое длинное слово в предложении.</li>
+        <li>Посчитай, сколько раз встречается заданная буква во всём тексте.</li>
+      </ol><div class="star"><b>★ Со звёздочкой:</b> найди и выведи самое частое слово в тексте (не только словарь, а именно чемпиона).</div></div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+  <!-- УРОК 25 — try/except -->
+  <div class="page">
+    <div class="lesson-head">
+      <div><div class="lesson-num">Урок 25</div><div class="lesson-title">Защита от ошибок: try / except</div></div>
+      <div class="lesson-quarter">Часть 4<br>Данные и проект</div>
+    </div>
+    <div class="body">
+      <div class="goal"><h3>Чему научимся</h3><ul>
+        <li>Ловить ошибки, чтобы программа не падала</li>
+        <li>Использовать <b>try</b> и <b>except</b></li>
+        <li>Делать программы надёжными для любого пользователя</li>
+      </ul></div>
+
+      <div class="sec"><div class="dot">📚</div><h2>Программа не должна падать</h2></div>
+      <p>Что будет, если в калькуляторе на вопрос «введи число» пользователь напишет «привет»? Программа <strong>рухнет</strong> с ошибкой. Настоящие программы так себя не ведут — они ловят ошибку и вежливо просят повторить. Это делают слова <span class="term">try</span> и <span class="term">except</span>.</p>
+      <div class="analogy"><b>На пальцах.</b> try / except — это страховка. «Попробуй (try) сделать. Если не вышло (except) — вот запасной план». Как страховочный трос у скалолаза: сорвался — не упал, а повис.</div>
+
+      <div class="sec"><div class="dot">💻</div><h2>Разбираем код</h2></div>
+      <div class="code"><div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>zaschita.py</span></div>
+<pre><span class="c-key">try</span>:
+    age = <span class="c-fn">int</span>(<span class="c-fn">input</span>(<span class="c-str">"Сколько тебе лет? "</span>))
+    <span class="c-fn">print</span>(<span class="c-str">"Через год будет:"</span>, age + <span class="c-num">1</span>)
+<span class="c-key">except</span>:
+    <span class="c-fn">print</span>(<span class="c-str">"Это не похоже на число!"</span>)</pre></div>
+      <div class="output"><span class="lbl">Если ввести «привет»</span>Это не похоже на число!<br><span style="color:#888">(программа не рухнула, а вежливо ответила)</span></div>
+
+      <p>Код внутри <code>try</code> — то, что <strong>пробуем</strong> сделать. Если там ошибка — Python не падает, а прыгает в <code>except</code> и выполняет запасной план. Пользователь видит понятное сообщение, а не красную простыню ошибки.</p>
+
+      <div class="keybox"><h4>Важно запомнить</h4><p><code>try:</code> — рискованный код. <code>except:</code> — что делать при ошибке. Особенно полезно с <code>int(input())</code>, делением (вдруг на ноль) и файлами (вдруг нет файла).</p></div>
+
+      <div class="task"><span class="task-tag">✋ Задание в паре</span><h4>Надёжный калькулятор</h4>
+        <p>Возьмите калькулятор из четверти 1 и защитите его: если ввели не число или делят на ноль — программа не падает, а просит повторить.</p>
+        <p class="pair">Через 10 минут поменяйтесь ролями.</p></div>
+
+      <div class="sec"><div class="dot">⚠️</div><h2>Частые ошибки</h2></div>
+      <div class="errors">
+        <div class="err-head"><div class="h-bad">Так не работает</div><div class="h-good">А так правильно</div></div>
+        <div class="err-row"><div class="err-bad">try:<br>age = int(input())<br>except:</div><div class="err-good">try:<br>&nbsp;&nbsp;age = int(input())<br>except:</div></div>
+      </div>
+      <p style="font-size:13.5px;color:var(--muted);">Код внутри try и except — с отступом, как в if. Не забудь двоеточия после обоих слов.</p>
+
+      <div class="home"><h3>🏠 Домашнее задание</h3><ol>
+        <li>Защити программу, которая читает файл: если файла нет — сообщи об этом вежливо.</li>
+        <li>Сделай ввод возраста, который повторяет вопрос, пока не введут число (try внутри цикла).</li>
+      </ol><div class="star"><b>★ Со звёздочкой:</b> раздели except на два: отдельно для «не число», отдельно для «деление на ноль».</div></div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+  <!-- УРОК 26 — повторение код-битвы -->
+  <div class="page">
+    <div class="lesson-head">
+      <div><div class="lesson-num">Урок 26</div><div class="lesson-title">Повторение: код-битвы и турнир</div></div>
+      <div class="lesson-quarter">Часть 4<br>Данные и проект</div>
+    </div>
+    <div class="body">
+      <div class="goal"><h3>Что сделаем</h3><ul>
+        <li>Повторим всё за год в игровой форме</li>
+        <li>Проведём код-битвы у проектора</li>
+        <li>Подготовимся к финальному проекту</li>
+      </ul></div>
+
+      <div class="sec"><div class="dot">🎮</div><h2>Урок-турнир</h2></div>
+      <p>Сегодня без новых тем — <strong>закрепляем</strong> всё, что прошли за год. Но не скучным повторением, а битвами: пары соревнуются, кто быстрее и красивее решит задачу. Это и повторение, и подготовка к финальному проекту.</p>
+
+      <div class="sec"><div class="dot">⚔️</div><h2>Правила код-битвы</h2></div>
+      <div class="steps">
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Учитель даёт задачу</h4><p>Короткую, на 5–7 минут: например, «программа выводит все чётные числа от 1 до 50».</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Пары решают на время</h4><p>Кто первый получил рабочий код — поднимает руку.</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Показ у проектора</h4><p>Две пары показывают решения. Класс голосует: чей код короче и понятнее.</p></div></div>
+      </div>
+
+      <div class="sec"><div class="dot">🎯</div><h2>Задачи для битвы</h2></div>
+      <p>Проверь себя — сможешь решить каждую? Это карта всего, что ты умеешь:</p>
+      <div class="themes">
+        <div class="theme"><div class="ti">🔢</div><h4>Числа</h4><p>Сумма цифр введённого числа</p></div>
+        <div class="theme"><div class="ti">🔁</div><h4>Циклы</h4><p>Вывести таблицу квадратов 1–10</p></div>
+        <div class="theme"><div class="ti">📝</div><h4>Строки</h4><p>Проверить, палиндром ли слово</p></div>
+        <div class="theme"><div class="ti">📋</div><h4>Списки</h4><p>Найти среднее и максимум списка</p></div>
+        <div class="theme"><div class="ti">🎲</div><h4>Функции</h4><p>Функция, бросающая кубик</p></div>
+        <div class="theme"><div class="ti">📖</div><h4>Словари</h4><p>Посчитать буквы в слове</p></div>
+      </div>
+
+      <div class="task"><span class="task-tag">✋ Турнир класса</span><h4>Кубок программиста</h4>
+        <p>Играем 5–6 раундов. За каждую победу пара получает очко. В конце — чемпионы четверти. Проигравших нет: решил задачу — уже молодец.</p>
+        <p class="pair">Меняйтесь, кто за клавиатурой, каждый раунд.</p></div>
+
+      <div class="home"><h3>🏠 Домашнее задание</h3><ol>
+        <li>Реши три любые задачи из карты выше, которые показались сложными.</li>
+        <li>Начни думать над темой финального проекта — что тебе интересно?</li>
+      </ol><div class="star"><b>★ Со звёздочкой:</b> придумай свою задачу для код-битвы и её решение.</div></div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+  <!-- УРОК 27 — выбор проекта -->
+  <div class="page">
+    <div class="lesson-head">
+      <div><div class="lesson-num">Урок 27</div><div class="lesson-title">Выбираем финальный проект</div></div>
+      <div class="lesson-quarter">Часть 4<br>Данные и проект</div>
+    </div>
+    <div class="body">
+      <div class="goal"><h3>Что сделаем</h3><ul>
+        <li>Выберем тему своего проекта</li>
+        <li>Составим план: что должна уметь программа</li>
+        <li>Распределим работу на три урока</li>
+      </ul></div>
+
+      <div class="sec"><div class="dot">🚀</div><h2>Твой собственный проект</h2></div>
+      <p>Финал года — проект, который ты придумываешь и делаешь <strong>сам</strong> (в паре). Не по образцу, а свой. Три урока на работу, потом защита перед классом. Это то, что покажет: ты умеешь программировать не по шаблону, а решать свою задачу.</p>
+
+      <div class="sec"><div class="dot">💡</div><h2>Идеи для проекта</h2></div>
+      <p>Выбери из этих или придумай своё:</p>
+      <div class="themes">
+        <div class="theme"><div class="ti">🎯</div><h4>Викторина</h4><p>Вопросы по любимому предмету, подсчёт очков</p></div>
+        <div class="theme"><div class="ti">🎲</div><h4>Игра-бродилка</h4><p>Текстовый квест с выбором пути</p></div>
+        <div class="theme"><div class="ti">💰</div><h4>Копилка</h4><p>Учёт денег: доходы, расходы, файл</p></div>
+        <div class="theme"><div class="ti">📝</div><h4>Список дел</h4><p>Задачи с сохранением в файл</p></div>
+        <div class="theme"><div class="ti">🎨</div><h4>Рисунок turtle</h4><p>Сложная картина или узор-генератор</p></div>
+        <div class="theme"><div class="ti">🐍</div><h4>Своя игра</h4><p>Развитие «Змейки» или новая аркада</p></div>
+      </div>
+
+      <div class="sec"><div class="dot">📋</div><h2>Как спланировать</h2></div>
+      <div class="steps">
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Опиши идею одним предложением</h4><p>«Викторина по истории Таджикистана на 10 вопросов со счётом».</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Раздели на части</h4><p>Что должна уметь программа? Выпиши 3–5 пунктов.</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Распредели на 3 урока</h4><p>Урок 28 — каркас, 29 — основное, 30 — доработка и защита.</p></div></div>
+      </div>
+
+      <div class="task"><span class="task-tag">✋ Задание в паре</span><h4>План проекта</h4>
+        <p>Выберите тему, опишите идею одним предложением и выпишите, что программа должна уметь. Покажите план учителю до начала кодирования.</p>
+        <p class="pair">Спорьте, обсуждайте — хороший план экономит массу времени.</p></div>
+
+      <div class="home"><h3>🏠 Домашнее задание</h3><ol>
+        <li>Доработай план: нарисуй на бумаге, как программа будет выглядеть.</li>
+        <li>Выпиши, какие темы года понадобятся (списки? файлы? функции?).</li>
+      </ol><div class="star"><b>★ Со звёздочкой:</b> продумай одну «фишку», которой удивишь класс на защите.</div></div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+  <!-- УРОКИ 28-30 — финальный проект -->
+  <div class="page">
+    <div class="lesson-head">
+      <div><div class="lesson-num">Уроки 28–30 · Финал</div><div class="lesson-title">🚀 Твой проект и защита</div></div>
+      <div class="lesson-quarter">Часть 4<br>Данные и проект</div>
+    </div>
+    <div class="body">
+      <div class="goal"><h3>Финальная прямая</h3><ul>
+        <li>Три урока на создание своего проекта</li>
+        <li>Защита перед классом — покажи, что умеешь</li>
+        <li>Диплом об окончании курса</li>
+      </ul></div>
+
+      <div class="sec"><div class="dot">🗓️</div><h2>План трёх уроков</h2></div>
+      <div class="steps">
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Урок 28 — каркас</h4><p>Собери основу программы: главное меню или главный цикл. Пусть работает хоть как-то, пусть криво — главное запускается.</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Урок 29 — начинка</h4><p>Добавь основные функции: подсчёт очков, сохранение в файл, проверки. Программа делает то, что задумано.</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Урок 30 — блеск и защита</h4><p>Доведи до ума: сообщения, красота, «фишка». Подготовь и проведи защиту.</p></div></div>
+      </div>
+
+      <div class="sec"><div class="dot">🎤</div><h2>Как пройти защиту</h2></div>
+      <p>Защита — 3 минуты у проектора. План простой:</p>
+      <div class="steps">
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Покажи в действии</h4><p>Запусти программу, продемонстрируй, что она делает.</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Объясни устройство</h4><p>Расскажи главное: какие темы года использовал, как всё работает.</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Поделись трудностями</h4><p>Что было сложно, где застрял, как решил. Это ценят больше всего.</p></div></div>
+      </div>
+
+      <div class="keybox"><h4>Критерии оценки проекта</h4><p>✓ Программа запускается без ошибок · ✓ Решает задачу, которую задумал · ✓ Есть комментарии и понятные имена · ✓ Оба в паре объясняют любую строку · ★ Бонус за «фишку» сверх задания.</p></div>
+
+      <div class="task"><span class="task-tag">🏆 Финальный проект года</span><h4>Сделай то, чем будешь гордиться</h4>
+        <p>Это твоя главная работа за год. Вложись, добавь свою идею, доведи до конца. Через год ты откроешь этот код и удивишься, как много уже умел.</p>
+        <p class="pair">Помогайте друг другу — но каждый должен понимать весь код.</p></div>
+
+      <div class="home" style="background:linear-gradient(135deg,#0050C8,#1E74F0);">
+        <h3>🎓 Ты прошёл весь курс!</h3>
+        <p style="font-size:15px;margin:0 0 10px;opacity:.95;">За год ты прошёл путь от «что такое команда» до собственных программ и игр. Ты умеешь: переменные, условия, циклы, списки, словари, функции, файлы, графику, обработку ошибок. Это настоящий фундамент программиста.</p>
+        <div class="star"><b>★ Что дальше:</b> продолжай! Придумывай проекты, изучай новое. Python — только начало. Ты уже программист.</div></div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+  <!-- ПРИЛОЖЕНИЕ 1 — ШПАРГАЛКА -->
+  <div class="page">
+    <div class="app-head"><div class="an">Приложение 1</div><h2>📋 Шпаргалка по Python</h2></div>
+    <div class="body">
+      <p style="color:var(--muted);font-size:14px;">Всё, что прошли за год, на одной странице. Держи под рукой, когда пишешь код.</p>
+
+      <div class="cheat">
+        <div class="cc"><div class="cch">Вывод и ввод</div><pre><span class="cm"># показать на экране</span>
+print("Привет")
+<span class="cm"># спросить (вернёт текст!)</span>
+name = input("Имя: ")
+<span class="cm"># спросить число</span>
+n = int(input("Число: "))</pre></div>
+        <div class="cc"><div class="cch">Переменные и числа</div><pre>age = 15          <span class="cm"># число</span>
+name = "Али"      <span class="cm"># текст</span>
+x + y   x - y     <span class="cm"># + -</span>
+x * y   x / y     <span class="cm"># * /</span>
+x % y             <span class="cm"># остаток</span></pre></div>
+        <div class="cc"><div class="cch">Условия</div><pre>if age >= 18:
+    print("взрослый")
+elif age >= 12:
+    print("подросток")
+else:
+    print("ребёнок")
+<span class="cm"># == сравнить, = положить</span></pre></div>
+        <div class="cc"><div class="cch">Циклы</div><pre><span class="cm"># повторить 5 раз</span>
+for i in range(5):
+    print(i)
+<span class="cm"># пока условие верно</span>
+while x < 10:
+    x = x + 1</pre></div>
+        <div class="cc"><div class="cch">Списки</div><pre>fruits = ["яблоко", "банан"]
+fruits[0]          <span class="cm"># первый</span>
+fruits[-1]         <span class="cm"># последний</span>
+fruits.append("x") <span class="cm"># добавить</span>
+len(fruits)        <span class="cm"># сколько</span></pre></div>
+        <div class="cc"><div class="cch">Словари</div><pre>ages = {"Али": 15, "Мади": 14}
+ages["Али"]        <span class="cm"># найти</span>
+ages["Сафар"] = 16 <span class="cm"># добавить</span>
+ages.get("X", "нет")</pre></div>
+        <div class="cc"><div class="cch">Строки</div><pre>word = "памир"
+len(word)          <span class="cm"># длина</span>
+word[0]            <span class="cm"># буква</span>
+word.upper()       <span class="cm"># ЗАГЛАВНЫЕ</span>
+"а" in word        <span class="cm"># есть ли</span>
+word.split()       <span class="cm"># на слова</span></pre></div>
+        <div class="cc"><div class="cch">Функции</div><pre>def summa(a, b):
+    return a + b
+
+x = summa(2, 3)    <span class="cm"># x = 5</span></pre></div>
+        <div class="cc"><div class="cch">Файлы</div><pre>f = open("f.txt", "w")
+f.write("текст\n")
+f.close()
+<span class="cm"># чтение: "r", дописать: "a"</span></pre></div>
+        <div class="cc"><div class="cch">Защита от ошибок</div><pre>try:
+    n = int(input())
+except:
+    print("не число!")</pre></div>
+      </div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+  <!-- ПРИЛОЖЕНИЕ 2 — ГЛОССАРИЙ -->
+  <div class="page">
+    <div class="app-head"><div class="an">Приложение 2</div><h2>📖 Словарь терминов</h2></div>
+    <div class="body">
+      <p style="color:var(--muted);font-size:14px;">Простыми словами — все понятия, которые встретились за год.</p>
+      <div class="gloss">
+        <div class="gr"><div class="gt">Программа</div><div class="gd">Список команд для компьютера, которые он выполняет по порядку.</div></div>
+        <div class="gr"><div class="gt">Переменная</div><div class="gd">Подписанный «ящик» для хранения значения. Кладёшь по имени, достаёшь по имени.</div></div>
+        <div class="gr"><div class="gt">Строка</div><div class="gd">Текст в кавычках. «привет», «Худжанд» — это строки.</div></div>
+        <div class="gr"><div class="gt">Число</div><div class="gd">То, с чем можно считать. Бывает целым (15) и дробным (3.14).</div></div>
+        <div class="gr"><div class="gt">Условие</div><div class="gd">Проверка «если … иначе …», по которой программа выбирает действие (if / else).</div></div>
+        <div class="gr"><div class="gt">Цикл</div><div class="gd">Повторение команд: for (по счёту) или while (пока условие верно).</div></div>
+        <div class="gr"><div class="gt">Список</div><div class="gd">Много значений в одном ящике, пронумерованных с нуля. В квадратных скобках [ ].</div></div>
+        <div class="gr"><div class="gt">Словарь</div><div class="gd">Пары «ключ — значение». Ищешь по ключу-имени, а не по номеру. В фигурных скобках { }.</div></div>
+        <div class="gr"><div class="gt">Функция</div><div class="gd">Своя команда с именем, созданная через def. Описал раз — вызываешь сколько нужно.</div></div>
+        <div class="gr"><div class="gt">Аргумент</div><div class="gd">Данные, которые передаёшь функции при вызове: summa(2, 3) — тут 2 и 3.</div></div>
+        <div class="gr"><div class="gt">return</div><div class="gd">Слово, которым функция отдаёт результат наружу, чтобы его можно было использовать.</div></div>
+        <div class="gr"><div class="gt">Файл</div><div class="gd">Место, где данные хранятся и после закрытия программы. Открывают через open.</div></div>
+        <div class="gr"><div class="gt">Модуль</div><div class="gd">Набор готовых команд, который подключают словом import. Например, turtle, random.</div></div>
+        <div class="gr"><div class="gt">Отступ</div><div class="gd">4 пробела перед командой. Показывает, что она внутри if, цикла или функции.</div></div>
+        <div class="gr"><div class="gt">Ошибка (Error)</div><div class="gd">Сообщение Python о проблеме в коде. Не провал, а подсказка, что и где поправить.</div></div>
+      </div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+  <!-- ПРИЛОЖЕНИЕ 3 — ОТВЕТЫ -->
+  <div class="page">
+    <div class="app-head"><div class="an">Приложение 3</div><h2>✅ Ответы к заданиям</h2></div>
+    <div class="body">
+      <p style="color:var(--muted);font-size:14px;">Подсказки и готовые решения заданий в паре. Загляни сюда, только если застрял — сначала попробуй сам!</p>
+
+      <div class="ans">
+        <div class="al">Часть 1 — Первые программы</div>
+        <div class="aq"><b>Урок 2 · Магазинный чек</b>
+<pre><span class="af">price</span> = <span class="af">int</span>(<span class="af">input</span>(<span class="as">"Цена: "</span>))
+<span class="af">count</span> = <span class="af">int</span>(<span class="af">input</span>(<span class="as">"Количество: "</span>))
+<span class="af">print</span>(<span class="as">"Итого:"</span>, price * count, <span class="as">"сомони"</span>)</pre></div>
+        <div class="aq"><b>Урок 3 · Больше из двух</b>
+<pre>a = <span class="af">int</span>(<span class="af">input</span>(<span class="as">"Первое: "</span>))
+b = <span class="af">int</span>(<span class="af">input</span>(<span class="as">"Второе: "</span>))
+<span class="ak">if</span> a &gt; b:
+    <span class="af">print</span>(a)
+<span class="ak">else</span>:
+    <span class="af">print</span>(b)</pre></div>
+        <div class="aq"><b>Урок 5 · Сумма от 1 до 100</b>
+<pre>total = <span class="anum">0</span>
+<span class="ak">for</span> i <span class="ak">in</span> <span class="af">range</span>(<span class="anum">1</span>, <span class="anum">101</span>):
+    total = total + i
+<span class="af">print</span>(total)   <span class="acm"># 5050</span></pre></div>
+      </div>
+
+      <div class="ans">
+        <div class="al">Часть 2 — Структуры и функции</div>
+        <div class="aq"><b>Урок 9 · Магазинная корзина</b>
+<pre>prices = [<span class="anum">12</span>, <span class="anum">45</span>, <span class="anum">8</span>, <span class="anum">30</span>, <span class="anum">15</span>]
+<span class="af">print</span>(<span class="as">"Всего:"</span>, <span class="af">sum</span>(prices))
+<span class="af">print</span>(<span class="as">"Дороже всего:"</span>, <span class="af">max</span>(prices))</pre></div>
+        <div class="aq"><b>Урок 11 · Калькулятор на функциях</b>
+<pre><span class="ak">def</span> <span class="af">summa</span>(a, b):
+    <span class="ak">return</span> a + b
+<span class="ak">def</span> <span class="af">raznost</span>(a, b):
+    <span class="ak">return</span> a - b
+
+x = <span class="af">int</span>(<span class="af">input</span>(<span class="as">"a: "</span>))
+y = <span class="af">int</span>(<span class="af">input</span>(<span class="as">"b: "</span>))
+<span class="af">print</span>(<span class="af">summa</span>(x, y), <span class="af">raznost</span>(x, y))</pre></div>
+      </div>
+
+      <div class="ans">
+        <div class="al">Часть 3 — Графика и файлы</div>
+        <div class="aq"><b>Урок 15 · Треугольник</b>
+<pre><span class="ak">import</span> turtle
+t = turtle.<span class="af">Turtle</span>()
+<span class="ak">for</span> i <span class="ak">in</span> <span class="af">range</span>(<span class="anum">3</span>):
+    t.<span class="af">forward</span>(<span class="anum">100</span>)
+    t.<span class="af">left</span>(<span class="anum">120</span>)
+turtle.<span class="af">done</span>()</pre></div>
+        <div class="aq"><b>Урок 16 · Пятиугольник</b>
+<pre><span class="ak">for</span> i <span class="ak">in</span> <span class="af">range</span>(<span class="anum">5</span>):
+    t.<span class="af">forward</span>(<span class="anum">80</span>)
+    t.<span class="af">right</span>(<span class="anum">72</span>)   <span class="acm"># 360 / 5 = 72</span></pre></div>
+      </div>
+
+      <div class="ans">
+        <div class="al">Часть 4 — Данные</div>
+        <div class="aq"><b>Урок 24 · Анализатор предложения</b>
+<pre>text = <span class="af">input</span>(<span class="as">"Предложение: "</span>)
+words = text.<span class="af">split</span>()
+<span class="af">print</span>(<span class="as">"Всего слов:"</span>, <span class="af">len</span>(words))
+<span class="af">print</span>(<span class="as">"Разных:"</span>, <span class="af">len</span>(<span class="af">set</span>(words)))</pre></div>
+        <div class="aq"><b>Урок 25 · Надёжный калькулятор</b>
+<pre><span class="ak">try</span>:
+    a = <span class="af">int</span>(<span class="af">input</span>(<span class="as">"a: "</span>))
+    b = <span class="af">int</span>(<span class="af">input</span>(<span class="as">"b: "</span>))
+    <span class="af">print</span>(a / b)
+<span class="ak">except</span>:
+    <span class="af">print</span>(<span class="as">"Ошибка: проверь ввод!"</span>)</pre></div>
+      </div>
+
+      <p style="margin-top:20px;padding:14px 18px;background:var(--sand-wash);border-radius:10px;font-size:13.5px;color:#7A5326;">💡 Остальные задания решаются по этим образцам. Если не получается — вернись к соответствующему уроку и перечитай раздел «Разбираем код».</p>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+</body>
+</html>

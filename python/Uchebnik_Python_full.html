@@ -1,0 +1,2318 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Учебник Python · Полный курс · 9 класс</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+  @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+  :root{
+    --blue:#0050C8; --blue-soft:#91BEEB; --blue-wash:#EAF1FB;
+    --sand:#FFCDAA; --sand-wash:#FFF3E9; --ink:#1A2333; --muted:#5B6472;
+    --line:#E2E8F2; --green:#1E8449; --green-wash:#E9F5EE;
+    --red:#C0392B; --red-wash:#FBEDEB; --page:#FFFFFF;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#D8DEE9;font-family:'Manrope',sans-serif;color:var(--ink);padding:28px 14px;line-height:1.55;}
+  .page{background:var(--page);width:820px;max-width:100%;margin:0 auto 26px;box-shadow:0 12px 40px rgba(26,35,51,.16);border-radius:4px;overflow:hidden;}
+
+  .cover{min-height:1000px;position:relative;overflow:hidden;background:linear-gradient(160deg,#0050C8 0%,#0A61E0 55%,#1E74F0 100%);color:#fff;}
+  .cover-inner{padding:70px 56px;position:relative;z-index:2;display:flex;flex-direction:column;min-height:1000px;}
+  .cover .kicker{font-size:14px;letter-spacing:.24em;text-transform:uppercase;font-weight:700;opacity:.9;}
+  .cover h1{font-size:50px;font-weight:800;line-height:1.05;margin-top:20px;letter-spacing:-.02em;}
+  .cover .sub{font-size:20px;font-weight:500;opacity:.92;margin-top:18px;max-width:82%;}
+  .cover .part-badge{display:inline-block;margin-top:38px;background:var(--sand);color:#5A3410;font-weight:800;font-size:15px;padding:10px 22px;border-radius:30px;}
+  .cover .lesson-list{margin-top:auto;background:rgba(6,17,38,.5);border:1px solid rgba(255,255,255,.16);border-radius:14px;padding:22px 26px;max-width:80%;}
+  .cover .lesson-list h4{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--sand);margin-bottom:12px;}
+  .cover .lesson-list ol{margin-left:18px;display:grid;gap:6px;}
+  .cover .lesson-list li{font-size:14px;color:#DCE8FF;}
+  .cover .lesson-list li b{color:#fff;}
+  .cover .who{margin-top:24px;font-size:14px;opacity:.85;}
+  .cover .who b{opacity:1;}
+  .cover-deco{position:absolute;right:-120px;top:-120px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(145,190,235,.35),transparent 70%);z-index:1;}
+
+  .lesson-head{background:var(--blue);color:#fff;padding:26px 44px 24px;position:relative;display:flex;align-items:baseline;justify-content:space-between;}
+  .lesson-head::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:var(--sand);}
+  .lesson-num{font-size:13px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;opacity:.85;}
+  .lesson-title{font-size:25px;font-weight:800;line-height:1.15;margin-top:6px;max-width:90%;}
+  .lesson-quarter{font-size:12px;font-weight:600;opacity:.8;text-align:right;letter-spacing:.04em;flex:none;}
+  .body{padding:30px 44px 0;}
+
+  .goal{background:var(--sand-wash);border-left:5px solid var(--sand);border-radius:0 10px 10px 0;padding:16px 20px;margin-bottom:26px;}
+  .goal h3{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#B9770E;font-weight:700;margin-bottom:8px;}
+  .goal ul{list-style:none;display:grid;gap:5px;}
+  .goal li{padding-left:22px;position:relative;font-size:15px;}
+  .goal li::before{content:"→";position:absolute;left:0;color:#B9770E;font-weight:700;}
+
+  .sec{display:flex;align-items:center;gap:11px;margin:28px 0 14px;}
+  .sec .dot{width:30px;height:30px;border-radius:8px;flex:none;background:var(--blue-wash);color:var(--blue);display:grid;place-items:center;font-size:16px;font-weight:800;}
+  .sec h2{font-size:19px;font-weight:800;letter-spacing:-.01em;}
+
+  p{font-size:15px;margin-bottom:13px;color:#28303D;}
+  strong{font-weight:700;color:var(--ink);}
+  .term{color:var(--blue);font-weight:700;}
+  code{font-family:'JetBrains Mono',monospace;font-size:.92em;background:#EEF2F8;padding:1px 6px;border-radius:5px;color:#324;}
+
+  .analogy{background:var(--blue-wash);border-radius:12px;padding:16px 20px 16px 52px;position:relative;margin:16px 0 20px;font-size:14.5px;}
+  .analogy::before{content:"💡";position:absolute;left:16px;top:15px;font-size:20px;}
+  .analogy b{color:var(--blue);}
+
+  .code{background:#0E1A2E;border-radius:12px;margin:16px 0 8px;overflow:hidden;box-shadow:0 6px 18px rgba(14,26,46,.28);}
+  .code-bar{background:#152238;padding:9px 16px;display:flex;align-items:center;gap:7px;border-bottom:1px solid #22344F;}
+  .code-bar i{width:11px;height:11px;border-radius:50%;display:inline-block;}
+  .code-bar .r{background:#FF5F57;} .code-bar .y{background:#FEBC2E;} .code-bar .g{background:#28C840;}
+  .code-bar span{margin-left:8px;color:#7B8BA5;font:500 12px 'JetBrains Mono',monospace;}
+  .code pre{padding:16px 20px;margin:0;font-family:'JetBrains Mono',monospace;font-size:13.5px;line-height:1.7;color:#E6ECF5;overflow-x:auto;}
+  .c-key{color:#FF9D7A;} .c-str{color:#8FD98F;} .c-num{color:#7FB4FF;} .c-com{color:#6B7B93;font-style:italic;} .c-fn{color:#FFD479;}
+
+  .output{background:#F4F7FB;border:1px dashed var(--blue-soft);border-radius:0 0 12px 12px;margin:-8px 0 20px;padding:12px 20px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#2A3647;}
+  .output .lbl{display:block;font:700 11px 'Manrope',sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+
+  .task{border:1.5px solid var(--line);border-radius:14px;padding:18px 20px;margin:18px 0;background:#fff;}
+  .task-tag{display:inline-flex;align-items:center;gap:6px;background:var(--green-wash);color:var(--green);font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:4px 11px;border-radius:20px;margin-bottom:10px;}
+  .task h4{font-size:15.5px;font-weight:700;margin-bottom:7px;}
+  .task p{font-size:14px;margin-bottom:0;color:#3A4351;}
+  .task .pair{font-size:12.5px;color:var(--muted);margin-top:9px;font-style:italic;}
+
+  .keybox{background:#0E1A2E;color:#DCE6F5;border-radius:12px;padding:16px 20px;margin:18px 0;}
+  .keybox h4{color:var(--sand);font-size:12px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;}
+  .keybox p{color:#C6D3E8;font-size:14.5px;margin:0;}
+  .keybox code{background:rgba(255,255,255,.1);color:#FFD479;}
+
+  .errors{margin:20px 0;}
+  .err-head{display:grid;grid-template-columns:1fr 1fr;gap:1px;margin-bottom:1px;background:var(--line);border-radius:12px 12px 0 0;overflow:hidden;}
+  .err-head > div{padding:8px 15px;font:700 11px 'Manrope';letter-spacing:.08em;text-transform:uppercase;}
+  .err-head .h-bad{background:#F7D9D5;color:var(--red);} .err-head .h-good{background:#D6EEDF;color:var(--green);}
+  .err-row{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);overflow:hidden;margin-bottom:1px;}
+  .err-row:last-child{border-radius:0 0 12px 12px;}
+  .err-row > div{padding:11px 15px;font-family:'JetBrains Mono',monospace;font-size:12.5px;}
+  .err-bad{background:var(--red-wash);color:var(--red);} .err-good{background:var(--green-wash);color:var(--green);}
+
+  .home{background:var(--blue);color:#fff;border-radius:14px;padding:20px 24px;margin:24px 0 0;}
+  .home h3{font-size:13px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px;opacity:.9;}
+  .home ol{margin-left:18px;display:grid;gap:8px;}
+  .home li{font-size:14.5px;}
+  .home .star{margin-top:14px;padding-top:13px;border-top:1px solid rgba(255,255,255,.22);font-size:13.5px;}
+  .home .star b{color:var(--sand);}
+
+  .steps{counter-reset:st;margin:8px 0 4px;}
+  .step{display:flex;gap:14px;margin-bottom:16px;}
+  .step .sn{counter-increment:st;flex:none;width:30px;height:30px;border-radius:50%;background:var(--blue);color:#fff;font-weight:800;font-size:14px;display:grid;place-items:center;}
+  .step .sn::before{content:counter(st);}
+  .step .sc{flex:1;}
+  .step .sc h4{font-size:15px;font-weight:700;margin-bottom:4px;}
+  .step .sc p{font-size:13.5px;margin-bottom:6px;color:#3A4351;}
+
+  /* карточки тем проекта */
+  .themes{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0;}
+  .theme{border:1.5px solid var(--line);border-radius:12px;padding:14px 16px;}
+  .theme .ti{font-size:22px;margin-bottom:6px;}
+  .theme h4{font-size:14.5px;font-weight:700;margin-bottom:4px;}
+  .theme p{font-size:12.5px;color:var(--muted);margin:0;}
+
+  /* приложения */
+  .app-head{background:linear-gradient(135deg,#152238,#0E1A2E);color:#fff;padding:30px 44px;position:relative;}
+  .app-head::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:var(--sand);}
+  .app-head .an{font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--sand);font-weight:700;}
+  .app-head h2{font-size:28px;font-weight:800;margin-top:6px;}
+  .cheat{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0;}
+  .cheat .cc{border:1px solid var(--line);border-radius:10px;overflow:hidden;}
+  .cheat .cc .cch{background:var(--blue-wash);color:var(--blue);font-size:12px;font-weight:700;padding:7px 12px;letter-spacing:.05em;text-transform:uppercase;}
+  .cheat .cc pre{margin:0;padding:11px 12px;font-family:'JetBrains Mono',monospace;font-size:11.5px;line-height:1.6;color:#28303D;background:#fff;white-space:pre-wrap;}
+  .cheat .cc .cm{color:#8794A8;}
+  .gloss{margin:6px 0;}
+  .gloss .gr{display:flex;gap:14px;padding:10px 0;border-bottom:1px solid var(--line);}
+  .gloss .gt{flex:none;width:150px;font-weight:700;color:var(--blue);font-size:14px;}
+  .gloss .gd{font-size:14px;color:#28303D;}
+  .ans{margin:6px 0;}
+  .ans .al{font-size:13px;font-weight:800;color:var(--blue);letter-spacing:.06em;text-transform:uppercase;margin:16px 0 8px;}
+  .ans .aq{border-left:3px solid var(--blue-soft);padding:6px 0 6px 14px;margin-bottom:10px;}
+  .ans .aq b{font-size:13.5px;color:var(--ink);}
+  .ans .aq pre{margin:6px 0 0;padding:10px 12px;background:#0E1A2E;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:11.5px;line-height:1.6;color:#E6ECF5;white-space:pre-wrap;overflow-x:auto;}
+  .ans .ak{color:#FF9D7A;} .ans .as{color:#8FD98F;} .ans .anum{color:#7FB4FF;} .ans .af{color:#FFD479;} .ans .acm{color:#6B7B93;font-style:italic;}
+
+  .foot{display:flex;justify-content:space-between;align-items:center;padding:16px 44px 30px;margin-top:8px;font-size:11.5px;color:var(--muted);}
+  .foot .brand{font-weight:700;color:var(--blue);}
+
+  @media print{body{background:#fff;padding:0;}.page{box-shadow:none;margin:0;border-radius:0;page-break-after:always;width:100%;}}
+
+/* игровое поле крестики-нолики */
+  .board{display:grid;grid-template-columns:repeat(3,58px);gap:4px;justify-content:center;margin:18px auto;}
+  .board div{width:58px;height:58px;background:var(--blue-wash);border-radius:8px;display:grid;place-items:center;
+    font:800 30px 'JetBrains Mono',monospace;color:var(--blue);}
+  .board div.num{color:var(--muted);font-size:20px;font-weight:600;}
+/* превью рисунка turtle */
+  .draw-preview{background:#F4F7FB;border:1px dashed var(--blue-soft);border-radius:12px;padding:18px;margin:16px 0;text-align:center;}
+  .draw-preview .lbl{display:block;font:700 11px 'Manrope';letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+  .draw-preview svg{max-width:100%;}
+</style>
+</head>
+<body>
+
+  <!-- ============ ОБЩАЯ ОБЛОЖКА УЧЕБНИКА ============ -->
+  <div class="page cover">
+    <div class="cover-deco"></div>
+    <div class="cover-inner">
+      <div class="kicker">Полный курс для начинающих</div>
+      <h1>Основы<br>программирования<br>на Python</h1>
+      <div class="sub">С нуля до собственных программ и игр. Полный годовой курс для тех, кто ещё ни разу не писал код.</div>
+      <span class="part-badge">5 частей · 30 уроков · 4 проекта-игры</span>
+      <div class="cover-code" style="margin-top:auto;background:rgba(6,17,38,.55);border:1px solid rgba(255,255,255,.16);border-radius:14px;padding:20px 24px;font-family:'JetBrains Mono',monospace;font-size:15px;color:#CFE0FF;max-width:72%;">
+        <span style="color:#FFD479;">print</span>(<span style="color:#8FD98F;">"Привет! Я начинаю учить Python."</span>)
+      </div>
+      <div class="who" style="margin-top:26px;">9 класс · субботний курс · <b>Эсхата Академия</b></div>
+    </div>
+  </div>
+
+  <!-- ============ МАСТЕР-ОГЛАВЛЕНИЕ ============ -->
+  <div class="page">
+    <div class="toc" style="padding:56px 56px 64px;">
+      <h2 style="font-size:15px;letter-spacing:.18em;text-transform:uppercase;color:var(--blue);font-weight:800;margin-bottom:6px;">Содержание курса</h2>
+      <div style="font-size:32px;font-weight:800;margin-bottom:28px;letter-spacing:-.01em;">Весь путь за год</div>
+      
+      <div class="toc-part" style="margin-bottom:22px;">
+        <div class="ph" style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+          <div class="pn" style="background:var(--blue);color:#fff;font-weight:800;font-size:14px;width:34px;height:34px;border-radius:9px;display:grid;place-items:center;flex:none;">0</div>
+          <div style="font-size:18px;font-weight:800;">Часть 0 · Как думает программа</div>
+        </div>
+        <div class="toc-row" style="display:flex;justify-content:space-between;padding:7px 0 7px 46px;font-size:14.5px;border-bottom:1px solid var(--line);color:#2A3647;"><span><b style="color:var(--blue);">0.1.</b> Первые команды. print и кавычки</span></div><div class="toc-row" style="display:flex;justify-content:space-between;padding:7px 0 7px 46px;font-size:14.5px;border-bottom:1px solid var(--line);color:#2A3647;"><span><b style="color:var(--blue);">0.2.</b> Переменные: ящики для данных</span></div>
+      </div>
+
+      <div class="toc-part" style="margin-bottom:22px;">
+        <div class="ph" style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+          <div class="pn" style="background:var(--blue);color:#fff;font-weight:800;font-size:14px;width:34px;height:34px;border-radius:9px;display:grid;place-items:center;flex:none;">1</div>
+          <div style="font-size:18px;font-weight:800;">Часть 1 · Первые программы</div>
+        </div>
+        <div class="toc-row" style="display:flex;justify-content:space-between;padding:7px 0 7px 46px;font-size:14.5px;border-bottom:1px solid var(--line);color:#2A3647;"><span><b style="color:var(--blue);">1.</b> Разговор с программой — input</span></div><div class="toc-row" style="display:flex;justify-content:space-between;padding:7px 0 7px 46px;font-size:14.5px;border-bottom:1px solid var(--line);color:#2A3647;"><span><b style="color:var(--blue);">2.</b> Числа и калькулятор</span></div><div class="toc-row" style="display:flex;justify-content:space-between;padding:7px 0 7px 46px;font-size:14.5px;border-bottom:1px solid var(--line);color:#2A3647;"><span><b style="color:var(--blue);">3.</b> Условия: программа решает</span></div><div class="toc-row" style="display:flex;justify-content:space-between;padding:7px 0 7px 46px;font-size:14.5px;border-bottom:1px solid var(--line);color:#2A3647;"><span><b style="color:var(--blue);">4.</b> 🎮 Проект «Угадай число»</span></div><div class="toc-row" style="display:flex;justify-content:space-between;padding:7px 0 7px 46px;font-size:14.5px;border-bottom:1px solid var(--line);color:#2A3647;"><span><b style="color:var(--blue);">5.</b> Циклы: повторяем действия</span></div><div class="toc-row" style="display:flex;justify-content:space-between;padding:7px 0 7px 46px;font-size:14.5px;border-bottom:1px solid var(--line);color:#2A3647;"><span><b style="color:var(--blue);">6.</b> Строки: работаем с текстом</span></div><div class="toc-row" style="display:flex;justify-content:space-between;padding:7px 0 7px 46px;font-size:14.5px;border-bottom:1px solid var(--line);color:#2A3647;"><span><b style="color:var(--blue);">7.</b> 🎮 Проект «Виселица»</span></div>
+      </div>
+
+      <div class="toc-part" style="margin-bottom:22px;">
+        <div class="ph" style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+          <div class="pn" style="background:var(--blue);color:#fff;font-weight:800;font-size:14px;width:34px;height:34px;border-radius:9px;display:grid;place-items:center;flex:none;">2</div>
+          <div style="font-size:18px;font-weight:800;">Часть 2 · Структуры и функции</div>
+        </div>
+        <div class="toc-row" style="display:flex;justify-content:space-between;padding:7px 0 7px 46px;font-size:14.5px;border-bottom:1px solid var(--line);color:#2A3647;"><span><b style="color:var(--blue);">8.</b> Списки: много данных</span></div><div class="toc-row" style="display:flex;justify-content:space-between;padding:7px 0 7px 46px;font-size:14.5px;border-bottom:1px solid var(--line);color:#2A3647;"><span><b style="color:var(--blue);">9.</b> Списки и циклы вместе</span></div><div class="toc-row" style="display:flex;justify-content:space-between;padding:7px 0 7px 46px;font-size:14.5px;border-bottom:1px solid var(--line);color:#2A3647;"><span><b style="color:var(--blue);">10.</b> Функции: наводим порядок</span></div><div class="toc-row" style="display:flex;justify-content:space-between;padding:7px 0 7px 46px;font-size:14.5px;border-bottom:1px solid var(--line);color:#2A3647;"><span><b style="color:var(--blue);">11.</b> Функции возвращают результат</span></div><div class="toc-row" style="display:flex;justify-content:space-between;padding:7px 0 7px 46px;font-size:14.5px;border-bottom:1px solid var(--line);color:#2A3647;"><span><b style="color:var(--blue);">12.</b> Словари: ключ и значение</span></div><div class="toc-row" style="display:flex;justify-content:space-between;padding:7px 0 7px 46px;font-size:14.5px;border-bottom:1px solid var(--line);color:#2A3647;"><span><b style="color:var(--blue);">13.</b> 🎮 «Крестики-нолики»: поле</span></div><div class="toc-row" style="display:flex;justify-content:space-between;padding:7px 0 7px 46px;font-size:14.5px;border-bottom:1px solid var(--line);color:#2A3647;"><span><b style="color:var(--blue);">14.</b> 🎮 «Крестики-нолики»: игра</span></div>
+      </div>
+
+      <div class="toc-part" style="margin-bottom:22px;">
+        <div class="ph" style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+          <div class="pn" style="background:var(--blue);color:#fff;font-weight:800;font-size:14px;width:34px;height:34px;border-radius:9px;display:grid;place-items:center;flex:none;">3</div>
+          <div style="font-size:18px;font-weight:800;">Часть 3 · Графика и большой проект</div>
+        </div>
+        <div class="toc-row" style="display:flex;justify-content:space-between;padding:7px 0 7px 46px;font-size:14.5px;border-bottom:1px solid var(--line);color:#2A3647;"><span><b style="color:var(--blue);">15.</b> Черепашка turtle: линии</span></div><div class="toc-row" style="display:flex;justify-content:space-between;padding:7px 0 7px 46px;font-size:14.5px;border-bottom:1px solid var(--line);color:#2A3647;"><span><b style="color:var(--blue);">16.</b> Циклы и turtle: узоры</span></div><div class="toc-row" style="display:flex;justify-content:space-between;padding:7px 0 7px 46px;font-size:14.5px;border-bottom:1px solid var(--line);color:#2A3647;"><span><b style="color:var(--blue);">17.</b> Функции и turtle: имя</span></div><div class="toc-row" style="display:flex;justify-content:space-between;padding:7px 0 7px 46px;font-size:14.5px;border-bottom:1px solid var(--line);color:#2A3647;"><span><b style="color:var(--blue);">18.</b> Файлы: программа запоминает</span></div><div class="toc-row" style="display:flex;justify-content:space-between;padding:7px 0 7px 46px;font-size:14.5px;border-bottom:1px solid var(--line);color:#2A3647;"><span><b style="color:var(--blue);">19.</b> 📇 «Записная книжка»</span></div><div class="toc-row" style="display:flex;justify-content:space-between;padding:7px 0 7px 46px;font-size:14.5px;border-bottom:1px solid var(--line);color:#2A3647;"><span><b style="color:var(--blue);">20.</b> Защита и разбор ошибок</span></div><div class="toc-row" style="display:flex;justify-content:space-between;padding:7px 0 7px 46px;font-size:14.5px;border-bottom:1px solid var(--line);color:#2A3647;"><span><b style="color:var(--blue);">21.</b> Готовимся к «Змейке»</span></div><div class="toc-row" style="display:flex;justify-content:space-between;padding:7px 0 7px 46px;font-size:14.5px;border-bottom:1px solid var(--line);color:#2A3647;"><span><b style="color:var(--blue);">22.</b> 🐍 «Змейка»: начало</span></div><div class="toc-row" style="display:flex;justify-content:space-between;padding:7px 0 7px 46px;font-size:14.5px;border-bottom:1px solid var(--line);color:#2A3647;"><span><b style="color:var(--blue);">23.</b> 🐍 «Змейка»: финал</span></div>
+      </div>
+
+      <div class="toc-part" style="margin-bottom:22px;">
+        <div class="ph" style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+          <div class="pn" style="background:var(--blue);color:#fff;font-weight:800;font-size:14px;width:34px;height:34px;border-radius:9px;display:grid;place-items:center;flex:none;">4</div>
+          <div style="font-size:18px;font-weight:800;">Часть 4 · Данные и свой проект</div>
+        </div>
+        <div class="toc-row" style="display:flex;justify-content:space-between;padding:7px 0 7px 46px;font-size:14.5px;border-bottom:1px solid var(--line);color:#2A3647;"><span><b style="color:var(--blue);">24.</b> Анализ текста: слова</span></div><div class="toc-row" style="display:flex;justify-content:space-between;padding:7px 0 7px 46px;font-size:14.5px;border-bottom:1px solid var(--line);color:#2A3647;"><span><b style="color:var(--blue);">25.</b> Защита от ошибок: try/except</span></div><div class="toc-row" style="display:flex;justify-content:space-between;padding:7px 0 7px 46px;font-size:14.5px;border-bottom:1px solid var(--line);color:#2A3647;"><span><b style="color:var(--blue);">26.</b> Повторение: код-битвы</span></div><div class="toc-row" style="display:flex;justify-content:space-between;padding:7px 0 7px 46px;font-size:14.5px;border-bottom:1px solid var(--line);color:#2A3647;"><span><b style="color:var(--blue);">27.</b> Выбираем финальный проект</span></div><div class="toc-row" style="display:flex;justify-content:space-between;padding:7px 0 7px 46px;font-size:14.5px;border-bottom:1px solid var(--line);color:#2A3647;"><span><b style="color:var(--blue);">28–30.</b> 🚀 Финальный проект и защита</span></div>
+      </div>
+
+      <div class="toc-part" style="margin-bottom:4px;">
+        <div class="ph" style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+          <div class="pn" style="background:var(--sand);color:#5A3410;font-weight:800;font-size:16px;width:34px;height:34px;border-radius:9px;display:grid;place-items:center;flex:none;">★</div>
+          <div style="font-size:18px;font-weight:800;">Приложения</div>
+        </div>
+        <div class="toc-row" style="display:flex;justify-content:space-between;padding:7px 0 7px 46px;font-size:14.5px;border-bottom:1px solid var(--line);color:#2A3647;"><span>Шпаргалка по Python · Словарь терминов · Ответы к заданиям</span></div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="page cover">
+    <div class="cover-deco"></div>
+    <div class="cover-inner">
+      <div class="kicker">Часть 0</div>
+      <h1>Как думает<br>программа</h1>
+      <div class="sub">Два коротких урока о самом главном — как вообще работает программа.</div>
+      <span class="part-badge">Часть 0</span>
+      <div class="lesson-list" style="margin-top:auto;">
+        <h4>Что в этой части</h4>
+        <ol><li><b>Урок 0.1.</b> Первые команды. print и кавычки</li><li><b>Урок 0.2.</b> Переменные: ящики для данных</li></ol>
+      </div>
+      <div class="who">9 класс · субботний курс · <b>Эсхата Академия</b></div>
+    </div>
+  </div>
+<div class="page">
+    <div class="lesson-head">
+      <div>
+        <div class="lesson-num">Урок 0.1</div>
+        <div class="lesson-title">Первые команды: программа делает то, что сказано</div>
+      </div>
+      <div class="lesson-quarter">Часть 0<br>Как думает программа</div>
+    </div>
+    <div class="body">
+
+      <div class="goal">
+        <h3>Чему научимся</h3>
+        <ul>
+          <li>Понять, что программа — это команды, которые компьютер выполняет по порядку</li>
+          <li>Написать первую команду <b>print</b> и увидеть результат</li>
+          <li>Разобраться, зачем нужны кавычки</li>
+        </ul>
+      </div>
+
+      <div class="sec"><div class="dot">📚</div><h2>Что такое программа</h2></div>
+      <p>Программа — это <strong>список команд для компьютера</strong>. Компьютер читает их сверху вниз, одну за другой, и выполняет ровно то, что написано. Он не догадывается и не додумывает — делает буквально.</p>
+
+      <div class="analogy">
+        <b>На пальцах.</b> Представь, что объясняешь другу, как заварить чай: налей воду, вскипяти, положи заварку, подожди. Это команды по порядку. Если перепутать шаги — чай не получится. Программа — то же самое, только компьютер ещё строже: он не поймёт намёков, ему нужна точность.
+      </div>
+
+      <div class="sec"><div class="dot">💻</div><h2>Первая команда — print</h2></div>
+      <p>Команда <span class="term">print</span> означает «покажи на экране». То, что стоит в скобках и кавычках, компьютер выведет как есть:</p>
+
+      <div class="code">
+        <div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>privet.py</span></div>
+<pre><span class="c-fn">print</span>(<span class="c-str">"Привет!"</span>)
+<span class="c-fn">print</span>(<span class="c-str">"Меня зовут Python."</span>)
+<span class="c-fn">print</span>(<span class="c-str">"Я выполняю команды по порядку."</span>)</pre>
+      </div>
+      <div class="output">
+        <span class="lbl">На экране появится</span>
+        Привет!<br>Меня зовут Python.<br>Я выполняю команды по порядку.
+      </div>
+
+      <p>Три команды — три строки на экране, ровно в том порядке, как написаны. Поменяешь строки местами — изменится и порядок вывода. Вот что значит «программа = команды по порядку».</p>
+
+      <div class="task">
+        <span class="task-tag">✋ Задание в паре</span>
+        <h4>Расскажи о себе</h4>
+        <p>Напишите программу из трёх команд <code>print</code>: пусть она выведет твоё имя, твой город и твой возраст — каждое на своей строке.</p>
+        <p class="pair">Водитель печатает, штурман диктует. Каждую строку сразу запускайте клавишей F5.</p>
+      </div>
+
+      <div class="sec"><div class="dot">🔑</div><h2>Главное открытие: кавычки</h2></div>
+      <p>А теперь фокус. Наберите две очень похожие строки и запустите:</p>
+
+      <div class="code">
+        <div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>kavychki.py</span></div>
+<pre><span class="c-fn">print</span>(<span class="c-str">"2 + 2"</span>)
+<span class="c-fn">print</span>(<span class="c-num">2</span> + <span class="c-num">2</span>)</pre>
+      </div>
+      <div class="output">
+        <span class="lbl">На экране появится</span>
+        2 + 2<br>4
+      </div>
+
+      <div class="keybox">
+        <h4>Запомни это правило</h4>
+        <p>Кавычки говорят: <code>"покажи ровно эти значки"</code>. Без кавычек компьютер думает, что это задачка, и <b>решает</b> её. Кавычки = «как есть», без кавычек = «посчитай».</p>
+      </div>
+
+      <div class="sec"><div class="dot">⚠️</div><h2>Частые ошибки</h2></div>
+      <div class="errors">
+        <div class="err-head"><div class="h-bad">Так не работает</div><div class="h-good">А так правильно</div></div>
+        <div class="err-row"><div class="err-bad">print(Привет)</div><div class="err-good">print("Привет")</div></div>
+        <div class="err-row"><div class="err-bad">print("Привет')</div><div class="err-good">print("Привет")</div></div>
+        <div class="err-row"><div class="err-bad">prin("Привет")</div><div class="err-good">print("Привет")</div></div>
+      </div>
+      <p style="font-size:13.5px;color:var(--muted);">Компьютер не догадается, что ты имел в виду. Ошибка — это не провал, а подсказка: прочитай, что он пишет, и поправь.</p>
+
+      <div class="home">
+        <h3>🏠 Домашнее задание</h3>
+        <ol>
+          <li>Программа выводит твоё имя и три факта о тебе (три команды print).</li>
+          <li>Программа выводит расписание твоих уроков на завтра.</li>
+        </ol>
+        <div class="star"><b>★ Со звёздочкой:</b> нарисуй рамку из символов * и напиши внутри «Я учу Python».</div>
+      </div>
+
+    </div>
+    <div class="foot">
+      <span>Основы программирования на Python · 9 класс</span>
+      <span class="brand">Эсхата Академия</span>
+    </div>
+  </div>
+
+  <!-- ============ УРОК 0.2 ============ -->
+  
+<div class="page">
+    <div class="lesson-head">
+      <div>
+        <div class="lesson-num">Урок 0.2</div>
+        <div class="lesson-title">Переменные: ящики для данных</div>
+      </div>
+      <div class="lesson-quarter">Часть 0<br>Как думает программа</div>
+    </div>
+    <div class="body">
+
+      <div class="goal">
+        <h3>Чему научимся</h3>
+        <ul>
+          <li>Понять, что такое переменная и зачем она нужна</li>
+          <li>Класть значение в «ящик» и доставать его по имени</li>
+          <li>Считать с помощью переменных</li>
+        </ul>
+      </div>
+
+      <div class="sec"><div class="dot">📚</div><h2>Зачем нужны переменные</h2></div>
+      <p>На прошлом уроке мы писали всё прямо в <code>print</code>. Но что делать, если одно значение нужно использовать много раз? Каждый раз печатать заново? Нет — его можно <strong>сохранить</strong>.</p>
+
+      <div class="analogy">
+        <b>На пальцах.</b> Переменная — это <b>ящик с наклейкой</b>. На наклейке — имя, внутри — значение. Ты кладёшь что-то один раз, а достаёшь столько раз, сколько нужно. Захотел поменять содержимое — положил новое, старое пропало.
+      </div>
+
+      <div class="sec"><div class="dot">💻</div><h2>Кладём в ящик</h2></div>
+      <p>Знак <span class="term">=</span> здесь означает не «равно», как в математике, а «<strong>положи в ящик</strong>». Слева — имя ящика, справа — что кладём:</p>
+
+      <div class="code">
+        <div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>yaschiki.py</span></div>
+<pre>age = <span class="c-num">15</span>
+<span class="c-fn">print</span>(age)
+
+name = <span class="c-str">"Алишер"</span>
+<span class="c-fn">print</span>(name)</pre>
+      </div>
+      <div class="output">
+        <span class="lbl">На экране появится</span>
+        15<br>Алишер
+      </div>
+
+      <p>Мы написали имя ящика — и компьютер достал из него значение. Читается так: «ящик <code>age</code> получает значение 15».</p>
+
+      <div class="sec"><div class="dot">🔧</div><h2>Зачем это удобно</h2></div>
+      <p>Один раз положил — используешь сколько угодно раз:</p>
+
+      <div class="code">
+        <div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>privet_imya.py</span></div>
+<pre>name = <span class="c-str">"Алишер"</span>
+<span class="c-fn">print</span>(<span class="c-str">"Привет,"</span>)
+<span class="c-fn">print</span>(name)
+<span class="c-fn">print</span>(<span class="c-str">"тебе лет:"</span>)
+<span class="c-fn">print</span>(age)</pre>
+      </div>
+
+      <p>И самое полезное — с числами в ящиках можно <strong>считать</strong>. Вот расчёт покупки:</p>
+
+      <div class="code">
+        <div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>pokupka.py</span></div>
+<pre>price = <span class="c-num">25</span>        <span class="c-com"># сомони за штуку</span>
+count = <span class="c-num">4</span>         <span class="c-com"># сколько штук</span>
+<span class="c-fn">print</span>(price * count)</pre>
+      </div>
+      <div class="output">
+        <span class="lbl">На экране появится</span>
+        100
+      </div>
+
+      <div class="keybox">
+        <h4>Запомни это правило</h4>
+        <p>Знак <code>=</code> — это «положи в ящик», а не «равно». Пишешь имя ящика — компьютер достаёт значение. Новое значение стирает старое.</p>
+      </div>
+
+      <div class="task">
+        <span class="task-tag">✋ Задание в паре</span>
+        <h4>Средний балл</h4>
+        <p>Положите пять своих оценок в ящики <code>g1</code>…<code>g5</code>, а потом выведите средний балл: сумму разделите на 5. Подсказка: <code>print((g1 + g2 + g3 + g4 + g5) / 5)</code></p>
+        <p class="pair">Через 10 минут поменяйтесь ролями — теперь печатает штурман.</p>
+      </div>
+
+      <div class="sec"><div class="dot">⚠️</div><h2>Частые ошибки</h2></div>
+      <div class="errors">
+        <div class="err-head"><div class="h-bad">Так не работает</div><div class="h-good">А так правильно</div></div>
+        <div class="err-row"><div class="err-bad">print(Name)</div><div class="err-good">print(name)</div></div>
+        <div class="err-row"><div class="err-bad">age = "15"<br>print(age + 1)</div><div class="err-good">age = 15<br>print(age + 1)</div></div>
+        <div class="err-row"><div class="err-bad">print(age)<br>age = 15</div><div class="err-good">age = 15<br>print(age)</div></div>
+      </div>
+      <p style="font-size:13.5px;color:var(--muted);">Python различает большие и маленькие буквы: <code>name</code> и <code>Name</code> — разные ящики. И сначала клади в ящик, потом доставай — не наоборот.</p>
+
+      <div class="home">
+        <h3>🏠 Домашнее задание</h3>
+        <ol>
+          <li>Создай ящики для профиля: ник, город, любимый предмет. Выведи их красиво.</li>
+          <li>Есть цена товара и количество — посчитай общую стоимость в сомони.</li>
+        </ol>
+        <div class="star"><b>★ Со звёздочкой:</b> положи в ящики цены трёх покупок и выведи, сколько всего денег нужно.</div>
+      </div>
+
+    </div>
+    <div class="foot">
+      <span>Основы программирования на Python · 9 класс</span>
+      <span class="brand">Эсхата Академия</span>
+    </div>
+  </div>
+
+
+<div class="page cover">
+    <div class="cover-deco"></div>
+    <div class="cover-inner">
+      <div class="kicker">Учебник · Часть 1</div>
+      <h1>Первые<br>программы</h1>
+      <div class="sub">Ввод, числа, условия, циклы и строки. И две первые настоящие игры, которые ты напишешь сам.</div>
+      <span class="part-badge">Четверть 1 · 7 уроков</span>
+      <div class="lesson-list">
+        <h4>Что в этой части</h4>
+        <ol>
+          <li><b>Урок 1.</b> Разговор с программой — input</li>
+          <li><b>Урок 2.</b> Числа и калькулятор</li>
+          <li><b>Урок 3.</b> Условия: программа решает</li>
+          <li><b>Урок 4.</b> 🎮 Проект «Угадай число»</li>
+          <li><b>Урок 5.</b> Циклы: повторяем действия</li>
+          <li><b>Урок 6.</b> Строки: работаем с текстом</li>
+          <li><b>Урок 7.</b> 🎮 Проект «Виселица»</li>
+        </ol>
+      </div>
+      <div class="who">9 класс · субботний курс · <b>Эсхата Академия</b></div>
+    </div>
+  </div>
+
+  <!-- УРОК 1 — input -->
+  
+<div class="page">
+    <div class="lesson-head">
+      <div><div class="lesson-num">Урок 1</div><div class="lesson-title">Разговор с программой: команда input</div></div>
+      <div class="lesson-quarter">Часть 1<br>Первые программы</div>
+    </div>
+    <div class="body">
+      <div class="goal"><h3>Чему научимся</h3><ul>
+        <li>Спрашивать у пользователя данные командой <b>input</b></li>
+        <li>Сохранять ответ в переменную и использовать его</li>
+        <li>Написать программу, которая знакомится с человеком</li>
+      </ul></div>
+
+      <div class="sec"><div class="dot">📚</div><h2>Программа умеет спрашивать</h2></div>
+      <p>Раньше все данные мы записывали в код сами. Но настоящая программа <strong>общается</strong>: спрашивает у человека и получает ответ. За это отвечает команда <span class="term">input</span> — «спроси и подожди ответ».</p>
+      <div class="analogy"><b>На пальцах.</b> input — это как продавец, который спрашивает «что вам?» и ждёт. Пока ты не ответишь, программа стоит на месте. Ответ она кладёт в ящик-переменную, чтобы использовать дальше.</div>
+
+      <div class="sec"><div class="dot">💻</div><h2>Разбираем код</h2></div>
+      <p>Программа спрашивает имя и город, потом здоровается:</p>
+      <div class="code"><div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>znakomstvo.py</span></div>
+<pre>name = <span class="c-fn">input</span>(<span class="c-str">"Как тебя зовут? "</span>)
+city = <span class="c-fn">input</span>(<span class="c-str">"Из какого ты города? "</span>)
+
+<span class="c-fn">print</span>(<span class="c-str">"Привет, "</span> + name + <span class="c-str">"!"</span>)
+<span class="c-fn">print</span>(<span class="c-str">"Значит, ты из города "</span> + city + <span class="c-str">". Отличное место!"</span>)</pre></div>
+      <div class="output"><span class="lbl">Пример работы</span>
+        Как тебя зовут? Алишер<br>Из какого ты города? Худжанд<br>Привет, Алишер!<br>Значит, ты из города Худжанд. Отличное место!</div>
+
+      <p>Знак <code>+</code> здесь <strong>склеивает</strong> текст: строку «Привет, », ответ из ящика <code>name</code> и «!». Это называется соединением строк.</p>
+
+      <div class="keybox"><h4>Важно запомнить</h4><p>input <b>всегда возвращает текст</b>, даже если ввели число. «15» после input — это текст, а не число. Как превратить его в число — узнаем на следующем уроке.</p></div>
+
+      <div class="task"><span class="task-tag">✋ Задание в паре</span><h4>Анкета друга</h4>
+        <p>Программа спрашивает имя, любимую еду и любимую игру, а потом составляет фразу: «<code>имя</code> любит <code>еда</code> и играет в <code>игра</code>».</p>
+        <p class="pair">Водитель печатает, штурман диктует. Через 10 минут — меняетесь.</p></div>
+
+      <div class="sec"><div class="dot">⚠️</div><h2>Частые ошибки</h2></div>
+      <div class="errors">
+        <div class="err-head"><div class="h-bad">Так не работает</div><div class="h-good">А так правильно</div></div>
+        <div class="err-row"><div class="err-bad">name = input(Как зовут?)</div><div class="err-good">name = input("Как зовут? ")</div></div>
+        <div class="err-row"><div class="err-bad">print("Привет " name)</div><div class="err-good">print("Привет " + name)</div></div>
+      </div>
+      <p style="font-size:13.5px;color:var(--muted);">Вопрос внутри input тоже в кавычках. А чтобы приклеить переменную к тексту — нужен знак <code>+</code>.</p>
+
+      <div class="home"><h3>🏠 Домашнее задание</h3><ol>
+        <li>Программа спрашивает имя и класс, затем печатает: «<code>имя</code> учится в <code>класс</code> классе».</li>
+        <li>Программа спрашивает город и отвечает: «Я бы хотел побывать в <code>город</code>!»</li>
+      </ol><div class="star"><b>★ Со звёздочкой:</b> спроси имя друга и «нарисуй» ему открытку из символов с его именем внутри.</div></div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+  <!-- УРОК 2 — числа -->
+  
+<div class="page">
+    <div class="lesson-head">
+      <div><div class="lesson-num">Урок 2</div><div class="lesson-title">Числа и калькулятор</div></div>
+      <div class="lesson-quarter">Часть 1<br>Первые программы</div>
+    </div>
+    <div class="body">
+      <div class="goal"><h3>Чему научимся</h3><ul>
+        <li>Превращать текст в число командой <b>int</b></li>
+        <li>Считать: сложение, вычитание, умножение, деление, остаток</li>
+        <li>Написать калькулятор из двух чисел</li>
+      </ul></div>
+
+      <div class="sec"><div class="dot">📚</div><h2>Почему input мало</h2></div>
+      <p>На прошлом уроке мы узнали: input даёт <strong>текст</strong>. С текстом нельзя считать — компьютер не станет складывать «2» и «3» как числа, он их склеит в «23». Чтобы считать, текст нужно превратить в число командой <span class="term">int</span>.</p>
+      <div class="analogy"><b>На пальцах.</b> «5» в кавычках — это как цифра, нарисованная на бумаге: красивая, но сложить нельзя. int превращает нарисованную цифру в настоящее число, с которым уже можно работать.</div>
+
+      <div class="sec"><div class="dot">💻</div><h2>Разбираем код</h2></div>
+      <p>Калькулятор: спрашиваем два числа и показываем все действия:</p>
+      <div class="code"><div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>calc.py</span></div>
+<pre>a = <span class="c-fn">int</span>(<span class="c-fn">input</span>(<span class="c-str">"Введи первое число: "</span>))
+b = <span class="c-fn">int</span>(<span class="c-fn">input</span>(<span class="c-str">"Введи второе число: "</span>))
+
+<span class="c-fn">print</span>(<span class="c-str">"Сумма:"</span>, a + b)
+<span class="c-fn">print</span>(<span class="c-str">"Разность:"</span>, a - b)
+<span class="c-fn">print</span>(<span class="c-str">"Произведение:"</span>, a * b)
+<span class="c-fn">print</span>(<span class="c-str">"Деление:"</span>, a / b)
+<span class="c-fn">print</span>(<span class="c-str">"Остаток:"</span>, a % b)</pre></div>
+      <div class="output"><span class="lbl">Если ввести 10 и 3</span>
+        Сумма: 13<br>Разность: 7<br>Произведение: 30<br>Деление: 3.33...<br>Остаток: 1</div>
+
+      <p>Обрати внимание: <code>int(input(...))</code> — это две команды сразу. Сначала input спрашивает, потом int превращает ответ в число. А запятая в print ставит пробел между текстом и результатом.</p>
+
+      <div class="keybox"><h4>Знаки действий в Python</h4><p><code>+</code> сложить · <code>-</code> вычесть · <code>*</code> умножить · <code>/</code> разделить · <code>%</code> остаток от деления. Остаток очень пригодится дальше — он умеет проверять чётность.</p></div>
+
+      <div class="task"><span class="task-tag">✋ Задание в паре</span><h4>Магазинный чек</h4>
+        <p>Программа спрашивает цену товара и количество, потом считает и выводит общую сумму в сомони. Подсказка: не забудь <code>int</code> для обоих ответов.</p>
+        <p class="pair">Через 10 минут поменяйтесь ролями.</p></div>
+
+      <div class="sec"><div class="dot">⚠️</div><h2>Частые ошибки</h2></div>
+      <div class="errors">
+        <div class="err-head"><div class="h-bad">Так не работает</div><div class="h-good">А так правильно</div></div>
+        <div class="err-row"><div class="err-bad">a = input("Число: ")<br>print(a + 5)</div><div class="err-good">a = int(input("Число: "))<br>print(a + 5)</div></div>
+        <div class="err-row"><div class="err-bad">print("Сумма:" a + b)</div><div class="err-good">print("Сумма:", a + b)</div></div>
+      </div>
+      <p style="font-size:13.5px;color:var(--muted);">Без int ответ остаётся текстом. И между кусочками внутри print нужна запятая.</p>
+
+      <div class="home"><h3>🏠 Домашнее задание</h3><ol>
+        <li>Программа спрашивает возраст и считает, сколько тебе будет через 10 лет.</li>
+        <li>Программа переводит сумму в сомони в дирамы (1 сомони = 100 дирам).</li>
+      </ol><div class="star"><b>★ Со звёздочкой:</b> калькулятор чаевых — спроси счёт, добавь 10% и выведи итог.</div></div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+  <!-- УРОК 3 — условия -->
+  
+<div class="page">
+    <div class="lesson-head">
+      <div><div class="lesson-num">Урок 3</div><div class="lesson-title">Условия: программа принимает решения</div></div>
+      <div class="lesson-quarter">Часть 1<br>Первые программы</div>
+    </div>
+    <div class="body">
+      <div class="goal"><h3>Чему научимся</h3><ul>
+        <li>Учить программу выбирать действие по условию</li>
+        <li>Разбирать <b>if</b> и <b>else</b> — «если … иначе …»</li>
+        <li>Проверять число на чётность</li>
+      </ul></div>
+
+      <div class="sec"><div class="dot">📚</div><h2>Что такое условие</h2></div>
+      <p>Пока наши программы выполняли все команды подряд. Но настоящая программа умеет <strong>выбирать</strong>: сделать одно или другое, смотря по обстоятельствам.</p>
+      <div class="analogy"><b>На пальцах.</b> Утром смотришь в окно. <b>Если</b> дождь — берёшь зонт. <b>Иначе</b> — не берёшь. Это решение по условию. Программа делает так же: проверяет условие и выбирает путь.</div>
+      <p>В Python это слова <span class="term">if</span> (если) и <span class="term">else</span> (иначе). После условия — двоеточие, а команды внутри пишутся <strong>с отступом</strong> в 4 пробела. Отступ показывает, что команда относится к условию.</p>
+
+      <div class="sec"><div class="dot">💻</div><h2>Разбираем код</h2></div>
+      <p>Программа проверяет возраст:</p>
+      <div class="code"><div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>vozrast.py</span></div>
+<pre>age = <span class="c-fn">int</span>(<span class="c-fn">input</span>(<span class="c-str">"Сколько тебе лет? "</span>))
+
+<span class="c-key">if</span> age &gt;= <span class="c-num">18</span>:
+    <span class="c-fn">print</span>(<span class="c-str">"Ты совершеннолетний."</span>)
+<span class="c-key">else</span>:
+    <span class="c-fn">print</span>(<span class="c-str">"Ты ещё несовершеннолетний."</span>)</pre></div>
+      <div class="output"><span class="lbl">Если ввести 15</span>Ты ещё несовершеннолетний.</div>
+      <p>Компьютер проверил: <strong>15 &gt;= 18?</strong> Неправда — значит, он пропустил первую ветку и выполнил ту, что после <span class="term">else</span>.</p>
+
+      <p>А вот проверка чётности — здесь пригодился остаток <code>%</code> с прошлого урока:</p>
+      <div class="code"><div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>chet.py</span></div>
+<pre>number = <span class="c-fn">int</span>(<span class="c-fn">input</span>(<span class="c-str">"Введи число: "</span>))
+<span class="c-key">if</span> number % <span class="c-num">2</span> == <span class="c-num">0</span>:
+    <span class="c-fn">print</span>(<span class="c-str">"Число чётное."</span>)
+<span class="c-key">else</span>:
+    <span class="c-fn">print</span>(<span class="c-str">"Число нечётное."</span>)</pre></div>
+
+      <div class="keybox"><h4>Важно запомнить</h4><p>Двоеточие в конце условия. Знак <code>==</code> — это «сравнить» (а один <code>=</code> — «положить в ящик»). И отступ 4 пробела у команд внутри if и else.</p></div>
+
+      <div class="task"><span class="task-tag">✋ Задание в паре</span><h4>Больше из двух</h4>
+        <p>Программа спрашивает два числа и выводит большее. Подсказка: <code>if a &gt; b:</code> … <code>else:</code> …</p>
+        <p class="pair">Через 10 минут поменяйтесь ролями.</p></div>
+
+      <div class="sec"><div class="dot">⚠️</div><h2>Частые ошибки</h2></div>
+      <div class="errors">
+        <div class="err-head"><div class="h-bad">Так не работает</div><div class="h-good">А так правильно</div></div>
+        <div class="err-row"><div class="err-bad">if age &gt;= 18</div><div class="err-good">if age &gt;= 18:</div></div>
+        <div class="err-row"><div class="err-bad">if age = 18:</div><div class="err-good">if age == 18:</div></div>
+        <div class="err-row"><div class="err-bad">if age &gt;= 18:<br>print(...)</div><div class="err-good">if age &gt;= 18:<br>&nbsp;&nbsp;&nbsp;&nbsp;print(...)</div></div>
+      </div>
+
+      <div class="home"><h3>🏠 Домашнее задание</h3><ol>
+        <li>Программа спрашивает оценку (2–5) и пишет словами: «отлично», «хорошо» и т.д. Подсказка: пригодится <code>elif</code> — «иначе если».</li>
+        <li>Программа-«фейсконтроль»: пускает на фильм с 16 лет, иначе отказывает.</li>
+      </ol><div class="star"><b>★ Со звёздочкой:</b> программа проверяет, високосный ли год (делится на 4).</div></div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+  <!-- УРОК 4 — ПРОЕКТ «Угадай число» -->
+  
+<div class="page">
+    <div class="lesson-head">
+      <div><div class="lesson-num">Урок 4 · Проект</div><div class="lesson-title">🎮 «Угадай число»</div></div>
+      <div class="lesson-quarter">Часть 1<br>Первые программы</div>
+    </div>
+    <div class="body">
+      <div class="goal"><h3>Что построим</h3><ul>
+        <li>Первую настоящую игру: компьютер загадал число, ты угадываешь</li>
+        <li>Познакомимся с циклом <b>while</b> — «повторяй, пока…»</li>
+        <li>Научимся считать попытки и завершать цикл словом <b>break</b></li>
+      </ul></div>
+
+      <div class="sec"><div class="dot">🎯</div><h2>Что за игра</h2></div>
+      <p>Компьютер загадывает число от 1 до 100. Ты называешь варианты, а он подсказывает: «больше» или «меньше», пока не угадаешь. В конце покажет, за сколько попыток ты справился. Это твоя <strong>первая игра</strong> — и она умещается в 15 строк.</p>
+      <div class="analogy"><b>Новое слово — цикл.</b> Цикл <b>while</b> означает «повторяй, пока условие верно». Здесь мы повторяем вопрос снова и снова, пока число не угадано. Без цикла пришлось бы копировать один и тот же код сто раз.</div>
+
+      <div class="sec"><div class="dot">💻</div><h2>Собираем игру</h2></div>
+      <div class="code"><div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>guess.py</span></div>
+<pre><span class="c-key">import</span> random
+
+secret = random.<span class="c-fn">randint</span>(<span class="c-num">1</span>, <span class="c-num">100</span>)
+attempts = <span class="c-num">0</span>
+
+<span class="c-fn">print</span>(<span class="c-str">"Я загадал число от 1 до 100!"</span>)
+
+<span class="c-key">while</span> <span class="c-key">True</span>:
+    guess = <span class="c-fn">int</span>(<span class="c-fn">input</span>(<span class="c-str">"Твоя догадка: "</span>))
+    attempts = attempts + <span class="c-num">1</span>
+
+    <span class="c-key">if</span> guess &lt; secret:
+        <span class="c-fn">print</span>(<span class="c-str">"Больше!"</span>)
+    <span class="c-key">elif</span> guess &gt; secret:
+        <span class="c-fn">print</span>(<span class="c-str">"Меньше!"</span>)
+    <span class="c-key">else</span>:
+        <span class="c-fn">print</span>(<span class="c-str">"Верно! Попыток:"</span>, attempts)
+        <span class="c-key">break</span></pre></div>
+
+      <div class="steps">
+        <div class="step"><div class="sn"></div><div class="sc"><h4>random загадывает число</h4><p><code>random.randint(1, 100)</code> — компьютер выбирает случайное число и прячет его в ящик <code>secret</code>.</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>while True — повторяем без конца</h4><p>Цикл крутится, спрашивая догадку снова и снова, пока мы сами его не остановим.</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>elif — третья ветка</h4><p>Теперь веток три: меньше, больше, точно. Слово <code>elif</code> — это «иначе если».</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>break останавливает игру</h4><p>Когда угадали — <code>break</code> выходит из цикла, и игра заканчивается.</p></div></div>
+      </div>
+
+      <div class="task"><span class="task-tag">✋ Задание в паре</span><h4>Соберите и сыграйте</h4>
+        <p>Наберите игру и сыграйте по очереди друг против друга. Работает? Поздравляю — вы написали первую игру!</p>
+        <p class="pair">Один печатает, второй проверяет каждую строку. Потом меняетесь и играете.</p></div>
+
+      <div class="home"><h3>🏠 Домашнее задание</h3><ol>
+        <li>Ограничь число попыток семью. Если не угадал за 7 — программа говорит, какое было число.</li>
+        <li>Поменяй диапазон на 1–1000 и посмотри, за сколько попыток реально угадать.</li>
+      </ol><div class="star"><b>★ Со звёздочкой:</b> поменяйтесь ролями с компьютером — теперь ты загадываешь, а программа угадывает.</div></div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+  <!-- УРОК 5 — циклы for -->
+  
+<div class="page">
+    <div class="lesson-head">
+      <div><div class="lesson-num">Урок 5</div><div class="lesson-title">Циклы for: повторяем по счёту</div></div>
+      <div class="lesson-quarter">Часть 1<br>Первые программы</div>
+    </div>
+    <div class="body">
+      <div class="goal"><h3>Чему научимся</h3><ul>
+        <li>Повторять действие заданное число раз циклом <b>for</b></li>
+        <li>Понимать <b>range</b> — «диапазон чисел»</li>
+        <li>Напечатать таблицу умножения и обратный отсчёт</li>
+      </ul></div>
+
+      <div class="sec"><div class="dot">📚</div><h2>Два вида циклов</h2></div>
+      <p>В «Угадай число» мы видели цикл <code>while</code> — «повторяй, пока не угадали». Но часто мы знаем <strong>точно, сколько раз</strong> надо повторить: 10 строк, 5 учеников, 12 месяцев. Для этого удобнее цикл <span class="term">for</span>.</p>
+      <div class="analogy"><b>На пальцах.</b> while — это «мешай суп, пока не будет готов» (не знаешь сколько). for — это «отожмись 10 раз» (знаешь точно). Оба повторяют, но по-разному считают.</div>
+
+      <div class="sec"><div class="dot">💻</div><h2>Разбираем код</h2></div>
+      <p>Обратный отсчёт и таблица умножения:</p>
+      <div class="code"><div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>cikly.py</span></div>
+<pre><span class="c-com"># обратный отсчёт от 10 до 1</span>
+<span class="c-key">for</span> i <span class="c-key">in</span> <span class="c-fn">range</span>(<span class="c-num">10</span>, <span class="c-num">0</span>, -<span class="c-num">1</span>):
+    <span class="c-fn">print</span>(i)
+<span class="c-fn">print</span>(<span class="c-str">"Старт!"</span>)
+
+<span class="c-com"># таблица умножения на 7</span>
+<span class="c-key">for</span> i <span class="c-key">in</span> <span class="c-fn">range</span>(<span class="c-num">1</span>, <span class="c-num">11</span>):
+    <span class="c-fn">print</span>(<span class="c-num">7</span>, <span class="c-str">"x"</span>, i, <span class="c-str">"="</span>, <span class="c-num">7</span> * i)</pre></div>
+      <div class="output"><span class="lbl">Начало вывода</span>10<br>9<br>8<br>...<br>Старт!<br>7 x 1 = 7<br>7 x 2 = 14<br>...</div>
+
+      <p>Переменная <code>i</code> — это счётчик: на каждом повторе она берёт следующее число из диапазона. <code>range(1, 11)</code> даёт числа от 1 до 10 (последнее число 11 не входит — важно запомнить!).</p>
+
+      <div class="keybox"><h4>Как читать range</h4><p><code>range(1, 11)</code> — от 1 до 10 (правая граница не входит). <code>range(10, 0, -1)</code> — от 10 до 1 в обратную сторону. Третье число — шаг.</p></div>
+
+      <div class="task"><span class="task-tag">✋ Задание в паре</span><h4>Сумма от 1 до 100</h4>
+        <p>С помощью цикла for посчитайте сумму всех чисел от 1 до 100. Подсказка: заведите ящик <code>total = 0</code> и на каждом шаге прибавляйте к нему <code>i</code>.</p>
+        <p class="pair">Через 10 минут поменяйтесь ролями.</p></div>
+
+      <div class="sec"><div class="dot">⚠️</div><h2>Частые ошибки</h2></div>
+      <div class="errors">
+        <div class="err-head"><div class="h-bad">Так не работает</div><div class="h-good">А так правильно</div></div>
+        <div class="err-row"><div class="err-bad">for i in range(1, 10):<br># ждём до 10</div><div class="err-good">for i in range(1, 11):<br># теперь до 10</div></div>
+        <div class="err-row"><div class="err-bad">for i in range(5)</div><div class="err-good">for i in range(5):</div></div>
+      </div>
+      <p style="font-size:13.5px;color:var(--muted);">Правая граница range не входит. И двоеточие в конце строки for — обязательно.</p>
+
+      <div class="home"><h3>🏠 Домашнее задание</h3><ol>
+        <li>Выведи все чётные числа от 2 до 20.</li>
+        <li>Программа спрашивает число N и печатает таблицу умножения на него.</li>
+      </ol><div class="star"><b>★ Со звёздочкой:</b> посчитай факториал числа N (1×2×3×…×N).</div></div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+  <!-- УРОК 6 — строки -->
+  
+<div class="page">
+    <div class="lesson-head">
+      <div><div class="lesson-num">Урок 6</div><div class="lesson-title">Строки: работаем с текстом</div></div>
+      <div class="lesson-quarter">Часть 1<br>Первые программы</div>
+    </div>
+    <div class="body">
+      <div class="goal"><h3>Чему научимся</h3><ul>
+        <li>Узнавать длину текста и брать отдельные буквы</li>
+        <li>Менять регистр: <b>upper</b> и <b>lower</b></li>
+        <li>Проверять, есть ли буква в слове — это ядро игры «Виселица»</li>
+      </ul></div>
+
+      <div class="sec"><div class="dot">📚</div><h2>Текст — это тоже данные</h2></div>
+      <p>Слово в Python называется <strong>строкой</strong>. С ним можно многое: узнать длину, вытащить любую букву, перевести в заглавные, проверить, есть ли в нём нужная буква. Всё это нам понадобится уже на следующем уроке — для игры «Виселица».</p>
+      <div class="analogy"><b>На пальцах.</b> Строка — это как бусы из букв. Каждая буква на своём месте, у каждого места есть номер. Только счёт начинается с нуля: первая буква — номер 0.</div>
+
+      <div class="sec"><div class="dot">💻</div><h2>Разбираем код</h2></div>
+      <div class="code"><div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>stroki.py</span></div>
+<pre>word = <span class="c-fn">input</span>(<span class="c-str">"Введи слово: "</span>)
+
+<span class="c-fn">print</span>(<span class="c-str">"Длина:"</span>, <span class="c-fn">len</span>(word))
+<span class="c-fn">print</span>(<span class="c-str">"Первая буква:"</span>, word[<span class="c-num">0</span>])
+<span class="c-fn">print</span>(<span class="c-str">"Последняя буква:"</span>, word[-<span class="c-num">1</span>])
+<span class="c-fn">print</span>(<span class="c-str">"Заглавными:"</span>, word.<span class="c-fn">upper</span>())
+
+letter = <span class="c-fn">input</span>(<span class="c-str">"Какую букву ищем? "</span>)
+<span class="c-key">if</span> letter <span class="c-key">in</span> word:
+    <span class="c-fn">print</span>(<span class="c-str">"Есть такая буква!"</span>)
+<span class="c-key">else</span>:
+    <span class="c-fn">print</span>(<span class="c-str">"Нет такой буквы."</span>)</pre></div>
+      <div class="output"><span class="lbl">Если ввести «памир» и букву «м»</span>
+        Длина: 5<br>Первая буква: п<br>Последняя буква: р<br>Заглавными: ПАМИР<br>Есть такая буква!</div>
+
+      <p><code>len(word)</code> — длина, <code>word[0]</code> — первая буква (счёт с нуля!), <code>word[-1]</code> — последняя. А <code>letter in word</code> проверяет, есть ли буква в слове — вот это и есть главная проверка «Виселицы».</p>
+
+      <div class="keybox"><h4>Важно запомнить</h4><p>Буквы нумеруются с нуля: у слова из 5 букв номера 0, 1, 2, 3, 4. Номер <code>-1</code> — это последняя буква. Оператор <code>in</code> отвечает «да» или «нет»: есть буква в слове или нет.</p></div>
+
+      <div class="task"><span class="task-tag">✋ Задание в паре</span><h4>Разбор имени</h4>
+        <p>Программа спрашивает имя и выводит: его длину, первую и последнюю букву, имя заглавными буквами.</p>
+        <p class="pair">Через 10 минут поменяйтесь ролями.</p></div>
+
+      <div class="sec"><div class="dot">⚠️</div><h2>Частые ошибки</h2></div>
+      <div class="errors">
+        <div class="err-head"><div class="h-bad">Так не работает</div><div class="h-good">А так правильно</div></div>
+        <div class="err-row"><div class="err-bad">word[1] # первая буква</div><div class="err-good">word[0] # первая буква</div></div>
+        <div class="err-row"><div class="err-bad">word.upper</div><div class="err-good">word.upper()</div></div>
+      </div>
+      <p style="font-size:13.5px;color:var(--muted);">Счёт с нуля: первая буква — <code>[0]</code>. И у методов вроде upper обязательны скобки в конце.</p>
+
+      <div class="home"><h3>🏠 Домашнее задание</h3><ol>
+        <li>Программа считает, сколько букв «а» в введённом слове.</li>
+        <li>Программа выводит слово наоборот. Подсказка: <code>word[::-1]</code>.</li>
+      </ol><div class="star"><b>★ Со звёздочкой:</b> проверь, читается ли слово одинаково слева и справа (палиндром).</div></div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+  <!-- УРОК 7 — ПРОЕКТ «Виселица» -->
+  
+<div class="page">
+    <div class="lesson-head">
+      <div><div class="lesson-num">Урок 7 · Проект</div><div class="lesson-title">🎮 «Виселица»</div></div>
+      <div class="lesson-quarter">Часть 1<br>Первые программы</div>
+    </div>
+    <div class="body">
+      <div class="goal"><h3>Что построим</h3><ul>
+        <li>Игру, где нужно угадать слово по буквам</li>
+        <li>Соберём вместе всё: строки, циклы, условия, списки</li>
+        <li>Это итоговый проект четверти — с защитой перед классом</li>
+      </ul></div>
+
+      <div class="sec"><div class="dot">🎯</div><h2>Что за игра</h2></div>
+      <p>Компьютер загадывает слово и показывает его чёрточками: <code>_ _ _ _ _</code>. Игрок называет буквы. Угадал — буква открывается. Ошибся — минус попытка. Слов даётся 6 попыток. Откроешь слово — победа. Это твой <strong>главный проект четверти</strong>.</p>
+
+      <div class="sec"><div class="dot">💻</div><h2>Собираем игру</h2></div>
+      <div class="code"><div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>viselica.py</span></div>
+<pre><span class="c-key">import</span> random
+words = [<span class="c-str">"худжанд"</span>, <span class="c-str">"душанбе"</span>, <span class="c-str">"памир"</span>, <span class="c-str">"python"</span>]
+secret = random.<span class="c-fn">choice</span>(words)
+
+guessed = []
+mistakes = <span class="c-num">0</span>
+
+<span class="c-key">while</span> mistakes &lt; <span class="c-num">6</span>:
+    display = <span class="c-str">""</span>
+    <span class="c-key">for</span> letter <span class="c-key">in</span> secret:
+        <span class="c-key">if</span> letter <span class="c-key">in</span> guessed:
+            display = display + letter + <span class="c-str">" "</span>
+        <span class="c-key">else</span>:
+            display = display + <span class="c-str">"_ "</span>
+    <span class="c-fn">print</span>(display)
+
+    <span class="c-key">if</span> <span class="c-fn">all</span>(l <span class="c-key">in</span> guessed <span class="c-key">for</span> l <span class="c-key">in</span> secret):
+        <span class="c-fn">print</span>(<span class="c-str">"Победа! Слово:"</span>, secret)
+        <span class="c-key">break</span>
+
+    guess = <span class="c-fn">input</span>(<span class="c-str">"Назови букву: "</span>)
+    <span class="c-key">if</span> guess <span class="c-key">in</span> secret:
+        guessed.<span class="c-fn">append</span>(guess)
+    <span class="c-key">else</span>:
+        mistakes = mistakes + <span class="c-num">1</span>
+        <span class="c-fn">print</span>(<span class="c-str">"Ошибок:"</span>, mistakes, <span class="c-str">"из 6"</span>)</pre></div>
+
+      <div class="steps">
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Список слов и выбор</h4><p><code>words</code> — это список (несколько слов в квадратных скобках). <code>random.choice</code> выбирает одно случайное.</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Показываем слово чёрточками</h4><p>Цикл for проходит по каждой букве: угадана — показываем её, нет — рисуем <code>_</code>.</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>append добавляет в список</h4><p>Угаданную букву кладём в список <code>guessed</code> командой append — «добавь в конец».</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Проверка победы</h4><p><code>all(...)</code> отвечает «да», если все буквы слова уже угаданы. Тогда — победа и break.</p></div></div>
+      </div>
+
+      <div class="task"><span class="task-tag">🏆 Итоговый проект четверти</span><h4>Соберите, доработайте, защитите</h4>
+        <p>Наберите игру в паре. Затем сделайте её своей: добавьте слова про Таджикистан, придумайте поздравление за победу. На защите (2 минуты у проектора) расскажите: что делает игра, как работает, что было сложно.</p>
+        <p class="pair">Оба в паре должны уметь объяснить любую строку кода.</p></div>
+
+      <div class="home"><h3>🏠 Что показать на защите</h3><ol>
+        <li>Игра запускается и работает без ошибок.</li>
+        <li>Вы добавили минимум 5 своих слов.</li>
+        <li>Каждый может объяснить, что делает любая строка.</li>
+      </ol><div class="star"><b>★ Со звёздочкой:</b> покажите игроку, сколько попыток осталось, и вставьте поздравление с именем победителя.</div></div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+
+<div class="page cover">
+    <div class="cover-deco"></div>
+    <div class="cover-inner">
+      <div class="kicker">Учебник · Часть 2</div>
+      <h1>Структуры<br>и функции</h1>
+      <div class="sub">Списки хранят много данных, функции наводят порядок в коде. А в конце — игра на двоих.</div>
+      <span class="part-badge">Четверть 2 · 7 уроков</span>
+      <div class="lesson-list">
+        <h4>Что в этой части</h4>
+        <ol>
+          <li><b>Урок 8.</b> Списки: много данных в одном ящике</li>
+          <li><b>Урок 9.</b> Списки и циклы вместе</li>
+          <li><b>Урок 10.</b> Функции: наводим порядок</li>
+          <li><b>Урок 11.</b> Функции возвращают результат</li>
+          <li><b>Урок 12.</b> Словари: ключ и значение</li>
+          <li><b>Урок 13.</b> 🎮 Проект «Крестики-нолики»: поле</li>
+          <li><b>Урок 14.</b> 🎮 «Крестики-нолики»: игра и защита</li>
+        </ol>
+      </div>
+      <div class="who">9 класс · субботний курс · <b>Эсхата Академия</b></div>
+    </div>
+  </div>
+
+  <!-- УРОК 8 — списки -->
+  
+<div class="page">
+    <div class="lesson-head">
+      <div><div class="lesson-num">Урок 8</div><div class="lesson-title">Списки: много данных в одном ящике</div></div>
+      <div class="lesson-quarter">Часть 2<br>Структуры и функции</div>
+    </div>
+    <div class="body">
+      <div class="goal"><h3>Чему научимся</h3><ul>
+        <li>Хранить много значений в одном списке</li>
+        <li>Брать элементы по номеру и добавлять новые командой <b>append</b></li>
+        <li>Узнавать длину списка</li>
+      </ul></div>
+
+      <div class="sec"><div class="dot">📚</div><h2>Зачем нужны списки</h2></div>
+      <p>Пока в каждый ящик-переменную мы клали <strong>одно</strong> значение. А если нужно хранить пять оценок? Заводить <code>g1, g2, g3, g4, g5</code> — неудобно. Есть решение получше: <span class="term">список</span> — один ящик, куда помещается сразу много значений.</p>
+      <div class="analogy"><b>На пальцах.</b> Переменная — это один ящик. Список — это полка с пронумерованными ячейками. Всё лежит вместе, а каждая ячейка со своим номером. Считаем с нуля: первая ячейка — номер 0.</div>
+
+      <div class="sec"><div class="dot">💻</div><h2>Разбираем код</h2></div>
+      <p>Список создаётся квадратными скобками, элементы через запятую:</p>
+      <div class="code"><div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>spiski.py</span></div>
+<pre>fruits = [<span class="c-str">"яблоко"</span>, <span class="c-str">"банан"</span>, <span class="c-str">"дыня"</span>]
+
+<span class="c-fn">print</span>(fruits[<span class="c-num">0</span>])          <span class="c-com"># яблоко — первый</span>
+<span class="c-fn">print</span>(fruits[<span class="c-num">2</span>])          <span class="c-com"># дыня — третий</span>
+<span class="c-fn">print</span>(<span class="c-fn">len</span>(fruits))       <span class="c-com"># 3 — сколько всего</span>
+
+fruits.<span class="c-fn">append</span>(<span class="c-str">"виноград"</span>)  <span class="c-com"># добавить в конец</span>
+<span class="c-fn">print</span>(fruits)</pre></div>
+      <div class="output"><span class="lbl">На экране появится</span>яблоко<br>дыня<br>3<br>['яблоко', 'банан', 'дыня', 'виноград']</div>
+
+      <p>Как и у строк, счёт с нуля: <code>fruits[0]</code> — первый элемент. <code>len</code> говорит, сколько всего элементов. А <code>append</code> добавляет новый в конец списка.</p>
+
+      <div class="keybox"><h4>Важно запомнить</h4><p>Список — в квадратных скобках <code>[ ]</code>. Элементы нумеруются с нуля. <code>append</code> — «добавь в конец». <code>len(список)</code> — сколько элементов внутри.</p></div>
+
+      <div class="task"><span class="task-tag">✋ Задание в паре</span><h4>Список любимого</h4>
+        <p>Создайте список из трёх любимых блюд. Выведите первое и последнее (подсказка: последнее — это <code>[-1]</code>). Добавьте в список четвёртое блюдо и выведите весь список.</p>
+        <p class="pair">Водитель печатает, штурман диктует. Через 10 минут — меняетесь.</p></div>
+
+      <div class="sec"><div class="dot">⚠️</div><h2>Частые ошибки</h2></div>
+      <div class="errors">
+        <div class="err-head"><div class="h-bad">Так не работает</div><div class="h-good">А так правильно</div></div>
+        <div class="err-row"><div class="err-bad">fruits[1] # первый</div><div class="err-good">fruits[0] # первый</div></div>
+        <div class="err-row"><div class="err-bad">fruits.append "манго"</div><div class="err-good">fruits.append("манго")</div></div>
+      </div>
+      <p style="font-size:13.5px;color:var(--muted);">Счёт с нуля, как у строк. И у append обязательны скобки с тем, что добавляем.</p>
+
+      <div class="home"><h3>🏠 Домашнее задание</h3><ol>
+        <li>Составь список из 5 городов Таджикистана и выведи каждый.</li>
+        <li>Заведи пустой список <code>[]</code>, добавь в него три числа через append.</li>
+      </ol><div class="star"><b>★ Со звёздочкой:</b> список дел на день — программа спрашивает 3 дела и складывает их в список.</div></div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+  <!-- УРОК 9 — списки и циклы -->
+  
+<div class="page">
+    <div class="lesson-head">
+      <div><div class="lesson-num">Урок 9</div><div class="lesson-title">Списки и циклы: обрабатываем данные</div></div>
+      <div class="lesson-quarter">Часть 2<br>Структуры и функции</div>
+    </div>
+    <div class="body">
+      <div class="goal"><h3>Чему научимся</h3><ul>
+        <li>Перебирать список циклом <b>for</b></li>
+        <li>Считать сумму, среднее, находить максимум</li>
+        <li>Обрабатывать оценки целого класса</li>
+      </ul></div>
+
+      <div class="sec"><div class="dot">📚</div><h2>Список + цикл = сила</h2></div>
+      <p>На уроке 5 мы перебирали числа через <code>range</code>. Но <code>for</code> умеет перебирать и <strong>список напрямую</strong> — брать по очереди каждый элемент. Это соединяет две вещи, которые мы уже знаем, и открывает настоящую обработку данных.</p>
+      <div class="analogy"><b>На пальцах.</b> Представь стопку тетрадей. Цикл for берёт по одной тетради сверху, что-то с ней делает, кладёт, берёт следующую — пока стопка не кончится. Список — это стопка, for — твои руки.</div>
+
+      <div class="sec"><div class="dot">💻</div><h2>Разбираем код</h2></div>
+      <p>Считаем средний балл по оценкам класса:</p>
+      <div class="code"><div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>ocenki.py</span></div>
+<pre>grades = [<span class="c-num">5</span>, <span class="c-num">4</span>, <span class="c-num">5</span>, <span class="c-num">3</span>, <span class="c-num">4</span>]
+
+total = <span class="c-num">0</span>
+<span class="c-key">for</span> grade <span class="c-key">in</span> grades:
+    total = total + grade
+
+<span class="c-fn">print</span>(<span class="c-str">"Сумма:"</span>, total)
+<span class="c-fn">print</span>(<span class="c-str">"Средний балл:"</span>, total / <span class="c-fn">len</span>(grades))
+<span class="c-fn">print</span>(<span class="c-str">"Лучшая оценка:"</span>, <span class="c-fn">max</span>(grades))</pre></div>
+      <div class="output"><span class="lbl">На экране появится</span>Сумма: 21<br>Средний балл: 4.2<br>Лучшая оценка: 5</div>
+
+      <p>Цикл берёт каждую оценку и прибавляет к <code>total</code>. После цикла делим сумму на количество — получаем среднее. А <code>max</code> сам находит наибольшее число в списке (есть и <code>min</code> — наименьшее).</p>
+
+      <div class="keybox"><h4>Важно запомнить</h4><p><code>for x in список</code> — берёт каждый элемент по очереди. Чтобы копить сумму, заведи ящик <code>total = 0</code> до цикла. Готовые помощники: <code>max</code>, <code>min</code>, <code>sum</code>.</p></div>
+
+      <div class="task"><span class="task-tag">✋ Задание в паре</span><h4>Магазинная корзина</h4>
+        <p>Есть список цен: <code>[12, 45, 8, 30, 15]</code>. Посчитайте общую стоимость покупки и выведите самый дорогой товар. Подсказка: <code>sum(...)</code> и <code>max(...)</code>.</p>
+        <p class="pair">Через 10 минут поменяйтесь ролями.</p></div>
+
+      <div class="sec"><div class="dot">⚠️</div><h2>Частые ошибки</h2></div>
+      <div class="errors">
+        <div class="err-head"><div class="h-bad">Так не работает</div><div class="h-good">А так правильно</div></div>
+        <div class="err-row"><div class="err-bad">for grade in grades:<br>total = grade</div><div class="err-good">for grade in grades:<br>&nbsp;&nbsp;total = total + grade</div></div>
+        <div class="err-row"><div class="err-bad">total = 0 # внутри цикла</div><div class="err-good">total = 0 # до цикла!</div></div>
+      </div>
+      <p style="font-size:13.5px;color:var(--muted);">Ящик для суммы заводится <b>до</b> цикла, иначе он обнуляется каждый раз. И прибавляй к total, а не перезаписывай.</p>
+
+      <div class="home"><h3>🏠 Домашнее задание</h3><ol>
+        <li>В списке температур <code>[18, 22, 25, 19, 30]</code> найди среднюю, самую высокую и низкую.</li>
+        <li>Посчитай, сколько в списке оценок «пятёрок» (подсказка: if внутри цикла + счётчик).</li>
+      </ol><div class="star"><b>★ Со звёздочкой:</b> выведи только те оценки из списка, которые выше среднего балла.</div></div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+  <!-- УРОК 10 — функции -->
+  
+<div class="page">
+    <div class="lesson-head">
+      <div><div class="lesson-num">Урок 10</div><div class="lesson-title">Функции: наводим порядок в коде</div></div>
+      <div class="lesson-quarter">Часть 2<br>Структуры и функции</div>
+    </div>
+    <div class="body">
+      <div class="goal"><h3>Чему научимся</h3><ul>
+        <li>Создавать свои команды — функции — словом <b>def</b></li>
+        <li>Передавать в функцию данные (аргументы)</li>
+        <li>Не повторять один и тот же код по многу раз</li>
+      </ul></div>
+
+      <div class="sec"><div class="dot">📚</div><h2>Зачем нужны функции</h2></div>
+      <p>Мы уже пользовались готовыми командами: <code>print</code>, <code>input</code>, <code>len</code>. Это <strong>функции</strong> — маленькие помощники, которые делают одно дело. Оказывается, свои функции можно создавать самому — и это главный способ навести порядок в коде.</p>
+      <div class="analogy"><b>На пальцах.</b> Функция — это рецепт с названием. Один раз записал «как заварить чай», а потом просто говоришь «завари чай» — и не пересказываешь все шаги заново. Так и в коде: описал функцию раз — вызываешь её сколько угодно.</div>
+
+      <div class="sec"><div class="dot">💻</div><h2>Разбираем код</h2></div>
+      <p>Создаём свою функцию-приветствие словом <span class="term">def</span>:</p>
+      <div class="code"><div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>funkcii.py</span></div>
+<pre><span class="c-key">def</span> <span class="c-fn">privet</span>(name):
+    <span class="c-fn">print</span>(<span class="c-str">"Привет, "</span> + name + <span class="c-str">"!"</span>)
+    <span class="c-fn">print</span>(<span class="c-str">"Рады тебя видеть."</span>)
+
+<span class="c-fn">privet</span>(<span class="c-str">"Алишер"</span>)
+<span class="c-fn">privet</span>(<span class="c-str">"Фарход"</span>)
+<span class="c-fn">privet</span>(<span class="c-str">"Мадина"</span>)</pre></div>
+      <div class="output"><span class="lbl">На экране появится</span>Привет, Алишер!<br>Рады тебя видеть.<br>Привет, Фарход!<br>Рады тебя видеть.<br>Привет, Мадина!<br>Рады тебя видеть.</div>
+
+      <p>Строка <code>def privet(name):</code> описывает функцию: её имя <code>privet</code> и что она принимает — <code>name</code>. Тело функции — с отступом. Дальше мы <strong>вызываем</strong> её три раза с разными именами — и код внутри не пришлось повторять.</p>
+
+      <div class="keybox"><h4>Важно запомнить</h4><p><code>def имя(данные):</code> — создаём функцию. Тело — с отступом. То, что в скобках при создании — <b>параметр</b>, то, что передаём при вызове — <b>аргумент</b>. Функцию сначала описывают, потом вызывают.</p></div>
+
+      <div class="task"><span class="task-tag">✋ Задание в паре</span><h4>Функция-рамка</h4>
+        <p>Напишите функцию <code>ramka(text)</code>, которая печатает текст в рамке из звёздочек. Вызовите её с тремя разными словами.</p>
+        <p class="pair">Через 10 минут поменяйтесь ролями.</p></div>
+
+      <div class="sec"><div class="dot">⚠️</div><h2>Частые ошибки</h2></div>
+      <div class="errors">
+        <div class="err-head"><div class="h-bad">Так не работает</div><div class="h-good">А так правильно</div></div>
+        <div class="err-row"><div class="err-bad">def privet(name)</div><div class="err-good">def privet(name):</div></div>
+        <div class="err-row"><div class="err-bad">def privet(name):<br>print(name)</div><div class="err-good">def privet(name):<br>&nbsp;&nbsp;&nbsp;&nbsp;print(name)</div></div>
+      </div>
+      <p style="font-size:13.5px;color:var(--muted);">Двоеточие после строки def, тело — с отступом. И не забудь вызвать функцию — само по себе описание ничего не печатает.</p>
+
+      <div class="home"><h3>🏠 Домашнее задание</h3><ol>
+        <li>Функция <code>privetstvie(name, city)</code> — здоровается и называет город.</li>
+        <li>Функция <code>ploshad(a, b)</code> — печатает площадь прямоугольника.</li>
+      </ol><div class="star"><b>★ Со звёздочкой:</b> функция рисует треугольник из звёздочек заданной высоты.</div></div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+  <!-- УРОК 11 — функции с return -->
+  
+<div class="page">
+    <div class="lesson-head">
+      <div><div class="lesson-num">Урок 11</div><div class="lesson-title">Функции возвращают результат</div></div>
+      <div class="lesson-quarter">Часть 2<br>Структуры и функции</div>
+    </div>
+    <div class="body">
+      <div class="goal"><h3>Чему научимся</h3><ul>
+        <li>Получать из функции результат словом <b>return</b></li>
+        <li>Понимать разницу между «напечатать» и «вернуть»</li>
+        <li>Собирать программу из функций-помощников</li>
+      </ul></div>
+
+      <div class="sec"><div class="dot">📚</div><h2>Печатать или вернуть?</h2></div>
+      <p>Функции с прошлого урока сами печатали результат. Но чаще нужно, чтобы функция <strong>отдала</strong> ответ обратно — и мы решили, что с ним делать: напечатать, сохранить в ящик, использовать в расчёте. За это отвечает слово <span class="term">return</span>.</p>
+      <div class="analogy"><b>На пальцах.</b> print — это когда повар выносит блюдо и сразу ставит на стол. return — когда повар отдаёт блюдо тебе в руки, а ты сам решаешь: съесть, отнести другу или положить в холодильник. return гибче.</div>
+
+      <div class="sec"><div class="dot">💻</div><h2>Разбираем код</h2></div>
+      <div class="code"><div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>return.py</span></div>
+<pre><span class="c-key">def</span> <span class="c-fn">summa</span>(a, b):
+    <span class="c-key">return</span> a + b
+
+<span class="c-com"># результат можно сохранить в ящик</span>
+result = <span class="c-fn">summa</span>(<span class="c-num">10</span>, <span class="c-num">5</span>)
+<span class="c-fn">print</span>(result)              <span class="c-com"># 15</span>
+
+<span class="c-com"># или сразу использовать в расчёте</span>
+<span class="c-fn">print</span>(<span class="c-fn">summa</span>(<span class="c-num">3</span>, <span class="c-num">4</span>) * <span class="c-num">2</span>)   <span class="c-com"># 14</span></pre></div>
+      <div class="output"><span class="lbl">На экране появится</span>15<br>14</div>
+
+      <p>Функция <code>summa</code> не печатает — она <strong>возвращает</strong> число. Поэтому его можно сохранить в <code>result</code>, умножить, передать дальше. В этом сила return: результат становится обычным значением, с которым можно делать что угодно.</p>
+
+      <div class="keybox"><h4>Важно запомнить</h4><p><code>return</code> отдаёт результат из функции наружу. После return функция заканчивает работу. Разница: <code>print</code> показывает на экране, <code>return</code> отдаёт значение, которое можно использовать.</p></div>
+
+      <div class="task"><span class="task-tag">✋ Задание в паре</span><h4>Калькулятор на функциях</h4>
+        <p>Напишите функции <code>summa(a,b)</code>, <code>raznost(a,b)</code>, <code>proizvedenie(a,b)</code> — каждая возвращает результат. Затем спросите два числа и покажите все три действия.</p>
+        <p class="pair">Через 10 минут поменяйтесь ролями.</p></div>
+
+      <div class="sec"><div class="dot">⚠️</div><h2>Частые ошибки</h2></div>
+      <div class="errors">
+        <div class="err-head"><div class="h-bad">Так не работает</div><div class="h-good">А так правильно</div></div>
+        <div class="err-row"><div class="err-bad">def summa(a, b):<br>&nbsp;&nbsp;&nbsp;&nbsp;print(a + b)<br>x = summa(2, 3) # x пустой</div><div class="err-good">def summa(a, b):<br>&nbsp;&nbsp;&nbsp;&nbsp;return a + b<br>x = summa(2, 3) # x = 5</div></div>
+      </div>
+      <p style="font-size:13.5px;color:var(--muted);">Если функция только печатает (print), в ящик ничего не попадёт. Чтобы сохранить результат — нужен return.</p>
+
+      <div class="home"><h3>🏠 Домашнее задание</h3><ol>
+        <li>Функция <code>srednee(a, b, c)</code> — возвращает среднее трёх чисел.</li>
+        <li>Функция <code>max_iz_dvuh(a, b)</code> — возвращает большее из двух.</li>
+      </ol><div class="star"><b>★ Со звёздочкой:</b> функция <code>chetnoe(n)</code> возвращает True или False — чётное ли число.</div></div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+  <!-- УРОК 12 — словари -->
+  
+<div class="page">
+    <div class="lesson-head">
+      <div><div class="lesson-num">Урок 12</div><div class="lesson-title">Словари: ключ и значение</div></div>
+      <div class="lesson-quarter">Часть 2<br>Структуры и функции</div>
+    </div>
+    <div class="body">
+      <div class="goal"><h3>Чему научимся</h3><ul>
+        <li>Хранить пары «ключ — значение» в словаре</li>
+        <li>Находить значение по ключу</li>
+        <li>Построить телефонную книгу</li>
+      </ul></div>
+
+      <div class="sec"><div class="dot">📚</div><h2>Когда списка мало</h2></div>
+      <p>В списке элементы ищут по номеру: <code>[0]</code>, <code>[1]</code>. Но иногда искать хочется по <strong>имени</strong>: не «третий элемент», а «телефон Алишера». Для этого есть <span class="term">словарь</span> — он хранит пары: ключ (имя) и значение (телефон).</p>
+      <div class="analogy"><b>На пальцах.</b> Словарь — как настоящий словарь или телефонная книга. Ты не листаешь по номерам страниц — ты ищешь слово и сразу видишь перевод. Ключ — это слово, значение — его перевод.</div>
+
+      <div class="sec"><div class="dot">💻</div><h2>Разбираем код</h2></div>
+      <p>Словарь создаётся фигурными скобками, пары через двоеточие:</p>
+      <div class="code"><div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>slovari.py</span></div>
+<pre>phones = {
+    <span class="c-str">"Алишер"</span>: <span class="c-str">"901-234-567"</span>,
+    <span class="c-str">"Мадина"</span>: <span class="c-str">"902-345-678"</span>,
+    <span class="c-str">"Фарход"</span>: <span class="c-str">"903-456-789"</span>
+}
+
+<span class="c-fn">print</span>(phones[<span class="c-str">"Мадина"</span>])   <span class="c-com"># находим по имени</span>
+
+phones[<span class="c-str">"Сафар"</span>] = <span class="c-str">"904-567-890"</span>  <span class="c-com"># добавляем нового</span>
+<span class="c-fn">print</span>(phones)</pre></div>
+      <div class="output"><span class="lbl">На экране появится</span>902-345-678<br>{'Алишер': '901-234-567', 'Мадина': '902-345-678', ...}</div>
+
+      <p>Вместо номера, как в списке, мы пишем <strong>ключ</strong> — <code>phones["Мадина"]</code> — и сразу получаем значение. Чтобы добавить новую пару, просто присваиваем значение новому ключу.</p>
+
+      <div class="keybox"><h4>Список против словаря</h4><p><b>Список</b> <code>[ ]</code> — доступ по номеру: <code>spisok[0]</code>. <b>Словарь</b> <code>{ }</code> — доступ по ключу: <code>slovar["имя"]</code>. Список — когда важен порядок, словарь — когда важно найти по названию.</p></div>
+
+      <div class="task"><span class="task-tag">✋ Задание в паре</span><h4>Словарь оценок</h4>
+        <p>Создайте словарь, где ключ — предмет, значение — твоя оценка: математика, история, информатика. Выведите оценку по информатике и добавьте новый предмет.</p>
+        <p class="pair">Через 10 минут поменяйтесь ролями.</p></div>
+
+      <div class="sec"><div class="dot">⚠️</div><h2>Частые ошибки</h2></div>
+      <div class="errors">
+        <div class="err-head"><div class="h-bad">Так не работает</div><div class="h-good">А так правильно</div></div>
+        <div class="err-row"><div class="err-bad">phones = ["Алишер": "901"]</div><div class="err-good">phones = {"Алишер": "901"}</div></div>
+        <div class="err-row"><div class="err-bad">phones[0] # первый</div><div class="err-good">phones["Алишер"]</div></div>
+      </div>
+      <p style="font-size:13.5px;color:var(--muted);">Словарь — в фигурных скобках <code>{ }</code>, а не квадратных. И ищем по ключу, а не по номеру.</p>
+
+      <div class="home"><h3>🏠 Домашнее задание</h3><ol>
+        <li>Словарь «столицы»: страна — столица (5 пар). Выведи столицу Таджикистана.</li>
+        <li>Словарь-меню кафе: блюдо — цена. Посчитай стоимость двух блюд.</li>
+      </ol><div class="star"><b>★ Со звёздочкой:</b> программа спрашивает имя и ищет его телефон в словаре; если нет — говорит «не найдено».</div></div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+  <!-- УРОК 13 — ПРОЕКТ крестики-нолики: поле -->
+  
+<div class="page">
+    <div class="lesson-head">
+      <div><div class="lesson-num">Урок 13 · Проект</div><div class="lesson-title">🎮 «Крестики-нолики»: строим поле</div></div>
+      <div class="lesson-quarter">Часть 2<br>Структуры и функции</div>
+    </div>
+    <div class="body">
+      <div class="goal"><h3>Что построим сегодня</h3><ul>
+        <li>Игровое поле 3×3 из списка</li>
+        <li>Функцию, которая красиво рисует поле</li>
+        <li>Ход игрока: ставим крестик в выбранную клетку</li>
+      </ul></div>
+
+      <div class="sec"><div class="dot">🎯</div><h2>Наш большой проект</h2></div>
+      <p>«Крестики-нолики» на двоих — это проект на два урока. Сегодня строим <strong>поле и ходы</strong>, на следующем уроке добавим проверку победы и защитим проект. Здесь соберётся всё из этой четверти: списки, функции, циклы.</p>
+
+      <div class="board">
+        <div class="num">1</div><div class="num">2</div><div class="num">3</div>
+        <div class="num">4</div><div>X</div><div class="num">6</div>
+        <div class="num">7</div><div>O</div><div class="num">9</div>
+      </div>
+      <p style="text-align:center;font-size:13px;color:var(--muted);margin-top:-4px;">Клетки пронумерованы 1–9. Игрок называет номер — туда ставится его знак.</p>
+
+      <div class="sec"><div class="dot">💻</div><h2>Поле и его показ</h2></div>
+      <p>Поле — это список из 9 клеток. Функция рисует его сеткой 3×3:</p>
+      <div class="code"><div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>pole.py</span></div>
+<pre>board = [<span class="c-str">" "</span>] * <span class="c-num">9</span>   <span class="c-com"># 9 пустых клеток</span>
+
+<span class="c-key">def</span> <span class="c-fn">show</span>(board):
+    <span class="c-fn">print</span>(board[<span class="c-num">0</span>], <span class="c-str">"|"</span>, board[<span class="c-num">1</span>], <span class="c-str">"|"</span>, board[<span class="c-num">2</span>])
+    <span class="c-fn">print</span>(<span class="c-str">"---------"</span>)
+    <span class="c-fn">print</span>(board[<span class="c-num">3</span>], <span class="c-str">"|"</span>, board[<span class="c-num">4</span>], <span class="c-str">"|"</span>, board[<span class="c-num">5</span>])
+    <span class="c-fn">print</span>(<span class="c-str">"---------"</span>)
+    <span class="c-fn">print</span>(board[<span class="c-num">6</span>], <span class="c-str">"|"</span>, board[<span class="c-num">7</span>], <span class="c-str">"|"</span>, board[<span class="c-num">8</span>])
+
+<span class="c-fn">show</span>(board)</pre></div>
+
+      <div class="steps">
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Поле — список из 9 клеток</h4><p><code>[" "] * 9</code> создаёт список из девяти пробелов — пустых клеток. Клетка 0 — верхняя левая.</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Функция show рисует поле</h4><p>Мы вынесли рисование в функцию — теперь можно показать поле в любой момент одной командой <code>show(board)</code>.</p></div></div>
+      </div>
+
+      <p>Теперь ход игрока — ставим знак в выбранную клетку:</p>
+      <div class="code"><div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>hod.py</span></div>
+<pre>pos = <span class="c-fn">int</span>(<span class="c-fn">input</span>(<span class="c-str">"Куда ставишь (1-9)? "</span>))
+board[pos - <span class="c-num">1</span>] = <span class="c-str">"X"</span>   <span class="c-com"># игрок назвал 1, а список с 0</span>
+<span class="c-fn">show</span>(board)</pre></div>
+
+      <div class="keybox"><h4>Важный момент</h4><p>Игрок называет клетки 1–9, а список считает с 0. Поэтому <code>board[pos - 1]</code>: вычитаем 1, чтобы номер клетки совпал с номером в списке.</p></div>
+
+      <div class="task"><span class="task-tag">✋ Задание в паре</span><h4>Соберите поле</h4>
+        <p>Наберите поле и функцию show. Сделайте два хода вручную: поставьте X в клетку 5 и O в клетку 1. Проверьте, что поле рисуется правильно.</p>
+        <p class="pair">На следующем уроке превратим это в полную игру.</p></div>
+
+      <div class="home"><h3>🏠 Домашнее задание</h3><ol>
+        <li>Допиши: пусть программа спрашивает клетку и ставит X, затем показывает поле.</li>
+        <li>Подумай: как чередовать X и O между двумя игроками? Запиши идею словами.</li>
+      </ol><div class="star"><b>★ Со звёздочкой:</b> сделай так, чтобы нельзя было поставить знак в уже занятую клетку.</div></div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+  <!-- УРОК 14 — ПРОЕКТ крестики-нолики: игра -->
+  
+<div class="page">
+    <div class="lesson-head">
+      <div><div class="lesson-num">Урок 14 · Проект</div><div class="lesson-title">🎮 «Крестики-нолики»: игра и защита</div></div>
+      <div class="lesson-quarter">Часть 2<br>Структуры и функции</div>
+    </div>
+    <div class="body">
+      <div class="goal"><h3>Что доделаем</h3><ul>
+        <li>Чередование игроков X и O</li>
+        <li>Проверку победы функцией</li>
+        <li>Готовую игру — и защиту проекта</li>
+      </ul></div>
+
+      <div class="sec"><div class="dot">💻</div><h2>Собираем игру целиком</h2></div>
+      <p>Соединяем поле с прошлого урока, чередование игроков и проверку победы:</p>
+      <div class="code"><div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>krestiki.py</span></div>
+<pre>board = [<span class="c-str">" "</span>] * <span class="c-num">9</span>
+
+<span class="c-key">def</span> <span class="c-fn">show</span>(board):
+    <span class="c-fn">print</span>(board[<span class="c-num">0</span>], <span class="c-str">"|"</span>, board[<span class="c-num">1</span>], <span class="c-str">"|"</span>, board[<span class="c-num">2</span>])
+    <span class="c-fn">print</span>(board[<span class="c-num">3</span>], <span class="c-str">"|"</span>, board[<span class="c-num">4</span>], <span class="c-str">"|"</span>, board[<span class="c-num">5</span>])
+    <span class="c-fn">print</span>(board[<span class="c-num">6</span>], <span class="c-str">"|"</span>, board[<span class="c-num">7</span>], <span class="c-str">"|"</span>, board[<span class="c-num">8</span>])
+
+<span class="c-key">def</span> <span class="c-fn">winner</span>(b):
+    lines = [(<span class="c-num">0</span>,<span class="c-num">1</span>,<span class="c-num">2</span>),(<span class="c-num">3</span>,<span class="c-num">4</span>,<span class="c-num">5</span>),(<span class="c-num">6</span>,<span class="c-num">7</span>,<span class="c-num">8</span>),
+             (<span class="c-num">0</span>,<span class="c-num">3</span>,<span class="c-num">6</span>),(<span class="c-num">1</span>,<span class="c-num">4</span>,<span class="c-num">7</span>),(<span class="c-num">2</span>,<span class="c-num">5</span>,<span class="c-num">8</span>),
+             (<span class="c-num">0</span>,<span class="c-num">4</span>,<span class="c-num">8</span>),(<span class="c-num">2</span>,<span class="c-num">4</span>,<span class="c-num">6</span>)]
+    <span class="c-key">for</span> a, b2, c <span class="c-key">in</span> lines:
+        <span class="c-key">if</span> b[a] == b[b2] == b[c] != <span class="c-str">" "</span>:
+            <span class="c-key">return</span> b[a]
+    <span class="c-key">return</span> <span class="c-key">None</span>
+
+player = <span class="c-str">"X"</span>
+<span class="c-key">for</span> turn <span class="c-key">in</span> <span class="c-fn">range</span>(<span class="c-num">9</span>):
+    <span class="c-fn">show</span>(board)
+    pos = <span class="c-fn">int</span>(<span class="c-fn">input</span>(player + <span class="c-str">", клетка (1-9): "</span>))
+    board[pos - <span class="c-num">1</span>] = player
+    <span class="c-key">if</span> <span class="c-fn">winner</span>(board):
+        <span class="c-fn">show</span>(board)
+        <span class="c-fn">print</span>(player + <span class="c-str">" победил!"</span>)
+        <span class="c-key">break</span>
+    player = <span class="c-str">"O"</span> <span class="c-key">if</span> player == <span class="c-str">"X"</span> <span class="c-key">else</span> <span class="c-str">"X"</span></pre></div>
+
+      <div class="steps">
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Функция winner проверяет линии</h4><p>Восемь способов победить: 3 ряда, 3 столбца, 2 диагонали. Функция проверяет каждую линию — три одинаковых знака подряд.</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Цикл на 9 ходов</h4><p>Максимум 9 клеток — значит 9 ходов. После каждого проверяем победу.</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Смена игрока</h4><p>Последняя строка меняет X на O и обратно: <code>"O" if player == "X" else "X"</code>.</p></div></div>
+      </div>
+
+      <div class="task"><span class="task-tag">🏆 Итоговый проект четверти</span><h4>Доделайте, украсьте, защитите</h4>
+        <p>Соберите игру и сыграйте пара на пару. Затем улучшите: добавьте сообщение о ничьей, запретите ходить в занятую клетку, добавьте рамку. На защите (2 минуты) расскажите: как устроено поле, как работает проверка победы, что было сложно.</p>
+        <p class="pair">Оба в паре должны уметь объяснить функцию winner.</p></div>
+
+      <div class="home"><h3>🏠 Что показать на защите</h3><ol>
+        <li>Игра работает: двое ходят по очереди, победа определяется верно.</li>
+        <li>Вы добавили хотя бы одно улучшение (ничья, защита клетки, рамка).</li>
+        <li>Каждый может объяснить, как функция winner находит победителя.</li>
+      </ol><div class="star"><b>★ Со звёздочкой:</b> добавьте счёт — сколько партий выиграл каждый игрок за вечер.</div></div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+
+<div class="page cover">
+    <div class="cover-deco"></div>
+    <div class="cover-inner">
+      <div class="kicker">Учебник · Часть 3</div>
+      <h1>Графика<br>и большой<br>проект</h1>
+      <div class="sub">Черепашка рисует на экране, программы запоминают данные в файлах. А в финале — своя «Змейка».</div>
+      <span class="part-badge">Четверть 3 · 9 уроков</span>
+      <div class="lesson-list">
+        <h4>Что в этой части</h4>
+        <ol>
+          <li><b>Урок 15.</b> Черепашка turtle: первые линии</li>
+          <li><b>Урок 16.</b> Циклы и turtle: узоры</li>
+          <li><b>Урок 17.</b> Функции и turtle: рисуем имя</li>
+          <li><b>Урок 18.</b> Файлы: программа запоминает</li>
+          <li><b>Урок 19.</b> 📇 Проект «Записная книжка»</li>
+          <li><b>Урок 20.</b> Защита и разбор ошибок</li>
+          <li><b>Урок 21.</b> Готовимся к «Змейке»</li>
+          <li><b>Урок 22.</b> 🐍 Проект «Змейка»: начало</li>
+          <li><b>Урок 23.</b> 🐍 «Змейка»: финал и защита</li>
+        </ol>
+      </div>
+      <div class="who">9 класс · субботний курс · <b>Эсхата Академия</b></div>
+    </div>
+  </div>
+
+  <!-- УРОК 15 — turtle основы -->
+  
+<div class="page">
+    <div class="lesson-head">
+      <div><div class="lesson-num">Урок 15</div><div class="lesson-title">Черепашка turtle: первые линии</div></div>
+      <div class="lesson-quarter">Часть 3<br>Графика и проект</div>
+    </div>
+    <div class="body">
+      <div class="goal"><h3>Чему научимся</h3><ul>
+        <li>Запускать графику модулем <b>turtle</b></li>
+        <li>Двигать черепашку: вперёд, поворот</li>
+        <li>Нарисовать квадрат и треугольник</li>
+      </ul></div>
+
+      <div class="sec"><div class="dot">📚</div><h2>Программа умеет рисовать</h2></div>
+      <p>До сих пор наши программы работали с текстом и числами. Но Python умеет и <strong>рисовать</strong>. В нём есть встроенный модуль <span class="term">turtle</span> — «черепашка». Она ползает по экрану и оставляет линию. Командуешь ей — получаешь рисунок.</p>
+      <div class="analogy"><b>На пальцах.</b> Представь черепашку с кисточкой на спине. Куда она ползёт — там остаётся краска. Ты говоришь «вперёд на 100», «повернись направо» — и из этих команд складывается картинка.</div>
+
+      <div class="sec"><div class="dot">💻</div><h2>Разбираем код</h2></div>
+      <p>Рисуем квадрат — четыре раза «вперёд и поворот»:</p>
+      <div class="code"><div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>kvadrat.py</span></div>
+<pre><span class="c-key">import</span> turtle
+
+t = turtle.<span class="c-fn">Turtle</span>()
+
+t.<span class="c-fn">forward</span>(<span class="c-num">100</span>)    <span class="c-com"># вперёд на 100</span>
+t.<span class="c-fn">right</span>(<span class="c-num">90</span>)       <span class="c-com"># поворот направо на 90°</span>
+t.<span class="c-fn">forward</span>(<span class="c-num">100</span>)
+t.<span class="c-fn">right</span>(<span class="c-num">90</span>)
+t.<span class="c-fn">forward</span>(<span class="c-num">100</span>)
+t.<span class="c-fn">right</span>(<span class="c-num">90</span>)
+t.<span class="c-fn">forward</span>(<span class="c-num">100</span>)
+
+turtle.<span class="c-fn">done</span>()       <span class="c-com"># оставить окно открытым</span></pre></div>
+
+      <div class="draw-preview"><span class="lbl">На экране появится</span>
+        <svg width="150" height="150" viewBox="0 0 150 150"><rect x="30" y="30" width="90" height="90" fill="none" stroke="#0050C8" stroke-width="3"/><circle cx="30" cy="120" r="5" fill="#1E8449"/></svg>
+      </div>
+
+      <p>Команда <code>forward</code> ведёт черепашку вперёд, <code>right</code> поворачивает на угол. Четыре стороны по 100 с поворотами на 90° — получается квадрат. <code>turtle.done()</code> в конце не даёт окну закрыться сразу.</p>
+
+      <div class="keybox"><h4>Команды черепашки</h4><p><code>forward(n)</code> / <code>backward(n)</code> — вперёд / назад. <code>right(угол)</code> / <code>left(угол)</code> — поворот. <code>t.color("red")</code> — цвет линии. Углы в градусах: полный круг — 360°.</p></div>
+
+      <div class="task"><span class="task-tag">✋ Задание в паре</span><h4>Треугольник</h4>
+        <p>Нарисуйте треугольник. Подсказка: три стороны, а поворачивать нужно на 120° (потому что 360 ÷ 3 = 120).</p>
+        <p class="pair">Водитель за клавиатурой, штурман сверяется с учебником. Через 10 минут — меняетесь.</p></div>
+
+      <div class="sec"><div class="dot">⚠️</div><h2>Частые ошибки</h2></div>
+      <div class="errors">
+        <div class="err-head"><div class="h-bad">Так не работает</div><div class="h-good">А так правильно</div></div>
+        <div class="err-row"><div class="err-bad">import turtle<br>forward(100)</div><div class="err-good">t = turtle.Turtle()<br>t.forward(100)</div></div>
+        <div class="err-row"><div class="err-bad"># окно мгновенно закрылось</div><div class="err-good">turtle.done() # в конце</div></div>
+      </div>
+      <p style="font-size:13.5px;color:var(--muted);">Сначала создай черепашку <code>t = turtle.Turtle()</code>, потом командуй ей. И <code>turtle.done()</code> в конце, чтобы окно не закрылось.</p>
+
+      <div class="home"><h3>🏠 Домашнее задание</h3><ol>
+        <li>Нарисуй прямоугольник (стороны разной длины).</li>
+        <li>Нарисуй свои инициалы (буквы из прямых линий: Л, Т, Г).</li>
+      </ol><div class="star"><b>★ Со звёздочкой:</b> нарисуй домик — квадрат и треугольник-крышу.</div></div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+  <!-- УРОК 16 — циклы + turtle -->
+  
+<div class="page">
+    <div class="lesson-head">
+      <div><div class="lesson-num">Урок 16</div><div class="lesson-title">Циклы и turtle: рисуем узоры</div></div>
+      <div class="lesson-quarter">Часть 3<br>Графика и проект</div>
+    </div>
+    <div class="body">
+      <div class="goal"><h3>Чему научимся</h3><ul>
+        <li>Соединять цикл <b>for</b> с черепашкой</li>
+        <li>Рисовать фигуры коротким кодом</li>
+        <li>Создавать спирали и узоры</li>
+      </ul></div>
+
+      <div class="sec"><div class="dot">📚</div><h2>Цикл экономит команды</h2></div>
+      <p>Квадрат на прошлом уроке занял 7 строк. Но ведь мы повторяли одно и то же: «вперёд, поворот». А что повторяется — просится в <strong>цикл</strong>. Соединим то, что уже знаем: <code>for</code> из четверти 1 и черепашку.</p>
+      <div class="analogy"><b>На пальцах.</b> Вместо того чтобы 4 раза писать «вперёд, направо», говоришь: «повтори 4 раза: вперёд, направо». Короче, понятнее, и легко поменять 4 на 5 — получится пятиугольник.</div>
+
+      <div class="sec"><div class="dot">💻</div><h2>Разбираем код</h2></div>
+      <p>Квадрат в цикле — всего 3 строки вместо 7:</p>
+      <div class="code"><div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>uzory.py</span></div>
+<pre><span class="c-key">import</span> turtle
+t = turtle.<span class="c-fn">Turtle</span>()
+
+<span class="c-com"># квадрат в цикле</span>
+<span class="c-key">for</span> i <span class="c-key">in</span> <span class="c-fn">range</span>(<span class="c-num">4</span>):
+    t.<span class="c-fn">forward</span>(<span class="c-num">100</span>)
+    t.<span class="c-fn">right</span>(<span class="c-num">90</span>)
+
+turtle.<span class="c-fn">done</span>()</pre></div>
+
+      <p>Хочешь другую фигуру — поменяй число повторов и угол. Правило простое: <strong>угол = 360 ÷ число сторон</strong>. Для шестиугольника: 6 сторон, поворот 60°.</p>
+
+      <p>А вот узор-спираль — черепашка рисует и каждый раз чуть-чуть увеличивает шаг и угол:</p>
+      <div class="code"><div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>spiral.py</span></div>
+<pre>t = turtle.<span class="c-fn">Turtle</span>()
+<span class="c-key">for</span> i <span class="c-key">in</span> <span class="c-fn">range</span>(<span class="c-num">100</span>):
+    t.<span class="c-fn">forward</span>(i)      <span class="c-com"># шаг растёт: 0,1,2,3...</span>
+    t.<span class="c-fn">right</span>(<span class="c-num">91</span>)        <span class="c-com"># чуть больше 90 — закрутка</span>
+turtle.<span class="c-fn">done</span>()</pre></div>
+
+      <div class="draw-preview"><span class="lbl">Примерно так</span>
+        <svg width="160" height="150" viewBox="0 0 160 150"><g fill="none" stroke="#0050C8" stroke-width="2"><path d="M80 75 L90 75 L90 65 L70 65 L70 90 L110 90 L110 45 L45 45 L45 115 L130 115"/></g></svg>
+      </div>
+
+      <div class="keybox"><h4>Формула фигуры</h4><p>Правильная фигура: <code>for i in range(число_сторон)</code>, внутри <code>forward(длина)</code> и <code>right(360 / число_сторон)</code>. Меняешь одно число — меняется фигура.</p></div>
+
+      <div class="task"><span class="task-tag">✋ Задание в паре</span><h4>Пятиугольник и звезда</h4>
+        <p>Нарисуйте правильный пятиугольник (5 сторон, поворот 72°). Потом попробуйте звезду: 5 повторов, но поворот 144°.</p>
+        <p class="pair">Через 10 минут поменяйтесь ролями.</p></div>
+
+      <div class="sec"><div class="dot">⚠️</div><h2>Частые ошибки</h2></div>
+      <div class="errors">
+        <div class="err-head"><div class="h-bad">Так не работает</div><div class="h-good">А так правильно</div></div>
+        <div class="err-row"><div class="err-bad">for i in range(4):<br>t.forward(100)<br>t.right(90)</div><div class="err-good">for i in range(4):<br>&nbsp;&nbsp;t.forward(100)<br>&nbsp;&nbsp;t.right(90)</div></div>
+      </div>
+      <p style="font-size:13.5px;color:var(--muted);">Обе команды должны быть с отступом — тогда они повторяются вместе. Без отступа цикл «не увидит» вторую строку.</p>
+
+      <div class="home"><h3>🏠 Домашнее задание</h3><ol>
+        <li>Нарисуй шестиугольник и восьмиугольник (посчитай углы по формуле).</li>
+        <li>Нарисуй ряд из трёх квадратов (подсказка: между ними подними перо <code>t.penup()</code>).</li>
+      </ol><div class="star"><b>★ Со звёздочкой:</b> нарисуй «цветок» — повтори круг 12 раз, каждый раз поворачивая на 30°.</div></div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+  <!-- УРОК 17 — функции + turtle -->
+  
+<div class="page">
+    <div class="lesson-head">
+      <div><div class="lesson-num">Урок 17</div><div class="lesson-title">Функции и turtle: рисуем имя</div></div>
+      <div class="lesson-quarter">Часть 3<br>Графика и проект</div>
+    </div>
+    <div class="body">
+      <div class="goal"><h3>Чему научимся</h3><ul>
+        <li>Выносить рисование фигуры в функцию</li>
+        <li>Управлять пером: поднять и опустить</li>
+        <li>Рисовать много фигур в разных местах</li>
+      </ul></div>
+
+      <div class="sec"><div class="dot">📚</div><h2>Функция-художник</h2></div>
+      <p>Соединяем ещё две знакомые вещи: <strong>функции</strong> из четверти 2 и черепашку. Опишем «как рисовать квадрат» один раз в функции — и будем рисовать квадраты где угодно одной командой.</p>
+      <div class="analogy"><b>На пальцах.</b> Это как штамп. Вырезал штамп «квадрат» один раз — и ставишь его на бумаге сколько хочешь, в любом месте. Функция <code>kvadrat()</code> — такой штамп.</div>
+
+      <div class="sec"><div class="dot">💻</div><h2>Разбираем код</h2></div>
+      <p>Функция рисует квадрат заданного размера, а перо помогает переходить без линии:</p>
+      <div class="code"><div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>imya.py</span></div>
+<pre><span class="c-key">import</span> turtle
+t = turtle.<span class="c-fn">Turtle</span>()
+
+<span class="c-key">def</span> <span class="c-fn">kvadrat</span>(size):
+    <span class="c-key">for</span> i <span class="c-key">in</span> <span class="c-fn">range</span>(<span class="c-num">4</span>):
+        t.<span class="c-fn">forward</span>(size)
+        t.<span class="c-fn">right</span>(<span class="c-num">90</span>)
+
+<span class="c-fn">kvadrat</span>(<span class="c-num">50</span>)          <span class="c-com"># маленький</span>
+
+t.<span class="c-fn">penup</span>()             <span class="c-com"># поднять перо — не рисуем</span>
+t.<span class="c-fn">forward</span>(<span class="c-num">120</span>)
+t.<span class="c-fn">pendown</span>()           <span class="c-com"># опустить — снова рисуем</span>
+
+<span class="c-fn">kvadrat</span>(<span class="c-num">80</span>)          <span class="c-com"># большой, в новом месте</span>
+
+turtle.<span class="c-fn">done</span>()</pre></div>
+
+      <div class="steps">
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Функция принимает размер</h4><p><code>kvadrat(size)</code> рисует квадрат любого размера — передаём число при вызове.</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>penup / pendown — перо</h4><p>Поднятое перо не оставляет линию. Так черепашка переходит в новое место, не соединяя фигуры чертой.</p></div></div>
+      </div>
+
+      <div class="keybox"><h4>Управление пером</h4><p><code>penup()</code> — поднять (двигаемся без линии). <code>pendown()</code> — опустить (снова рисуем). Незаменимо, когда рисуешь несколько отдельных фигур: буквы имени, ряд домиков.</p></div>
+
+      <div class="task"><span class="task-tag">✋ Задание в паре</span><h4>Три квадрата в ряд</h4>
+        <p>Используя функцию <code>kvadrat</code> и перо, нарисуйте три квадрата разного размера в ряд, не соединённые линиями.</p>
+        <p class="pair">Через 10 минут поменяйтесь ролями.</p></div>
+
+      <div class="sec"><div class="dot">⚠️</div><h2>Частые ошибки</h2></div>
+      <div class="errors">
+        <div class="err-head"><div class="h-bad">Так не работает</div><div class="h-good">А так правильно</div></div>
+        <div class="err-row"><div class="err-bad"># перешёл, но забыл penup<br>t.forward(120)</div><div class="err-good">t.penup()<br>t.forward(120)<br>t.pendown()</div></div>
+      </div>
+      <p style="font-size:13.5px;color:var(--muted);">Если не поднять перо, черепашка нарисует лишнюю линию между фигурами. Не забудь опустить перо обратно.</p>
+
+      <div class="home"><h3>🏠 Домашнее задание</h3><ol>
+        <li>Напиши функцию <code>treugolnik(size)</code> и нарисуй два треугольника рядом.</li>
+        <li>Нарисуй первую букву своего имени из линий и фигур.</li>
+      </ol><div class="star"><b>★ Со звёздочкой:</b> напиши функцию, рисующую квадрат заданного цвета — цвет передавай аргументом.</div></div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+  <!-- УРОК 18 — файлы -->
+  
+<div class="page">
+    <div class="lesson-head">
+      <div><div class="lesson-num">Урок 18</div><div class="lesson-title">Файлы: программа запоминает</div></div>
+      <div class="lesson-quarter">Часть 3<br>Графика и проект</div>
+    </div>
+    <div class="body">
+      <div class="goal"><h3>Чему научимся</h3><ul>
+        <li>Сохранять данные в файл .txt</li>
+        <li>Читать данные из файла обратно</li>
+        <li>Понять, почему это важно для настоящих программ</li>
+      </ul></div>
+
+      <div class="sec"><div class="dot">📚</div><h2>Проблема забывчивости</h2></div>
+      <p>Все наши программы <strong>забывали</strong> всё, как только закрывались. Ввёл данные, программа посчитала — закрыл, и всё пропало. Настоящие программы так не делают: заметки, игры, контакты сохраняются. Секрет — в <span class="term">файлах</span>.</p>
+      <div class="analogy"><b>На пальцах.</b> Память программы — как разговор: закончился и забылся. Файл — как записная книжка: закрыл, убрал, а завтра открыл — всё на месте. Файл переживает закрытие программы.</div>
+
+      <div class="sec"><div class="dot">💻</div><h2>Записываем в файл</h2></div>
+      <div class="code"><div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>zapis.py</span></div>
+<pre><span class="c-com"># "w" — режим записи (write)</span>
+file = <span class="c-fn">open</span>(<span class="c-str">"zametki.txt"</span>, <span class="c-str">"w"</span>)
+file.<span class="c-fn">write</span>(<span class="c-str">"Купить хлеб\n"</span>)
+file.<span class="c-fn">write</span>(<span class="c-str">"Позвонить бабушке\n"</span>)
+file.<span class="c-fn">close</span>()
+
+<span class="c-fn">print</span>(<span class="c-str">"Заметки сохранены!"</span>)</pre></div>
+      <p><code>open</code> открывает файл, <code>"w"</code> означает «для записи». <code>write</code> записывает строку, а <code>\n</code> — это переход на новую строку. <code>close</code> обязательно закрывает файл — как закрыть кран.</p>
+
+      <div class="sec"><div class="dot">📖</div><h2>Читаем из файла</h2></div>
+      <div class="code"><div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>chtenie.py</span></div>
+<pre><span class="c-com"># "r" — режим чтения (read)</span>
+file = <span class="c-fn">open</span>(<span class="c-str">"zametki.txt"</span>, <span class="c-str">"r"</span>)
+text = file.<span class="c-fn">read</span>()
+file.<span class="c-fn">close</span>()
+
+<span class="c-fn">print</span>(text)</pre></div>
+      <div class="output"><span class="lbl">На экране появится</span>Купить хлеб<br>Позвонить бабушке</div>
+
+      <div class="keybox"><h4>Важно запомнить</h4><p><code>open(имя, "w")</code> — записать (стирает старое!). <code>open(имя, "r")</code> — прочитать. <code>write</code> пишет, <code>read</code> читает, <code>close</code> закрывает. <code>\n</code> — новая строка. Есть ещё <code>"a"</code> — дописать в конец, не стирая.</p></div>
+
+      <div class="task"><span class="task-tag">✋ Задание в паре</span><h4>Дневник</h4>
+        <p>Программа спрашивает, как прошёл день, и сохраняет ответ в файл <code>dnevnik.txt</code>. Затем отдельная программа читает файл и показывает запись.</p>
+        <p class="pair">Через 10 минут поменяйтесь ролями.</p></div>
+
+      <div class="sec"><div class="dot">⚠️</div><h2>Частые ошибки</h2></div>
+      <div class="errors">
+        <div class="err-head"><div class="h-bad">Так не работает</div><div class="h-good">А так правильно</div></div>
+        <div class="err-row"><div class="err-bad">file = open("f.txt", "w")<br>file.write("текст")<br># забыли close</div><div class="err-good">file = open("f.txt", "w")<br>file.write("текст")<br>file.close()</div></div>
+        <div class="err-row"><div class="err-bad">write("привет")\n # это не перенос</div><div class="err-good">write("привет\n")</div></div>
+      </div>
+      <p style="font-size:13.5px;color:var(--muted);">Всегда закрывай файл через close. И помни: режим "w" стирает старое содержимое — для дописывания используй "a".</p>
+
+      <div class="home"><h3>🏠 Домашнее задание</h3><ol>
+        <li>Сохрани в файл список из трёх любимых фильмов, потом прочитай и выведи.</li>
+        <li>Программа дописывает (режим "a") новую строку в файл при каждом запуске.</li>
+      </ol><div class="star"><b>★ Со звёздочкой:</b> счётчик запусков — программа читает число из файла, увеличивает и записывает обратно.</div></div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+  <!-- УРОК 19 — ПРОЕКТ Записная книжка -->
+  
+<div class="page">
+    <div class="lesson-head">
+      <div><div class="lesson-num">Урок 19 · Проект</div><div class="lesson-title">📇 «Записная книжка»</div></div>
+      <div class="lesson-quarter">Часть 3<br>Графика и проект</div>
+    </div>
+    <div class="body">
+      <div class="goal"><h3>Что построим</h3><ul>
+        <li>Программу, которая хранит контакты между запусками</li>
+        <li>Соединим словари, циклы и файлы</li>
+        <li>Меню с выбором действия</li>
+      </ul></div>
+
+      <div class="sec"><div class="dot">🎯</div><h2>Первая полезная программа</h2></div>
+      <p>«Угадай число» и «Виселица» были играми. А это — <strong>полезная</strong> программа, которой можно реально пользоваться: добавлять контакты, искать их, и всё сохраняется в файл. Здесь соберётся много знакомого: словари, циклы, условия, файлы.</p>
+
+      <div class="sec"><div class="dot">💻</div><h2>Собираем книжку</h2></div>
+      <div class="code"><div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>knizhka.py</span></div>
+<pre><span class="c-com"># читаем контакты из файла в начале</span>
+contacts = {}
+<span class="c-key">try</span>:
+    file = <span class="c-fn">open</span>(<span class="c-str">"contacts.txt"</span>, <span class="c-str">"r"</span>)
+    <span class="c-key">for</span> line <span class="c-key">in</span> file:
+        name, phone = line.<span class="c-fn">strip</span>().<span class="c-fn">split</span>(<span class="c-str">","</span>)
+        contacts[name] = phone
+    file.<span class="c-fn">close</span>()
+<span class="c-key">except</span>:
+    <span class="c-key">pass</span>   <span class="c-com"># файла ещё нет — не страшно</span>
+
+<span class="c-key">while</span> <span class="c-key">True</span>:
+    <span class="c-fn">print</span>(<span class="c-str">"1-добавить  2-найти  3-выход"</span>)
+    choice = <span class="c-fn">input</span>(<span class="c-str">"Выбор: "</span>)
+
+    <span class="c-key">if</span> choice == <span class="c-str">"1"</span>:
+        name = <span class="c-fn">input</span>(<span class="c-str">"Имя: "</span>)
+        phone = <span class="c-fn">input</span>(<span class="c-str">"Телефон: "</span>)
+        contacts[name] = phone
+    <span class="c-key">elif</span> choice == <span class="c-str">"2"</span>:
+        name = <span class="c-fn">input</span>(<span class="c-str">"Кого ищем? "</span>)
+        <span class="c-fn">print</span>(contacts.<span class="c-fn">get</span>(name, <span class="c-str">"Не найдено"</span>))
+    <span class="c-key">else</span>:
+        <span class="c-key">break</span>
+
+<span class="c-com"># сохраняем всё обратно в файл</span>
+file = <span class="c-fn">open</span>(<span class="c-str">"contacts.txt"</span>, <span class="c-str">"w"</span>)
+<span class="c-key">for</span> name, phone <span class="c-key">in</span> contacts.<span class="c-fn">items</span>():
+    file.<span class="c-fn">write</span>(name + <span class="c-str">","</span> + phone + <span class="c-str">"\n"</span>)
+file.<span class="c-fn">close</span>()</pre></div>
+
+      <div class="steps">
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Загрузка при старте</h4><p>В начале читаем файл и складываем контакты в словарь. <code>split(",")</code> разделяет строку «имя,телефон» на две части.</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Меню в цикле</h4><p>Цикл показывает меню снова и снова, пока не выберешь выход. Знакомый приём из «Угадай число».</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Сохранение при выходе</h4><p>Перед выходом записываем весь словарь обратно в файл — чтобы контакты не потерялись.</p></div></div>
+      </div>
+
+      <div class="task"><span class="task-tag">✋ Задание в паре</span><h4>Соберите и проверьте</h4>
+        <p>Наберите программу. Добавьте пару контактов, выйдите, запустите снова — контакты на месте? Значит, файл работает!</p>
+        <p class="pair">Разбирайте по частям: сначала меню, потом файл.</p></div>
+
+      <div class="home"><h3>🏠 Домашнее задание</h3><ol>
+        <li>Добавь в меню пункт «показать все контакты».</li>
+        <li>Сделай, чтобы при поиске несуществующего имени программа предлагала добавить его.</li>
+      </ol><div class="star"><b>★ Со звёздочкой:</b> добавь удаление контакта по имени.</div></div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+  <!-- УРОК 20 — защита и разбор ошибок -->
+  
+<div class="page">
+    <div class="lesson-head">
+      <div><div class="lesson-num">Урок 20</div><div class="lesson-title">Защита проекта и разбор ошибок</div></div>
+      <div class="lesson-quarter">Часть 3<br>Графика и проект</div>
+    </div>
+    <div class="body">
+      <div class="goal"><h3>Чему научимся</h3><ul>
+        <li>Читать сообщения об ошибках и понимать их</li>
+        <li>Находить и исправлять чужие ошибки</li>
+        <li>Рассказывать о своей программе на защите</li>
+      </ul></div>
+
+      <div class="sec"><div class="dot">📚</div><h2>Ошибка — это подсказка</h2></div>
+      <p>За три четверти вы много раз видели красные сообщения об ошибках. Пора научиться <strong>читать</strong> их спокойно. Python всегда подсказывает, что не так и в какой строке — надо просто присмотреться.</p>
+      <div class="analogy"><b>На пальцах.</b> Ошибка — не «ты плохой программист», а навигатор, который говорит «поверни, ты не туда». Опытные программисты ошибаются постоянно — просто быстро читают подсказку и правят.</div>
+
+      <div class="sec"><div class="dot">🔍</div><h2>Три частые ошибки в лицо</h2></div>
+      <div class="code"><div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>oshibki.py</span></div>
+<pre><span class="c-com"># SyntaxError — забыл двоеточие или скобку</span>
+<span class="c-key">if</span> x &gt; <span class="c-num">5</span>
+    <span class="c-fn">print</span>(<span class="c-str">"много"</span>)
+
+<span class="c-com"># NameError — имя не создано (опечатка)</span>
+<span class="c-fn">print</span>(nmae)
+
+<span class="c-com"># IndentationError — неправильный отступ</span>
+<span class="c-key">for</span> i <span class="c-key">in</span> <span class="c-fn">range</span>(<span class="c-num">3</span>):
+<span class="c-fn">print</span>(i)</pre></div>
+
+      <div class="keybox"><h4>Читаем ошибку</h4><p><b>SyntaxError</b> — синтаксис: забыл двоеточие, скобку, кавычку. <b>NameError</b> — имя не существует, чаще опечатка. <b>IndentationError</b> — отступы. <b>TypeError</b> — смешал текст и число. Последняя строка ошибки — самая важная.</p></div>
+
+      <div class="task"><span class="task-tag">✋ Задание в паре</span><h4>Охота на баги</h4>
+        <p>Учитель даст программу с 3–4 ошибками. Ваша задача — запустить, прочитать каждую ошибку, исправить и добиться, чтобы программа заработала. Кто быстрее?</p>
+        <p class="pair">Читайте ошибки вслух друг другу — так быстрее находится причина.</p></div>
+
+      <div class="sec"><div class="dot">🎤</div><h2>Как защищать проект</h2></div>
+      <p>Защита — это 2 минуты у проектора. Расскажи по простому плану:</p>
+      <div class="steps">
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Что делает программа</h4><p>Одним предложением: «это записная книжка, хранит контакты в файле».</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Как она работает</h4><p>Покажи главное: «меню в цикле, контакты в словаре, сохранение в файл».</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Что было сложно</h4><p>Честно расскажи, где застрял и как решил. Это ценят больше всего.</p></div></div>
+      </div>
+
+      <div class="home"><h3>🏠 Домашнее задание</h3><ol>
+        <li>Подготовь защиту «Записной книжки» по плану из трёх пунктов.</li>
+        <li>Найди в своём старом коде любую ошибку, которую делал, и запиши, как её узнать.</li>
+      </ol><div class="star"><b>★ Со звёздочкой:</b> составь свою «шпаргалку ошибок» — 5 самых частых и как их чинить.</div></div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+  <!-- УРОК 21 — подготовка к Змейке -->
+  
+<div class="page">
+    <div class="lesson-head">
+      <div><div class="lesson-num">Урок 21</div><div class="lesson-title">Готовимся к «Змейке»: разбор идеи</div></div>
+      <div class="lesson-quarter">Часть 3<br>Графика и проект</div>
+    </div>
+    <div class="body">
+      <div class="goal"><h3>Чему научимся</h3><ul>
+        <li>Разбирать большой проект на части до начала кода</li>
+        <li>Понимать, из чего состоит игра «Змейка»</li>
+        <li>Планировать — главный навык программиста</li>
+      </ul></div>
+
+      <div class="sec"><div class="dot">📚</div><h2>Сначала думаем, потом кодим</h2></div>
+      <p>«Змейка» — самый большой проект года. Бросаться писать код сразу — плохая идея. Сначала <strong>разберём игру на части</strong>: что в ней есть, что за чем происходит. Это называется планированием, и это отличает хорошего программиста.</p>
+      <div class="analogy"><b>На пальцах.</b> Строитель не начинает класть кирпичи наугад — сначала чертёж. Наш чертёж «Змейки»: понять, из каких кусочков состоит игра, до того как писать первую строку.</div>
+
+      <div class="sec"><div class="dot">🧩</div><h2>Из чего состоит «Змейка»</h2></div>
+      <p>Разберём игру на понятные части:</p>
+      <div class="steps">
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Змейка — это список</h4><p>Тело змейки — список координат. Голова — первый элемент. Двигается — добавляем клетку спереди, убираем сзади.</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Еда — случайная точка</h4><p>Яблоко появляется в случайном месте (знакомый <code>random</code>). Съела — растёт, появляется новое.</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Управление — клавиши</h4><p>turtle умеет ловить нажатия стрелок и менять направление движения.</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Проигрыш — врезалась</h4><p>Если голова столкнулась со стеной или своим хвостом — игра окончена.</p></div></div>
+      </div>
+
+      <div class="keybox"><h4>Что мы уже умеем для «Змейки»</h4><p>Списки (тело змейки), циклы (главный цикл игры), функции (движение, проверки), random (еда), условия (столкновения), turtle (рисование). Вся игра — это сборка того, что вы уже знаете!</p></div>
+
+      <div class="task"><span class="task-tag">✋ Задание в паре</span><h4>Нарисуйте план на бумаге</h4>
+        <p>Не за компьютером, а на листе: нарисуйте, как выглядит игра, и запишите словами, что происходит на каждом шаге (голова двигается → проверяем еду → проверяем столкновение). Это ваш чертёж.</p>
+        <p class="pair">Обсуждайте вслух — так рождается понимание.</p></div>
+
+      <div class="home"><h3>🏠 Домашнее задание</h3><ol>
+        <li>Запиши по шагам, что происходит за один «тик» игры (одно движение змейки).</li>
+        <li>Подумай: где в «Змейке» пригодится список, а где словарь? Обоснуй.</li>
+      </ol><div class="star"><b>★ Со звёздочкой:</b> придумай, как добавить в игру подсчёт очков, и запиши идею.</div></div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+  <!-- УРОК 22 — ПРОЕКТ Змейка начало -->
+  
+<div class="page">
+    <div class="lesson-head">
+      <div><div class="lesson-num">Урок 22 · Проект</div><div class="lesson-title">🐍 «Змейка»: начало</div></div>
+      <div class="lesson-quarter">Часть 3<br>Графика и проект</div>
+    </div>
+    <div class="body">
+      <div class="goal"><h3>Что построим сегодня</h3><ul>
+        <li>Окно игры и змейку из одного сегмента</li>
+        <li>Движение по нажатию стрелок</li>
+        <li>Основу главного цикла игры</li>
+      </ul></div>
+
+      <div class="sec"><div class="dot">🎯</div><h2>Собираем каркас</h2></div>
+      <p>По нашему плану строим постепенно. Сегодня — <strong>окно, змейка и управление</strong>. На следующем уроке добавим еду, рост и проигрыш. Не пугайся длины кода — мы разберём его по кусочкам, и каждый кусочек знакомый.</p>
+
+      <div class="sec"><div class="dot">💻</div><h2>Каркас игры</h2></div>
+      <div class="code"><div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>snake.py</span></div>
+<pre><span class="c-key">import</span> turtle
+
+screen = turtle.<span class="c-fn">Screen</span>()
+screen.<span class="c-fn">setup</span>(<span class="c-num">400</span>, <span class="c-num">400</span>)
+screen.<span class="c-fn">title</span>(<span class="c-str">"Змейка"</span>)
+
+<span class="c-com"># голова змейки</span>
+head = turtle.<span class="c-fn">Turtle</span>()
+head.<span class="c-fn">shape</span>(<span class="c-str">"square"</span>)
+head.<span class="c-fn">color</span>(<span class="c-str">"green"</span>)
+head.<span class="c-fn">penup</span>()
+
+direction = <span class="c-str">"stop"</span>
+
+<span class="c-key">def</span> <span class="c-fn">go_up</span>():
+    <span class="c-key">global</span> direction
+    direction = <span class="c-str">"up"</span>
+
+<span class="c-key">def</span> <span class="c-fn">go_down</span>():
+    <span class="c-key">global</span> direction
+    direction = <span class="c-str">"down"</span>
+
+<span class="c-com"># ловим нажатия стрелок</span>
+screen.<span class="c-fn">listen</span>()
+screen.<span class="c-fn">onkey</span>(go_up, <span class="c-str">"Up"</span>)
+screen.<span class="c-fn">onkey</span>(go_down, <span class="c-str">"Down"</span>)
+
+<span class="c-com"># главный цикл игры</span>
+<span class="c-key">while</span> <span class="c-key">True</span>:
+    screen.<span class="c-fn">update</span>()
+    <span class="c-key">if</span> direction == <span class="c-str">"up"</span>:
+        head.<span class="c-fn">sety</span>(head.<span class="c-fn">ycor</span>() + <span class="c-num">20</span>)
+    <span class="c-key">if</span> direction == <span class="c-str">"down"</span>:
+        head.<span class="c-fn">sety</span>(head.<span class="c-fn">ycor</span>() - <span class="c-num">20</span>)</pre></div>
+
+      <div class="steps">
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Окно и голова</h4><p><code>Screen</code> создаёт окно игры. Голова — черепашка в форме квадрата. <code>penup</code>, чтобы не рисовала линию.</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Функции направления</h4><p>Каждая клавиша меняет переменную <code>direction</code>. Слово <code>global</code> позволяет функции менять переменную снаружи.</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Главный цикл</h4><p><code>while True</code> — сердце игры. Каждый повтор: обновить экран и подвинуть голову в текущем направлении.</p></div></div>
+      </div>
+
+      <div class="task"><span class="task-tag">✋ Задание в паре</span><h4>Запустите и подвигайте</h4>
+        <p>Наберите каркас и добавьте функции <code>go_left</code> и <code>go_right</code> по образцу (меняют x через <code>setx</code>). Запустите — квадрат должен двигаться стрелками.</p>
+        <p class="pair">На следующем уроке добавим еду и проигрыш.</p></div>
+
+      <div class="home"><h3>🏠 Домашнее задание</h3><ol>
+        <li>Допиши движение влево и вправо, чтобы змейка слушалась всех четырёх стрелок.</li>
+        <li>Поменяй цвет и размер окна на свой вкус.</li>
+      </ol><div class="star"><b>★ Со звёздочкой:</b> сделай, чтобы змейка не могла развернуться на 180° (вверх нельзя, если едет вниз).</div></div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+  <!-- УРОК 23 — ПРОЕКТ Змейка финал -->
+  
+<div class="page">
+    <div class="lesson-head">
+      <div><div class="lesson-num">Урок 23 · Проект</div><div class="lesson-title">🐍 «Змейка»: финал и защита</div></div>
+      <div class="lesson-quarter">Часть 3<br>Графика и проект</div>
+    </div>
+    <div class="body">
+      <div class="goal"><h3>Что доделаем</h3><ul>
+        <li>Еду, которую змейка ест</li>
+        <li>Проигрыш при столкновении со стеной</li>
+        <li>Готовую игру для портфолио — и защиту</li>
+      </ul></div>
+
+      <div class="sec"><div class="dot">💻</div><h2>Добавляем еду и проигрыш</h2></div>
+      <p>К каркасу с прошлого урока добавляем еду и проверку столкновений. Показываю ключевые части — вставьте их в главный цикл:</p>
+      <div class="code"><div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>snake_final.py</span></div>
+<pre><span class="c-key">import</span> random
+
+<span class="c-com"># создаём еду (яблоко)</span>
+food = turtle.<span class="c-fn">Turtle</span>()
+food.<span class="c-fn">shape</span>(<span class="c-str">"circle"</span>)
+food.<span class="c-fn">color</span>(<span class="c-str">"red"</span>)
+food.<span class="c-fn">penup</span>()
+food.<span class="c-fn">goto</span>(<span class="c-num">0</span>, <span class="c-num">100</span>)
+
+score = <span class="c-num">0</span>
+
+<span class="c-com"># --- эти проверки идут ВНУТРИ главного цикла ---</span>
+
+<span class="c-com"># съели еду?</span>
+<span class="c-key">if</span> head.<span class="c-fn">distance</span>(food) &lt; <span class="c-num">20</span>:
+    x = random.<span class="c-fn">randint</span>(-<span class="c-num">180</span>, <span class="c-num">180</span>)
+    y = random.<span class="c-fn">randint</span>(-<span class="c-num">180</span>, <span class="c-num">180</span>)
+    food.<span class="c-fn">goto</span>(x, y)
+    score = score + <span class="c-num">1</span>
+    <span class="c-fn">print</span>(<span class="c-str">"Очки:"</span>, score)
+
+<span class="c-com"># врезались в стену?</span>
+<span class="c-key">if</span> <span class="c-fn">abs</span>(head.<span class="c-fn">xcor</span>()) &gt; <span class="c-num">190</span> <span class="c-key">or</span> <span class="c-fn">abs</span>(head.<span class="c-fn">ycor</span>()) &gt; <span class="c-num">190</span>:
+    <span class="c-fn">print</span>(<span class="c-str">"Игра окончена! Очки:"</span>, score)
+    <span class="c-key">break</span></pre></div>
+
+      <div class="steps">
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Еда — красный круг</h4><p>Отдельная черепашка в форме круга. <code>head.distance(food)</code> измеряет расстояние до неё.</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Съели — новая еда и очко</h4><p>Если голова близко к еде — переносим еду в случайное место и добавляем очко.</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Стена — конец игры</h4><p><code>abs()</code> берёт число без знака. Ушли за 190 по любой оси — <code>break</code>, игра окончена.</p></div></div>
+      </div>
+
+      <div class="task"><span class="task-tag">🏆 Главный проект года</span><h4>Доделайте и защитите «Змейку»</h4>
+        <p>Соберите игру целиком. Сделайте её своей: свой цвет, счёт на экране, ускорение. Это ваш лучший проект — сохраните его в портфолио. На защите (3 минуты) покажите игру в действии и расскажите, как она устроена.</p>
+        <p class="pair">Оба должны уметь объяснить главный цикл и проверку столкновений.</p></div>
+
+      <div class="home"><h3>🏠 Что показать на защите</h3><ol>
+        <li>Змейка двигается стрелками, ест еду, растёт счёт.</li>
+        <li>Игра заканчивается при столкновении со стеной.</li>
+        <li>Вы добавили минимум одно своё улучшение.</li>
+      </ol><div class="star"><b>★ Со звёздочкой:</b> сделай, чтобы змейка росла (хвост из сегментов) и проигрывала, врезавшись в себя.</div></div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+
+<div class="page cover">
+    <div class="cover-deco"></div>
+    <div class="cover-inner">
+      <div class="kicker">Учебник · Часть 4 · Финал</div>
+      <h1>Данные<br>и твой<br>проект</h1>
+      <div class="sub">Анализ текста, защита от ошибок — и твой собственный проект, который ты придумаешь и защитишь сам.</div>
+      <span class="part-badge">Четверть 4 · 7 уроков + приложения</span>
+      <div class="lesson-list">
+        <h4>Что в этой части</h4>
+        <ol>
+          <li><b>Урок 24.</b> Анализ текста: считаем слова</li>
+          <li><b>Урок 25.</b> Защита от ошибок: try / except</li>
+          <li><b>Урок 26.</b> Повторение: код-битвы</li>
+          <li><b>Урок 27.</b> Выбираем финальный проект</li>
+          <li><b>Уроки 28–30.</b> 🚀 Финальный проект и защита</li>
+          <li><b>Приложения.</b> Шпаргалка, глоссарий, ответы</li>
+        </ol>
+      </div>
+      <div class="who">9 класс · субботний курс · <b>Эсхата Академия</b></div>
+    </div>
+  </div>
+
+  <!-- УРОК 24 — анализ текста -->
+  
+<div class="page">
+    <div class="lesson-head">
+      <div><div class="lesson-num">Урок 24</div><div class="lesson-title">Анализ текста: считаем слова</div></div>
+      <div class="lesson-quarter">Часть 4<br>Данные и проект</div>
+    </div>
+    <div class="body">
+      <div class="goal"><h3>Чему научимся</h3><ul>
+        <li>Разбивать текст на слова командой <b>split</b></li>
+        <li>Считать количество слов и находить самое частое</li>
+        <li>Соединять строки, списки и словари для анализа</li>
+      </ul></div>
+
+      <div class="sec"><div class="dot">📚</div><h2>Текст как данные</h2></div>
+      <p>Программы умеют не только хранить текст, но и <strong>анализировать</strong> его: сколько слов, какое встречается чаще всего. Так работают поисковики и умные помощники. У тебя уже есть все инструменты — строки, списки, словари. Осталось соединить.</p>
+      <div class="analogy"><b>На пальцах.</b> Представь, что рассыпал текст на отдельные слова-карточки. Теперь можно их посчитать, разложить по стопкам, найти самую большую стопку. Именно это делает анализ текста.</div>
+
+      <div class="sec"><div class="dot">💻</div><h2>Разбираем код</h2></div>
+      <p><code>split</code> разбивает строку на список слов:</p>
+      <div class="code"><div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>analiz.py</span></div>
+<pre>text = <span class="c-str">"кот пёс кот рыба кот пёс"</span>
+words = text.<span class="c-fn">split</span>()      <span class="c-com"># список слов</span>
+
+<span class="c-fn">print</span>(<span class="c-str">"Всего слов:"</span>, <span class="c-fn">len</span>(words))
+
+<span class="c-com"># считаем каждое слово в словарь</span>
+count = {}
+<span class="c-key">for</span> word <span class="c-key">in</span> words:
+    <span class="c-key">if</span> word <span class="c-key">in</span> count:
+        count[word] = count[word] + <span class="c-num">1</span>
+    <span class="c-key">else</span>:
+        count[word] = <span class="c-num">1</span>
+
+<span class="c-fn">print</span>(count)</pre></div>
+      <div class="output"><span class="lbl">На экране появится</span>Всего слов: 6<br>{'кот': 3, 'пёс': 2, 'рыба': 1}</div>
+
+      <p>Цикл идёт по словам. Если слово уже в словаре — прибавляем 1, если нет — начинаем с 1. В итоге словарь показывает, сколько раз встретилось каждое слово. «кот» — 3 раза, чемпион.</p>
+
+      <div class="keybox"><h4>Важно запомнить</h4><p><code>split()</code> — разбивает строку на список слов по пробелам. Приём «считать в словарь» (есть ключ — прибавь, нет — создай) очень частый: так считают что угодно — слова, голоса, товары.</p></div>
+
+      <div class="task"><span class="task-tag">✋ Задание в паре</span><h4>Анализатор предложения</h4>
+        <p>Программа спрашивает предложение и выводит: сколько всего слов и сколько среди них разных (подсказка: разных — это <code>len(count)</code>).</p>
+        <p class="pair">Через 10 минут поменяйтесь ролями.</p></div>
+
+      <div class="sec"><div class="dot">⚠️</div><h2>Частые ошибки</h2></div>
+      <div class="errors">
+        <div class="err-head"><div class="h-bad">Так не работает</div><div class="h-good">А так правильно</div></div>
+        <div class="err-row"><div class="err-bad">count[word] = count[word] + 1<br># для нового слова — ошибка</div><div class="err-good">if word in count: ...<br>else: count[word] = 1</div></div>
+      </div>
+      <p style="font-size:13.5px;color:var(--muted);">Нельзя прибавлять к слову, которого ещё нет в словаре. Сначала проверь, есть ли оно.</p>
+
+      <div class="home"><h3>🏠 Домашнее задание</h3><ol>
+        <li>Найди самое длинное слово в предложении.</li>
+        <li>Посчитай, сколько раз встречается заданная буква во всём тексте.</li>
+      </ol><div class="star"><b>★ Со звёздочкой:</b> найди и выведи самое частое слово в тексте (не только словарь, а именно чемпиона).</div></div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+  <!-- УРОК 25 — try/except -->
+  
+<div class="page">
+    <div class="lesson-head">
+      <div><div class="lesson-num">Урок 25</div><div class="lesson-title">Защита от ошибок: try / except</div></div>
+      <div class="lesson-quarter">Часть 4<br>Данные и проект</div>
+    </div>
+    <div class="body">
+      <div class="goal"><h3>Чему научимся</h3><ul>
+        <li>Ловить ошибки, чтобы программа не падала</li>
+        <li>Использовать <b>try</b> и <b>except</b></li>
+        <li>Делать программы надёжными для любого пользователя</li>
+      </ul></div>
+
+      <div class="sec"><div class="dot">📚</div><h2>Программа не должна падать</h2></div>
+      <p>Что будет, если в калькуляторе на вопрос «введи число» пользователь напишет «привет»? Программа <strong>рухнет</strong> с ошибкой. Настоящие программы так себя не ведут — они ловят ошибку и вежливо просят повторить. Это делают слова <span class="term">try</span> и <span class="term">except</span>.</p>
+      <div class="analogy"><b>На пальцах.</b> try / except — это страховка. «Попробуй (try) сделать. Если не вышло (except) — вот запасной план». Как страховочный трос у скалолаза: сорвался — не упал, а повис.</div>
+
+      <div class="sec"><div class="dot">💻</div><h2>Разбираем код</h2></div>
+      <div class="code"><div class="code-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>zaschita.py</span></div>
+<pre><span class="c-key">try</span>:
+    age = <span class="c-fn">int</span>(<span class="c-fn">input</span>(<span class="c-str">"Сколько тебе лет? "</span>))
+    <span class="c-fn">print</span>(<span class="c-str">"Через год будет:"</span>, age + <span class="c-num">1</span>)
+<span class="c-key">except</span>:
+    <span class="c-fn">print</span>(<span class="c-str">"Это не похоже на число!"</span>)</pre></div>
+      <div class="output"><span class="lbl">Если ввести «привет»</span>Это не похоже на число!<br><span style="color:#888">(программа не рухнула, а вежливо ответила)</span></div>
+
+      <p>Код внутри <code>try</code> — то, что <strong>пробуем</strong> сделать. Если там ошибка — Python не падает, а прыгает в <code>except</code> и выполняет запасной план. Пользователь видит понятное сообщение, а не красную простыню ошибки.</p>
+
+      <div class="keybox"><h4>Важно запомнить</h4><p><code>try:</code> — рискованный код. <code>except:</code> — что делать при ошибке. Особенно полезно с <code>int(input())</code>, делением (вдруг на ноль) и файлами (вдруг нет файла).</p></div>
+
+      <div class="task"><span class="task-tag">✋ Задание в паре</span><h4>Надёжный калькулятор</h4>
+        <p>Возьмите калькулятор из четверти 1 и защитите его: если ввели не число или делят на ноль — программа не падает, а просит повторить.</p>
+        <p class="pair">Через 10 минут поменяйтесь ролями.</p></div>
+
+      <div class="sec"><div class="dot">⚠️</div><h2>Частые ошибки</h2></div>
+      <div class="errors">
+        <div class="err-head"><div class="h-bad">Так не работает</div><div class="h-good">А так правильно</div></div>
+        <div class="err-row"><div class="err-bad">try:<br>age = int(input())<br>except:</div><div class="err-good">try:<br>&nbsp;&nbsp;age = int(input())<br>except:</div></div>
+      </div>
+      <p style="font-size:13.5px;color:var(--muted);">Код внутри try и except — с отступом, как в if. Не забудь двоеточия после обоих слов.</p>
+
+      <div class="home"><h3>🏠 Домашнее задание</h3><ol>
+        <li>Защити программу, которая читает файл: если файла нет — сообщи об этом вежливо.</li>
+        <li>Сделай ввод возраста, который повторяет вопрос, пока не введут число (try внутри цикла).</li>
+      </ol><div class="star"><b>★ Со звёздочкой:</b> раздели except на два: отдельно для «не число», отдельно для «деление на ноль».</div></div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+  <!-- УРОК 26 — повторение код-битвы -->
+  
+<div class="page">
+    <div class="lesson-head">
+      <div><div class="lesson-num">Урок 26</div><div class="lesson-title">Повторение: код-битвы и турнир</div></div>
+      <div class="lesson-quarter">Часть 4<br>Данные и проект</div>
+    </div>
+    <div class="body">
+      <div class="goal"><h3>Что сделаем</h3><ul>
+        <li>Повторим всё за год в игровой форме</li>
+        <li>Проведём код-битвы у проектора</li>
+        <li>Подготовимся к финальному проекту</li>
+      </ul></div>
+
+      <div class="sec"><div class="dot">🎮</div><h2>Урок-турнир</h2></div>
+      <p>Сегодня без новых тем — <strong>закрепляем</strong> всё, что прошли за год. Но не скучным повторением, а битвами: пары соревнуются, кто быстрее и красивее решит задачу. Это и повторение, и подготовка к финальному проекту.</p>
+
+      <div class="sec"><div class="dot">⚔️</div><h2>Правила код-битвы</h2></div>
+      <div class="steps">
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Учитель даёт задачу</h4><p>Короткую, на 5–7 минут: например, «программа выводит все чётные числа от 1 до 50».</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Пары решают на время</h4><p>Кто первый получил рабочий код — поднимает руку.</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Показ у проектора</h4><p>Две пары показывают решения. Класс голосует: чей код короче и понятнее.</p></div></div>
+      </div>
+
+      <div class="sec"><div class="dot">🎯</div><h2>Задачи для битвы</h2></div>
+      <p>Проверь себя — сможешь решить каждую? Это карта всего, что ты умеешь:</p>
+      <div class="themes">
+        <div class="theme"><div class="ti">🔢</div><h4>Числа</h4><p>Сумма цифр введённого числа</p></div>
+        <div class="theme"><div class="ti">🔁</div><h4>Циклы</h4><p>Вывести таблицу квадратов 1–10</p></div>
+        <div class="theme"><div class="ti">📝</div><h4>Строки</h4><p>Проверить, палиндром ли слово</p></div>
+        <div class="theme"><div class="ti">📋</div><h4>Списки</h4><p>Найти среднее и максимум списка</p></div>
+        <div class="theme"><div class="ti">🎲</div><h4>Функции</h4><p>Функция, бросающая кубик</p></div>
+        <div class="theme"><div class="ti">📖</div><h4>Словари</h4><p>Посчитать буквы в слове</p></div>
+      </div>
+
+      <div class="task"><span class="task-tag">✋ Турнир класса</span><h4>Кубок программиста</h4>
+        <p>Играем 5–6 раундов. За каждую победу пара получает очко. В конце — чемпионы четверти. Проигравших нет: решил задачу — уже молодец.</p>
+        <p class="pair">Меняйтесь, кто за клавиатурой, каждый раунд.</p></div>
+
+      <div class="home"><h3>🏠 Домашнее задание</h3><ol>
+        <li>Реши три любые задачи из карты выше, которые показались сложными.</li>
+        <li>Начни думать над темой финального проекта — что тебе интересно?</li>
+      </ol><div class="star"><b>★ Со звёздочкой:</b> придумай свою задачу для код-битвы и её решение.</div></div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+  <!-- УРОК 27 — выбор проекта -->
+  
+<div class="page">
+    <div class="lesson-head">
+      <div><div class="lesson-num">Урок 27</div><div class="lesson-title">Выбираем финальный проект</div></div>
+      <div class="lesson-quarter">Часть 4<br>Данные и проект</div>
+    </div>
+    <div class="body">
+      <div class="goal"><h3>Что сделаем</h3><ul>
+        <li>Выберем тему своего проекта</li>
+        <li>Составим план: что должна уметь программа</li>
+        <li>Распределим работу на три урока</li>
+      </ul></div>
+
+      <div class="sec"><div class="dot">🚀</div><h2>Твой собственный проект</h2></div>
+      <p>Финал года — проект, который ты придумываешь и делаешь <strong>сам</strong> (в паре). Не по образцу, а свой. Три урока на работу, потом защита перед классом. Это то, что покажет: ты умеешь программировать не по шаблону, а решать свою задачу.</p>
+
+      <div class="sec"><div class="dot">💡</div><h2>Идеи для проекта</h2></div>
+      <p>Выбери из этих или придумай своё:</p>
+      <div class="themes">
+        <div class="theme"><div class="ti">🎯</div><h4>Викторина</h4><p>Вопросы по любимому предмету, подсчёт очков</p></div>
+        <div class="theme"><div class="ti">🎲</div><h4>Игра-бродилка</h4><p>Текстовый квест с выбором пути</p></div>
+        <div class="theme"><div class="ti">💰</div><h4>Копилка</h4><p>Учёт денег: доходы, расходы, файл</p></div>
+        <div class="theme"><div class="ti">📝</div><h4>Список дел</h4><p>Задачи с сохранением в файл</p></div>
+        <div class="theme"><div class="ti">🎨</div><h4>Рисунок turtle</h4><p>Сложная картина или узор-генератор</p></div>
+        <div class="theme"><div class="ti">🐍</div><h4>Своя игра</h4><p>Развитие «Змейки» или новая аркада</p></div>
+      </div>
+
+      <div class="sec"><div class="dot">📋</div><h2>Как спланировать</h2></div>
+      <div class="steps">
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Опиши идею одним предложением</h4><p>«Викторина по истории Таджикистана на 10 вопросов со счётом».</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Раздели на части</h4><p>Что должна уметь программа? Выпиши 3–5 пунктов.</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Распредели на 3 урока</h4><p>Урок 28 — каркас, 29 — основное, 30 — доработка и защита.</p></div></div>
+      </div>
+
+      <div class="task"><span class="task-tag">✋ Задание в паре</span><h4>План проекта</h4>
+        <p>Выберите тему, опишите идею одним предложением и выпишите, что программа должна уметь. Покажите план учителю до начала кодирования.</p>
+        <p class="pair">Спорьте, обсуждайте — хороший план экономит массу времени.</p></div>
+
+      <div class="home"><h3>🏠 Домашнее задание</h3><ol>
+        <li>Доработай план: нарисуй на бумаге, как программа будет выглядеть.</li>
+        <li>Выпиши, какие темы года понадобятся (списки? файлы? функции?).</li>
+      </ol><div class="star"><b>★ Со звёздочкой:</b> продумай одну «фишку», которой удивишь класс на защите.</div></div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+  <!-- УРОКИ 28-30 — финальный проект -->
+  
+<div class="page">
+    <div class="lesson-head">
+      <div><div class="lesson-num">Уроки 28–30 · Финал</div><div class="lesson-title">🚀 Твой проект и защита</div></div>
+      <div class="lesson-quarter">Часть 4<br>Данные и проект</div>
+    </div>
+    <div class="body">
+      <div class="goal"><h3>Финальная прямая</h3><ul>
+        <li>Три урока на создание своего проекта</li>
+        <li>Защита перед классом — покажи, что умеешь</li>
+        <li>Диплом об окончании курса</li>
+      </ul></div>
+
+      <div class="sec"><div class="dot">🗓️</div><h2>План трёх уроков</h2></div>
+      <div class="steps">
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Урок 28 — каркас</h4><p>Собери основу программы: главное меню или главный цикл. Пусть работает хоть как-то, пусть криво — главное запускается.</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Урок 29 — начинка</h4><p>Добавь основные функции: подсчёт очков, сохранение в файл, проверки. Программа делает то, что задумано.</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Урок 30 — блеск и защита</h4><p>Доведи до ума: сообщения, красота, «фишка». Подготовь и проведи защиту.</p></div></div>
+      </div>
+
+      <div class="sec"><div class="dot">🎤</div><h2>Как пройти защиту</h2></div>
+      <p>Защита — 3 минуты у проектора. План простой:</p>
+      <div class="steps">
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Покажи в действии</h4><p>Запусти программу, продемонстрируй, что она делает.</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Объясни устройство</h4><p>Расскажи главное: какие темы года использовал, как всё работает.</p></div></div>
+        <div class="step"><div class="sn"></div><div class="sc"><h4>Поделись трудностями</h4><p>Что было сложно, где застрял, как решил. Это ценят больше всего.</p></div></div>
+      </div>
+
+      <div class="keybox"><h4>Критерии оценки проекта</h4><p>✓ Программа запускается без ошибок · ✓ Решает задачу, которую задумал · ✓ Есть комментарии и понятные имена · ✓ Оба в паре объясняют любую строку · ★ Бонус за «фишку» сверх задания.</p></div>
+
+      <div class="task"><span class="task-tag">🏆 Финальный проект года</span><h4>Сделай то, чем будешь гордиться</h4>
+        <p>Это твоя главная работа за год. Вложись, добавь свою идею, доведи до конца. Через год ты откроешь этот код и удивишься, как много уже умел.</p>
+        <p class="pair">Помогайте друг другу — но каждый должен понимать весь код.</p></div>
+
+      <div class="home" style="background:linear-gradient(135deg,#0050C8,#1E74F0);">
+        <h3>🎓 Ты прошёл весь курс!</h3>
+        <p style="font-size:15px;margin:0 0 10px;opacity:.95;">За год ты прошёл путь от «что такое команда» до собственных программ и игр. Ты умеешь: переменные, условия, циклы, списки, словари, функции, файлы, графику, обработку ошибок. Это настоящий фундамент программиста.</p>
+        <div class="star"><b>★ Что дальше:</b> продолжай! Придумывай проекты, изучай новое. Python — только начало. Ты уже программист.</div></div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+  <!-- ПРИЛОЖЕНИЕ 1 — ШПАРГАЛКА -->
+  
+<div class="page">
+    <div class="app-head"><div class="an">Приложение 1</div><h2>📋 Шпаргалка по Python</h2></div>
+    <div class="body">
+      <p style="color:var(--muted);font-size:14px;">Всё, что прошли за год, на одной странице. Держи под рукой, когда пишешь код.</p>
+
+      <div class="cheat">
+        <div class="cc"><div class="cch">Вывод и ввод</div><pre><span class="cm"># показать на экране</span>
+print("Привет")
+<span class="cm"># спросить (вернёт текст!)</span>
+name = input("Имя: ")
+<span class="cm"># спросить число</span>
+n = int(input("Число: "))</pre></div>
+        <div class="cc"><div class="cch">Переменные и числа</div><pre>age = 15          <span class="cm"># число</span>
+name = "Али"      <span class="cm"># текст</span>
+x + y   x - y     <span class="cm"># + -</span>
+x * y   x / y     <span class="cm"># * /</span>
+x % y             <span class="cm"># остаток</span></pre></div>
+        <div class="cc"><div class="cch">Условия</div><pre>if age >= 18:
+    print("взрослый")
+elif age >= 12:
+    print("подросток")
+else:
+    print("ребёнок")
+<span class="cm"># == сравнить, = положить</span></pre></div>
+        <div class="cc"><div class="cch">Циклы</div><pre><span class="cm"># повторить 5 раз</span>
+for i in range(5):
+    print(i)
+<span class="cm"># пока условие верно</span>
+while x < 10:
+    x = x + 1</pre></div>
+        <div class="cc"><div class="cch">Списки</div><pre>fruits = ["яблоко", "банан"]
+fruits[0]          <span class="cm"># первый</span>
+fruits[-1]         <span class="cm"># последний</span>
+fruits.append("x") <span class="cm"># добавить</span>
+len(fruits)        <span class="cm"># сколько</span></pre></div>
+        <div class="cc"><div class="cch">Словари</div><pre>ages = {"Али": 15, "Мади": 14}
+ages["Али"]        <span class="cm"># найти</span>
+ages["Сафар"] = 16 <span class="cm"># добавить</span>
+ages.get("X", "нет")</pre></div>
+        <div class="cc"><div class="cch">Строки</div><pre>word = "памир"
+len(word)          <span class="cm"># длина</span>
+word[0]            <span class="cm"># буква</span>
+word.upper()       <span class="cm"># ЗАГЛАВНЫЕ</span>
+"а" in word        <span class="cm"># есть ли</span>
+word.split()       <span class="cm"># на слова</span></pre></div>
+        <div class="cc"><div class="cch">Функции</div><pre>def summa(a, b):
+    return a + b
+
+x = summa(2, 3)    <span class="cm"># x = 5</span></pre></div>
+        <div class="cc"><div class="cch">Файлы</div><pre>f = open("f.txt", "w")
+f.write("текст\n")
+f.close()
+<span class="cm"># чтение: "r", дописать: "a"</span></pre></div>
+        <div class="cc"><div class="cch">Защита от ошибок</div><pre>try:
+    n = int(input())
+except:
+    print("не число!")</pre></div>
+      </div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+  <!-- ПРИЛОЖЕНИЕ 2 — ГЛОССАРИЙ -->
+  
+<div class="page">
+    <div class="app-head"><div class="an">Приложение 2</div><h2>📖 Словарь терминов</h2></div>
+    <div class="body">
+      <p style="color:var(--muted);font-size:14px;">Простыми словами — все понятия, которые встретились за год.</p>
+      <div class="gloss">
+        <div class="gr"><div class="gt">Программа</div><div class="gd">Список команд для компьютера, которые он выполняет по порядку.</div></div>
+        <div class="gr"><div class="gt">Переменная</div><div class="gd">Подписанный «ящик» для хранения значения. Кладёшь по имени, достаёшь по имени.</div></div>
+        <div class="gr"><div class="gt">Строка</div><div class="gd">Текст в кавычках. «привет», «Худжанд» — это строки.</div></div>
+        <div class="gr"><div class="gt">Число</div><div class="gd">То, с чем можно считать. Бывает целым (15) и дробным (3.14).</div></div>
+        <div class="gr"><div class="gt">Условие</div><div class="gd">Проверка «если … иначе …», по которой программа выбирает действие (if / else).</div></div>
+        <div class="gr"><div class="gt">Цикл</div><div class="gd">Повторение команд: for (по счёту) или while (пока условие верно).</div></div>
+        <div class="gr"><div class="gt">Список</div><div class="gd">Много значений в одном ящике, пронумерованных с нуля. В квадратных скобках [ ].</div></div>
+        <div class="gr"><div class="gt">Словарь</div><div class="gd">Пары «ключ — значение». Ищешь по ключу-имени, а не по номеру. В фигурных скобках { }.</div></div>
+        <div class="gr"><div class="gt">Функция</div><div class="gd">Своя команда с именем, созданная через def. Описал раз — вызываешь сколько нужно.</div></div>
+        <div class="gr"><div class="gt">Аргумент</div><div class="gd">Данные, которые передаёшь функции при вызове: summa(2, 3) — тут 2 и 3.</div></div>
+        <div class="gr"><div class="gt">return</div><div class="gd">Слово, которым функция отдаёт результат наружу, чтобы его можно было использовать.</div></div>
+        <div class="gr"><div class="gt">Файл</div><div class="gd">Место, где данные хранятся и после закрытия программы. Открывают через open.</div></div>
+        <div class="gr"><div class="gt">Модуль</div><div class="gd">Набор готовых команд, который подключают словом import. Например, turtle, random.</div></div>
+        <div class="gr"><div class="gt">Отступ</div><div class="gd">4 пробела перед командой. Показывает, что она внутри if, цикла или функции.</div></div>
+        <div class="gr"><div class="gt">Ошибка (Error)</div><div class="gd">Сообщение Python о проблеме в коде. Не провал, а подсказка, что и где поправить.</div></div>
+      </div>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+  <!-- ПРИЛОЖЕНИЕ 3 — ОТВЕТЫ -->
+  
+<div class="page">
+    <div class="app-head"><div class="an">Приложение 3</div><h2>✅ Ответы к заданиям</h2></div>
+    <div class="body">
+      <p style="color:var(--muted);font-size:14px;">Подсказки и готовые решения заданий в паре. Загляни сюда, только если застрял — сначала попробуй сам!</p>
+
+      <div class="ans">
+        <div class="al">Часть 1 — Первые программы</div>
+        <div class="aq"><b>Урок 2 · Магазинный чек</b>
+<pre><span class="af">price</span> = <span class="af">int</span>(<span class="af">input</span>(<span class="as">"Цена: "</span>))
+<span class="af">count</span> = <span class="af">int</span>(<span class="af">input</span>(<span class="as">"Количество: "</span>))
+<span class="af">print</span>(<span class="as">"Итого:"</span>, price * count, <span class="as">"сомони"</span>)</pre></div>
+        <div class="aq"><b>Урок 3 · Больше из двух</b>
+<pre>a = <span class="af">int</span>(<span class="af">input</span>(<span class="as">"Первое: "</span>))
+b = <span class="af">int</span>(<span class="af">input</span>(<span class="as">"Второе: "</span>))
+<span class="ak">if</span> a &gt; b:
+    <span class="af">print</span>(a)
+<span class="ak">else</span>:
+    <span class="af">print</span>(b)</pre></div>
+        <div class="aq"><b>Урок 5 · Сумма от 1 до 100</b>
+<pre>total = <span class="anum">0</span>
+<span class="ak">for</span> i <span class="ak">in</span> <span class="af">range</span>(<span class="anum">1</span>, <span class="anum">101</span>):
+    total = total + i
+<span class="af">print</span>(total)   <span class="acm"># 5050</span></pre></div>
+      </div>
+
+      <div class="ans">
+        <div class="al">Часть 2 — Структуры и функции</div>
+        <div class="aq"><b>Урок 9 · Магазинная корзина</b>
+<pre>prices = [<span class="anum">12</span>, <span class="anum">45</span>, <span class="anum">8</span>, <span class="anum">30</span>, <span class="anum">15</span>]
+<span class="af">print</span>(<span class="as">"Всего:"</span>, <span class="af">sum</span>(prices))
+<span class="af">print</span>(<span class="as">"Дороже всего:"</span>, <span class="af">max</span>(prices))</pre></div>
+        <div class="aq"><b>Урок 11 · Калькулятор на функциях</b>
+<pre><span class="ak">def</span> <span class="af">summa</span>(a, b):
+    <span class="ak">return</span> a + b
+<span class="ak">def</span> <span class="af">raznost</span>(a, b):
+    <span class="ak">return</span> a - b
+
+x = <span class="af">int</span>(<span class="af">input</span>(<span class="as">"a: "</span>))
+y = <span class="af">int</span>(<span class="af">input</span>(<span class="as">"b: "</span>))
+<span class="af">print</span>(<span class="af">summa</span>(x, y), <span class="af">raznost</span>(x, y))</pre></div>
+      </div>
+
+      <div class="ans">
+        <div class="al">Часть 3 — Графика и файлы</div>
+        <div class="aq"><b>Урок 15 · Треугольник</b>
+<pre><span class="ak">import</span> turtle
+t = turtle.<span class="af">Turtle</span>()
+<span class="ak">for</span> i <span class="ak">in</span> <span class="af">range</span>(<span class="anum">3</span>):
+    t.<span class="af">forward</span>(<span class="anum">100</span>)
+    t.<span class="af">left</span>(<span class="anum">120</span>)
+turtle.<span class="af">done</span>()</pre></div>
+        <div class="aq"><b>Урок 16 · Пятиугольник</b>
+<pre><span class="ak">for</span> i <span class="ak">in</span> <span class="af">range</span>(<span class="anum">5</span>):
+    t.<span class="af">forward</span>(<span class="anum">80</span>)
+    t.<span class="af">right</span>(<span class="anum">72</span>)   <span class="acm"># 360 / 5 = 72</span></pre></div>
+      </div>
+
+      <div class="ans">
+        <div class="al">Часть 4 — Данные</div>
+        <div class="aq"><b>Урок 24 · Анализатор предложения</b>
+<pre>text = <span class="af">input</span>(<span class="as">"Предложение: "</span>)
+words = text.<span class="af">split</span>()
+<span class="af">print</span>(<span class="as">"Всего слов:"</span>, <span class="af">len</span>(words))
+<span class="af">print</span>(<span class="as">"Разных:"</span>, <span class="af">len</span>(<span class="af">set</span>(words)))</pre></div>
+        <div class="aq"><b>Урок 25 · Надёжный калькулятор</b>
+<pre><span class="ak">try</span>:
+    a = <span class="af">int</span>(<span class="af">input</span>(<span class="as">"a: "</span>))
+    b = <span class="af">int</span>(<span class="af">input</span>(<span class="as">"b: "</span>))
+    <span class="af">print</span>(a / b)
+<span class="ak">except</span>:
+    <span class="af">print</span>(<span class="as">"Ошибка: проверь ввод!"</span>)</pre></div>
+      </div>
+
+      <p style="margin-top:20px;padding:14px 18px;background:var(--sand-wash);border-radius:10px;font-size:13.5px;color:#7A5326;">💡 Остальные задания решаются по этим образцам. Если не получается — вернись к соответствующему уроку и перечитай раздел «Разбираем код».</p>
+    </div>
+    <div class="foot"><span>Основы программирования на Python · 9 класс</span><span class="brand">Эсхата Академия</span></div>
+  </div>
+
+
+</body>
+</html>
