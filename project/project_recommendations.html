@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Рекомендации по проектам — стартовый код и план</title>
+<style>
+  :root{
+    --indigo:#312e81; --indigo-2:#4338ca; --violet:#7c3aed; --cyan:#0891b2;
+    --cyan-soft:#e0f2fe; --violet-soft:#f3e8ff;
+    --ink:#1e1b2e; --muted:#5b5670; --line:#d9d5e6;
+    --ok:#0f766e; --ok-bg:#d1fae5; --warn:#b45309; --warn-bg:#fef3c7;
+    --bad:#b91c1c; --bad-bg:#fee2e2;
+    --code-bg:#f6f4fd; --code-c:#7a869a;
+  }
+  *{box-sizing:border-box;}
+  body{font-family:Calibri,"Segoe UI",sans-serif;color:var(--ink);margin:0;background:#eceaf3;line-height:1.5;}
+  .page{background:#fff;width:210mm;min-height:297mm;margin:14px auto;padding:15mm 14mm;box-shadow:0 2px 14px rgba(49,46,129,.14);}
+  code,.mono{font-family:Consolas,"Courier New",monospace;}
+
+  .head{border-left:6px solid var(--violet);padding-left:15px;margin-bottom:18px;}
+  .kicker{font-size:11pt;letter-spacing:2px;text-transform:uppercase;color:var(--cyan);font-weight:700;margin:0 0 4px;}
+  h1{font-size:24pt;margin:0 0 6px;color:var(--indigo);line-height:1.15;}
+  .sub{color:var(--muted);font-size:12pt;margin:0;}
+
+  h2.section{font-size:17pt;color:var(--indigo);border-bottom:3px solid var(--violet);padding-bottom:6px;margin:0 0 14px;}
+  h3.step{font-size:13pt;color:var(--indigo-2);margin:16px 0 6px;}
+
+  .note{background:var(--cyan-soft);border:1px solid #bae6fd;border-radius:12px;padding:13px 15px;font-size:11pt;margin:12px 0;}
+  .note b{color:var(--indigo);}
+
+  pre.code{
+    font-family:Consolas,monospace;font-size:9pt;line-height:1.45;
+    background:var(--code-bg);border:1px solid #e3def7;border-left:4px solid var(--violet);
+    border-radius:8px;padding:11px 13px;overflow-x:auto;margin:8px 0 4px;white-space:pre-wrap;
+  }
+  pre.code .c{color:var(--code-c);}       /* комментарий */
+  pre.code .k{color:var(--violet);}       /* ключевое */
+  pre.code .s{color:var(--cyan);}         /* строка */
+
+  ol.plan{margin:6px 0 6px 20px;padding:0;font-size:11pt;}
+  ol.plan li{margin-bottom:3px;}
+
+  /* project cards */
+  .card{border:1px solid var(--line);border-radius:14px;margin-bottom:14px;overflow:hidden;page-break-inside:avoid;}
+  .card-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 15px;
+    background:linear-gradient(90deg,var(--indigo),var(--indigo-2));color:#fff;}
+  .card-head .who{font-size:13pt;font-weight:700;}
+  .card-head .who small{display:block;font-weight:400;font-size:9pt;color:#c7d2fe;letter-spacing:.5px;}
+  .status{font-size:9pt;font-weight:700;white-space:nowrap;padding:4px 10px;border-radius:20px;}
+  .status.ok{background:var(--ok-bg);color:var(--ok);}
+  .status.warn{background:var(--warn-bg);color:var(--warn);}
+  .status.bad{background:var(--bad-bg);color:var(--bad);}
+  .card-body{padding:12px 15px;}
+  .meta{display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;font-size:10.5pt;margin:8px 0 2px;}
+  .meta .k{font-size:8pt;letter-spacing:1px;text-transform:uppercase;color:var(--cyan);font-weight:700;}
+  .meta .v code{background:#f1eefc;padding:1px 5px;border-radius:5px;color:var(--violet);font-size:9.5pt;}
+  .err{background:var(--warn-bg);border-radius:8px;padding:8px 11px;font-size:10.5pt;margin-top:9px;}
+  .err b{color:var(--warn);}
+  .par{background:var(--violet-soft);border-radius:8px;padding:8px 11px;font-size:10.5pt;margin-top:7px;}
+  .par b{color:var(--violet);}
+
+  .footer{margin-top:18px;padding-top:11px;border-top:1px solid var(--line);font-size:9pt;color:var(--muted);text-align:center;}
+  @media print{
+    body{background:#fff;}
+    .page{box-shadow:none;margin:0;width:auto;min-height:auto;page-break-after:always;padding:11mm;}
+    .page:last-child{page-break-after:auto;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ PAGE 1: COVER + UNIVERSAL RECIPE ============ -->
+<section class="page">
+  <div class="head">
+    <p class="kicker">Курс ML · Фаза 4 · помощь по проектам</p>
+    <h1>Рекомендации по проектам:<br>бери и делай</h1>
+    <p class="sub">Универсальный скелет кода — один на всех. Дальше на каждый проект: готовая загрузка данных, план и что подставить.</p>
+  </div>
+
+  <div class="note">
+    <b>Логика любого проекта одинаковая:</b> загрузил данные → выбрал цель (<code>TARGET</code>) → разделил train/test →
+    сделал <b>baseline</b> → собрал <b>Pipeline</b> → посчитал метрику → обернул в Gradio.
+    Меняется только <b>две строчки</b>: чем грузишь данные и что предсказываешь. Всё остальное — из скелета ниже.
+  </div>
+
+  <h2 class="section">Скелет №1 — регрессия (предсказываем число)</h2>
+  <pre class="code"><span class="c"># === 1. Библиотеки ===</span>
+<span class="k">import</span> pandas <span class="k">as</span> pd
+<span class="k">from</span> sklearn.model_selection <span class="k">import</span> train_test_split
+<span class="k">from</span> sklearn.pipeline <span class="k">import</span> Pipeline
+<span class="k">from</span> sklearn.compose <span class="k">import</span> ColumnTransformer
+<span class="k">from</span> sklearn.preprocessing <span class="k">import</span> StandardScaler, OneHotEncoder
+<span class="k">from</span> sklearn.dummy <span class="k">import</span> DummyRegressor
+<span class="k">from</span> sklearn.ensemble <span class="k">import</span> RandomForestRegressor
+<span class="k">from</span> sklearn.metrics <span class="k">import</span> mean_absolute_error
+
+<span class="c"># === 2. Данные — ЭТИ ДВЕ СТРОЧКИ меняешь под свой проект (см. карточку) ===</span>
+df = ...                       <span class="c"># загрузка из карточки проекта</span>
+TARGET = <span class="s">"..."</span>              <span class="c"># что предсказываем</span>
+
+X = df.drop(columns=[TARGET])  <span class="c"># признаки</span>
+y = df[TARGET]                 <span class="c"># цель</span>
+
+<span class="c"># === 3. Сами определяем, какие столбцы числовые, какие текстовые ===</span>
+num = X.select_dtypes(include=<span class="s">"number"</span>).columns.tolist()
+cat = X.select_dtypes(exclude=<span class="s">"number"</span>).columns.tolist()
+
+<span class="c"># === 4. Делим на обучение и тест. random_state=42 — стандарт курса ===</span>
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42)
+
+<span class="c"># === 5. BASELINE: тупая модель «всегда среднее». С ней сравниваем ===</span>
+dummy = DummyRegressor(strategy=<span class="s">"mean"</span>)
+dummy.fit(X_train, y_train)
+<span class="k">print</span>(<span class="s">"Baseline MAE:"</span>, mean_absolute_error(y_test, dummy.predict(X_test)))
+
+<span class="c"># === 6. PIPELINE: вся предобработка + модель в одном объекте ===</span>
+pre = ColumnTransformer([
+    (<span class="s">"num"</span>, StandardScaler(), num),
+    (<span class="s">"cat"</span>, OneHotEncoder(handle_unknown=<span class="s">"ignore"</span>), cat),
+])
+model = Pipeline([(<span class="s">"pre"</span>, pre), (<span class="s">"rf"</span>, RandomForestRegressor(random_state=42))])
+model.fit(X_train, y_train)
+<span class="k">print</span>(<span class="s">"Модель MAE:"</span>, mean_absolute_error(y_test, model.predict(X_test)))
+<span class="c"># Цель: MAE модели ДОЛЖЕН быть меньше baseline — иначе модель бесполезна</span></pre>
+
+  <h2 class="section" style="margin-top:18px;">Скелет №2 — классификация (предсказываем класс)</h2>
+  <p class="sub" style="font-size:10.5pt;margin-bottom:6px;">Тот же скелет, но меняем 3 импорта и метрику:</p>
+  <pre class="code"><span class="k">from</span> sklearn.dummy <span class="k">import</span> DummyClassifier
+<span class="k">from</span> sklearn.ensemble <span class="k">import</span> RandomForestClassifier
+<span class="k">from</span> sklearn.metrics <span class="k">import</span> accuracy_score, f1_score
+
+dummy = DummyClassifier(strategy=<span class="s">"most_frequent"</span>)   <span class="c"># baseline: всегда частый класс</span>
+<span class="c"># ...в Pipeline вместо RandomForestRegressor -> RandomForestClassifier...</span>
+pred = model.predict(X_test)
+<span class="k">print</span>(<span class="s">"Accuracy:"</span>, accuracy_score(y_test, pred))
+<span class="k">print</span>(<span class="s">"F1-macro:"</span>, f1_score(y_test, pred, average=<span class="s">"macro"</span>))  <span class="c"># одной Accuracy мало!</span></pre>
+
+  <div class="footer">Стандарты: <code>random_state=42</code> везде · Pipeline обязателен · метрики только из реального прогона.</div>
+</section>
+
+<!-- ============ PAGE 2: TEXT SKELETON + GRADIO ============ -->
+<section class="page">
+  <h2 class="section">Скелет №3 — текст (спам / отзывы)</h2>
+  <p class="sub" style="font-size:10.5pt;margin-bottom:6px;">Для проектов с текстом ColumnTransformer не нужен — вместо него TF-IDF:</p>
+  <pre class="code"><span class="k">from</span> sklearn.feature_extraction.text <span class="k">import</span> TfidfVectorizer
+<span class="k">from</span> sklearn.linear_model <span class="k">import</span> LogisticRegression
+<span class="k">from</span> sklearn.dummy <span class="k">import</span> DummyClassifier
+<span class="k">from</span> sklearn.metrics <span class="k">import</span> f1_score
+
+X = df[<span class="s">"text"</span>]          <span class="c"># колонка с текстом</span>
+y = df[<span class="s">"label"</span>]         <span class="c"># метка</span>
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42)
+
+<span class="c"># TF-IDF превращает текст в числа, LogReg — учится на них</span>
+model = Pipeline([
+    (<span class="s">"tfidf"</span>, TfidfVectorizer()),
+    (<span class="s">"clf"</span>, LogisticRegression(max_iter=1000)),
+])
+model.fit(X_train, y_train)
+<span class="k">print</span>(<span class="s">"F1:"</span>, f1_score(y_test, model.predict(X_test), pos_label=<span class="s">"spam"</span>))</pre>
+
+  <h2 class="section" style="margin-top:20px;">Gradio — веб-интерфейс для защиты</h2>
+  <p class="sub" style="font-size:10.5pt;margin-bottom:6px;">Один шаблон. Входы подставляешь из своей карточки.</p>
+  <pre class="code"><span class="k">import</span> gradio <span class="k">as</span> gr
+
+<span class="k">def</span> predict(a, b, c):
+    row = pd.DataFrame([{<span class="s">"признак1"</span>: a, <span class="s">"признак2"</span>: b, <span class="s">"признак3"</span>: c}])
+    <span class="k">return</span> model.predict(row)[0]
+
+gr.Interface(
+    fn=predict,
+    inputs=[gr.Number(label=<span class="s">"Признак 1"</span>),
+            gr.Number(label=<span class="s">"Признак 2"</span>),
+            gr.Textbox(label=<span class="s">"Признак 3"</span>)],
+    outputs=<span class="s">"text"</span>,
+).launch()   <span class="c"># в Colab даёт ссылку — по ней проект открывает родитель</span></pre>
+
+  <div class="note">
+    <b>Правило защиты:</b> живое демо в Gradio, с которым <b>родитель сам</b> нажимает кнопку, — сильнее любого слайда.
+    Готовьте так, чтобы можно было ввести свои значения и получить предсказание за 3 секунды.
+  </div>
+
+  <div class="note" style="background:var(--warn-bg);border-color:#fcd34d;">
+    <b>hugging face pipeline (строчная) ≠ sklearn Pipeline (заглавная).</b> В финальных проектах у нас
+    именно <code>sklearn.pipeline.Pipeline</code> — обучаемая модель. Обёртка над готовым API моделью не считается.
+  </div>
+
+  <div class="footer">Дальше — карточки проектов. Каждому ученику — его страница + три скелета выше.</div>
+</section>
+
+<!-- ============ PAGE 3: PROJECTS 1–3 ============ -->
+<section class="page">
+  <h2 class="section">Проекты 1–3</h2>
+
+  <!-- 1 -->
+  <div class="card">
+    <div class="card-head"><span class="who">AI-прогноз оценки ученика<small>Muhammad Musaev · регрессия</small></span><span class="status warn">СВОИ ДАННЫЕ</span></div>
+    <div class="card-body">
+      <pre class="code"><span class="c"># Публикуешь таблицу класса: Файл -> Поделиться -> Опубликовать -> CSV</span>
+url = <span class="s">"ВСТАВЬ_ССЫЛКУ_CSV"</span>
+df = pd.read_csv(url)
+TARGET = <span class="s">"final_grade"</span>
+<span class="c"># В признаках ТОЛЬКО ранние данные: посещаемость + первые 1-2 работы</span></pre>
+      <div class="meta">
+        <div><span class="k">Метрика</span><div class="v">MAE</div></div>
+        <div><span class="k">Gradio</span><div class="v">посещаемость + ранние оценки → прогноз</div></div>
+      </div>
+      <div class="err"><b>Ошибка именно здесь:</b> если подать оценки, из которых складывается итог, — это <b>утечка данных</b>, MAE≈0 и модель бессмысленна. Только ранние данные! (Отличный момент показать классу утечку вживую.)</div>
+      <div class="par"><b>Родителям:</b> «покажу, реально ли уже по началу семестра предсказать итоговую оценку».</div>
+    </div>
+  </div>
+
+  <!-- 2 -->
+  <div class="card">
+    <div class="card-head"><span class="who">Ценовой класс смартфона<small>Turmsek · классификация</small></span><span class="status ok">ГОТОВ</span></div>
+    <div class="card-body">
+      <pre class="code"><span class="c"># Kaggle: "Mobile Price Classification" -> скачай train.csv</span>
+<span class="k">from</span> google.colab <span class="k">import</span> files
+files.upload()                 <span class="c"># выбери train.csv</span>
+df = pd.read_csv(<span class="s">"train.csv"</span>)
+TARGET = <span class="s">"price_range"</span>       <span class="c"># классы 0,1,2,3</span></pre>
+      <div class="meta">
+        <div><span class="k">Метрика</span><div class="v">Accuracy + F1-macro</div></div>
+        <div><span class="k">Gradio</span><div class="v">RAM, батарея, камера… → класс</div></div>
+      </div>
+      <div class="err"><b>Ошибка именно здесь:</b> считать это регрессией и мерить <code>MAE</code>. Это <b>классификация</b> → Accuracy/F1. Используй Скелет №2.</div>
+      <div class="par"><b>Родителям:</b> «по характеристикам угадываю ценовую категорию телефона».</div>
+    </div>
+  </div>
+
+  <!-- 3 -->
+  <div class="card">
+    <div class="card-head"><span class="who">Проект «В» (бывший Ai-Помощник)<small>регрессия — смена жанра</small></span><span class="status bad">ПЕРЕДЕЛКА</span></div>
+    <div class="card-body">
+      <pre class="code"><span class="c"># Лучший вариант — пара с Turmsek (см. #10): берёшь цену техники.</span>
+<span class="c"># Датасет "Laptop Price" (Kaggle) -> laptop_price.csv</span>
+files.upload()
+df = pd.read_csv(<span class="s">"laptop_price.csv"</span>, encoding=<span class="s">"latin-1"</span>)
+TARGET = <span class="s">"Price_euros"</span></pre>
+      <div class="meta">
+        <div><span class="k">Метрика</span><div class="v">MAE</div></div>
+        <div><span class="k">Gradio</span><div class="v">RAM, экран, бренд → цена</div></div>
+      </div>
+      <div class="err"><b>Ошибка именно здесь:</b> остаться обёрткой над LLM — тогда нет ни baseline, ни Pipeline, и по рубрике 0 баллов за модель. Нужна <b>обучаемая</b> модель на таблице.</div>
+      <div class="par"><b>Родителям:</b> «предсказываю справедливую цену ноутбука по его железу».</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PAGE 4: PROJECTS 4–6 ============ -->
+<section class="page">
+  <h2 class="section">Проекты 4–6</h2>
+
+  <!-- 4 -->
+  <div class="card">
+    <div class="card-head"><span class="who">Прогноз по бойцу UFC<small>Okilov · классификация (рекоменд.)</small></span><span class="status warn">ВЫБРАТЬ ЦЕЛЬ</span></div>
+    <div class="card-body">
+      <pre class="code"><span class="c"># Kaggle "UFC" -> data.csv</span>
+files.upload()
+df = pd.read_csv(<span class="s">"data.csv"</span>)
+<span class="c"># Рекомендую классификацию: победит боец красного угла или нет</span>
+df = df[df[<span class="s">"Winner"</span>].isin([<span class="s">"Red"</span>, <span class="s">"Blue"</span>])]
+TARGET = <span class="s">"Winner"</span></pre>
+      <div class="meta">
+        <div><span class="k">Метрика</span><div class="v">Accuracy + F1</div></div>
+        <div><span class="k">Gradio</span><div class="v">статы бойца → исход</div></div>
+      </div>
+      <div class="err"><b>Ошибка именно здесь:</b> расплывчатый таргет «очки». Зафиксируй <b>одну</b> цель: исход боя (классификация) или конкретное число (напр. significant strikes) — регрессия.</div>
+      <div class="par"><b>Родителям:</b> «по статистике бойцов предсказываю исход поединка».</div>
+    </div>
+  </div>
+
+  <!-- 5 -->
+  <div class="card">
+    <div class="card-head"><span class="who">Прогноз погоды<small>Akbar · регрессия</small></span><span class="status warn">УБРАТЬ LIVE-API</span></div>
+    <div class="card-body">
+      <pre class="code"><span class="c"># Чистый исторический датасет — без live API</span>
+!pip -q install vega_datasets
+<span class="k">from</span> vega_datasets <span class="k">import</span> data
+df = data.seattle_weather()
+df[<span class="s">"temp_max_tomorrow"</span>] = df[<span class="s">"temp_max"</span>].shift(-1)  <span class="c"># цель — макс. темп. ЗАВТРА</span>
+df = df.dropna().drop(columns=[<span class="s">"date"</span>, <span class="s">"weather"</span>])
+TARGET = <span class="s">"temp_max_tomorrow"</span></pre>
+      <div class="meta">
+        <div><span class="k">Метрика</span><div class="v">MAE</div></div>
+        <div><span class="k">Baseline ★</span><div class="v">«завтра = сегодня»</div></div>
+      </div>
+      <div class="err"><b>Ошибка именно здесь:</b> прогноз «в открытое будущее» из API — это временные ряды, рано. Свели к обычной регрессии: <b>признаки сегодня → значение завтра</b>.</div>
+      <div class="par"><b>Родителям:</b> «по сегодняшней погоде предсказываю завтрашнюю температуру».</div>
+    </div>
+  </div>
+
+  <!-- 6 -->
+  <div class="card">
+    <div class="card-head"><span class="who">TG BOT Аъзамчон<small>AM · текст — смена жанра</small></span><span class="status bad">ПЕРЕДЕЛКА</span></div>
+    <div class="card-body">
+      <pre class="code"><span class="c"># Готовый датасет спама (грузится без Kaggle). Проверено — работает.</span>
+url = <span class="s">"https://raw.githubusercontent.com/justmarkham/"</span> \
+      <span class="s">"pycon-2016-tutorial/master/data/sms.tsv"</span>
+df = pd.read_csv(url, sep=<span class="s">"\t"</span>, header=None, names=[<span class="s">"label"</span>, <span class="s">"text"</span>])
+TARGET = <span class="s">"label"</span>            <span class="c"># ham / spam</span></pre>
+      <div class="meta">
+        <div><span class="k">Метрика</span><div class="v">F1 (Скелет №3)</div></div>
+        <div><span class="k">Gradio</span><div class="v">текст → метка + вероятность</div></div>
+      </div>
+      <div class="err"><b>Ошибка именно здесь:</b> остаться обёрткой над Kimi API. Теперь модель <b>сама учится</b> на размеченных текстах — тема мошенничества сохраняется.</div>
+      <div class="par"><b>Родителям:</b> «модель сама научилась отличать спам/накрутку по тексту — покажу на живом примере».</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PAGE 5: PROJECTS 7–8 ============ -->
+<section class="page">
+  <h2 class="section">Проекты 7–8</h2>
+
+  <!-- 7 -->
+  <div class="card">
+    <div class="card-head"><span class="who">Прогноз цены на жильё<small>Нозанин · регрессия</small></span><span class="status ok">ГОТОВ</span></div>
+    <div class="card-body">
+      <pre class="code"><span class="c"># Датасет уже внутри sklearn — грузится одной строкой, без скачивания</span>
+<span class="k">from</span> sklearn.datasets <span class="k">import</span> fetch_california_housing
+df = fetch_california_housing(as_frame=True).frame
+TARGET = <span class="s">"MedHouseVal"</span>     <span class="c"># медианная цена дома</span>
+<span class="c"># Boston НЕ берём — удалён из sklearn по этическим причинам</span></pre>
+      <div class="meta">
+        <div><span class="k">Метрика</span><div class="v">MAE / RMSE</div></div>
+        <div><span class="k">Gradio</span><div class="v">доход района, возраст домов… → цена</div></div>
+      </div>
+      <div class="err"><b>Ошибка именно здесь:</b> взять устаревший Boston Housing или забыть <code>StandardScaler</code>. Скелет №1 закрывает и то, и другое.</div>
+      <div class="par"><b>Родителям:</b> «предсказываю цену дома по характеристикам района». (Идеальный первый проект — данные чистые.)</div>
+    </div>
+  </div>
+
+  <!-- 8 -->
+  <div class="card">
+    <div class="card-head"><span class="who">Прогноз времени на домашку<small>Muhammadsharif · регрессия</small></span><span class="status warn">СОБРАТЬ ДАННЫЕ</span></div>
+    <div class="card-body">
+      <pre class="code"><span class="c"># Замеры собираем ВСЕМ классом в одну таблицу (нужно 200+ строк)</span>
+url = <span class="s">"ВСТАВЬ_ССЫЛКУ_CSV"</span>
+df = pd.read_csv(url)
+TARGET = <span class="s">"minutes"</span>          <span class="c"># сколько минут делал</span>
+<span class="c"># признаки: предмет, объём (задач/страниц), день недели</span></pre>
+      <div class="meta">
+        <div><span class="k">Метрика</span><div class="v">MAE</div></div>
+        <div><span class="k">Gradio</span><div class="v">предмет + объём → минуты</div></div>
+      </div>
+      <div class="err"><b>Ошибка именно здесь:</b> один ученик соберёт 20–30 строк — модель не обучится. Данные собираем <b>всем классом</b> в общую Google-таблицу.</div>
+      <div class="par"><b>Родителям:</b> «планировщик, который реально считает, сколько времени займёт домашка».</div>
+    </div>
+  </div>
+
+  <div class="note" style="margin-top:18px;">
+    <b>Совет по проектам «свои данные» (#1 и #8):</b> заведите общую Google-таблицу заранее, на этом же занятии.
+    Пока данные не собраны — ученик работает по Скелету №1 на любом готовом датасете (например Palmer Penguins),
+    чтобы отладить код, а потом просто подменит загрузку.
+  </div>
+</section>
+
+<!-- ============ PAGE 6: PROJECTS 9–10 ============ -->
+<section class="page">
+  <h2 class="section">Проекты 9–10</h2>
+
+  <!-- 9 -->
+  <div class="card">
+    <div class="card-head"><span class="who">Цена подержанной машины<small>участник #9 · регрессия</small></span><span class="status ok">ГОТОВ</span></div>
+    <div class="card-body">
+      <pre class="code"><span class="c"># Kaggle "Used Cars" -> cars.csv</span>
+files.upload()
+df = pd.read_csv(<span class="s">"cars.csv"</span>)
+TARGET = <span class="s">"price"</span>
+df = df.drop(columns=[<span class="s">"id"</span>], errors=<span class="s">"ignore"</span>)   <span class="c"># мусорные столбцы убрать</span></pre>
+      <div class="meta">
+        <div><span class="k">Метрика</span><div class="v">MAE / RMSE</div></div>
+        <div><span class="k">Gradio</span><div class="v">год, пробег, марка → цена</div></div>
+      </div>
+      <div class="err"><b>Ошибка именно здесь:</b> оставить <code>id</code> или текстовые столбцы с сотнями уникальных значений — OneHot раздуется. Убери лишнее, марку/топливо оставь.</div>
+      <div class="par"><b>Родителям:</b> «оцениваю справедливую цену б/у авто — можно проверить на нашей машине».</div>
+    </div>
+  </div>
+
+  <!-- 10 -->
+  <div class="card">
+    <div class="card-head"><span class="who">Turmsek + В — техника<small>#10 · разделить на двоих</small></span><span class="status warn">РАЗДЕЛИТЬ</span></div>
+    <div class="card-body">
+      <div class="meta" style="grid-template-columns:1fr;">
+        <div><span class="k">Turmsek</span><div class="v">классификация ценового класса смартфона = проект #2</div></div>
+        <div><span class="k">В</span><div class="v">регрессия цены техники = проект #3 (закрывает провальный Ai-Помощник)</div></div>
+        <div><span class="k">Общее</span><div class="v">у каждого свой <code>Pipeline</code>, свой baseline, своя метрика</div></div>
+      </div>
+      <div class="err"><b>Ошибка именно здесь:</b> делать две ML-задачи в одном проекте. <b>Разделите между партнёрами</b> — каждый обучает и защищает свою модель.</div>
+      <div class="par"><b>Родителям:</b> «две разные модели: одна угадывает класс телефона, другая — цену техники».</div>
+    </div>
+  </div>
+
+  <div class="note" style="margin-top:20px;">
+    <b>Единый порядок сдачи для всех.</b> Проект готов к защите, когда в ноутбуке по порядку идут:
+    загрузка данных → train/test → <b>baseline</b> → <b>Pipeline</b> → метрика (лучше baseline) → интерпретация (важность признаков / confusion matrix) → <b>Gradio</b> → README.
+    Без baseline и Pipeline потолок оценки ≈ 14/20.
+  </div>
+
+  <div class="footer">Каждому ученику: эта карточка + страницы со скелетами 1–3. Живое демо в Gradio — обязательно.</div>
+</section>
+
+</body>
+</html>

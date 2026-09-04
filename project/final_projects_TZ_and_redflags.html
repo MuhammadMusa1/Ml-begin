@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Финальные проекты — ТЗ учеников и чек-лист защиты</title>
+<style>
+  :root{
+    --indigo:#312e81;
+    --indigo-2:#4338ca;
+    --violet:#7c3aed;
+    --cyan:#0891b2;
+    --cyan-soft:#e0f2fe;
+    --violet-soft:#f3e8ff;
+    --ink:#1e1b2e;
+    --muted:#5b5670;
+    --line:#d9d5e6;
+    --ok:#0f766e;
+    --ok-bg:#d1fae5;
+    --warn:#b45309;
+    --warn-bg:#fef3c7;
+    --bad:#b91c1c;
+    --bad-bg:#fee2e2;
+    --paper:#ffffff;
+  }
+  *{box-sizing:border-box;}
+  body{
+    font-family:Calibri,"Segoe UI",sans-serif;
+    color:var(--ink);
+    margin:0;
+    background:#eceaf3;
+    line-height:1.5;
+  }
+  .page{
+    background:var(--paper);
+    width:210mm;
+    min-height:297mm;
+    margin:14px auto;
+    padding:16mm 15mm;
+    box-shadow:0 2px 14px rgba(49,46,129,.14);
+  }
+  code, .mono{font-family:Consolas,"Courier New",monospace;}
+
+  /* ---------- Cover / header ---------- */
+  .cover-head{
+    border-left:6px solid var(--violet);
+    padding-left:16px;
+    margin-bottom:22px;
+  }
+  .kicker{
+    font-size:11pt;letter-spacing:2px;text-transform:uppercase;
+    color:var(--cyan);font-weight:700;margin:0 0 4px;
+  }
+  h1{font-size:26pt;margin:0 0 6px;color:var(--indigo);line-height:1.15;}
+  .sub{color:var(--muted);font-size:12pt;margin:0;}
+
+  .legend{
+    display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 4px;
+  }
+  .lg{
+    display:flex;align-items:center;gap:8px;
+    border:1px solid var(--line);border-radius:10px;
+    padding:7px 12px;font-size:10.5pt;background:#fbfaff;
+  }
+  .dot{width:14px;height:14px;border-radius:50%;display:inline-block;}
+  .dot.ok{background:var(--ok);}
+  .dot.warn{background:var(--warn);}
+  .dot.bad{background:var(--bad);}
+
+  .howto{
+    margin-top:16px;background:var(--cyan-soft);
+    border:1px solid #bae6fd;border-radius:12px;padding:14px 16px;
+    font-size:11pt;
+  }
+  .howto b{color:var(--indigo);}
+
+  /* ---------- Student cards ---------- */
+  h2.section{
+    font-size:18pt;color:var(--indigo);
+    border-bottom:3px solid var(--violet);
+    padding-bottom:6px;margin:0 0 16px;
+  }
+  .card{
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:0;
+    margin-bottom:14px;
+    overflow:hidden;
+    page-break-inside:avoid;
+  }
+  .card-head{
+    display:flex;align-items:center;justify-content:space-between;
+    gap:10px;padding:11px 16px;
+    background:linear-gradient(90deg,var(--indigo),var(--indigo-2));
+    color:#fff;
+  }
+  .card-head .who{font-size:13.5pt;font-weight:700;}
+  .card-head .who small{
+    display:block;font-weight:400;font-size:9.5pt;
+    color:#c7d2fe;letter-spacing:.5px;
+  }
+  .status{
+    font-size:9.5pt;font-weight:700;white-space:nowrap;
+    padding:5px 11px;border-radius:20px;
+    display:flex;align-items:center;gap:7px;
+  }
+  .status.ok{background:var(--ok-bg);color:var(--ok);}
+  .status.warn{background:var(--warn-bg);color:var(--warn);}
+  .status.bad{background:var(--bad-bg);color:var(--bad);}
+
+  .grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:0;
+  }
+  .cell{
+    padding:9px 16px;
+    border-top:1px solid var(--line);
+    font-size:10.5pt;
+  }
+  .cell:nth-child(odd){border-right:1px solid var(--line);}
+  .cell .k{
+    font-size:8.5pt;letter-spacing:1px;text-transform:uppercase;
+    color:var(--cyan);font-weight:700;margin-bottom:1px;
+  }
+  .cell .v{color:var(--ink);}
+  .cell .v code{
+    background:#f1eefc;padding:1px 5px;border-radius:5px;
+    font-size:9.5pt;color:var(--violet);
+  }
+  .fix{
+    padding:10px 16px;border-top:1px solid var(--line);
+    background:#fbf7ef;font-size:10.5pt;
+  }
+  .fix.badfix{background:var(--bad-bg);}
+  .fix .k{
+    font-size:8.5pt;letter-spacing:1px;text-transform:uppercase;
+    color:var(--warn);font-weight:700;margin-bottom:1px;
+  }
+  .fix.badfix .k{color:var(--bad);}
+
+  /* ---------- Red flags ---------- */
+  .flag{
+    border:1px solid var(--line);border-left:5px solid var(--bad);
+    border-radius:10px;padding:12px 16px;margin-bottom:11px;
+    page-break-inside:avoid;
+  }
+  .flag h3{
+    margin:0 0 4px;font-size:12.5pt;color:var(--ink);
+    display:flex;align-items:flex-start;gap:9px;
+  }
+  .flag h3 .cb{
+    flex:none;width:16px;height:16px;border:2px solid var(--violet);
+    border-radius:4px;margin-top:2px;
+  }
+  .flag .why{font-size:10.5pt;color:var(--muted);margin:2px 0 6px 25px;}
+  .flag .check{
+    font-size:10.5pt;margin-left:25px;
+    background:var(--violet-soft);border-radius:8px;padding:7px 11px;
+  }
+  .flag .check b{color:var(--violet);}
+  .flag .check code{
+    font-family:Consolas,monospace;background:#fff;
+    padding:1px 5px;border-radius:5px;color:var(--indigo);font-size:9.5pt;
+  }
+
+  .footer{
+    margin-top:20px;padding-top:12px;border-top:1px solid var(--line);
+    font-size:9.5pt;color:var(--muted);text-align:center;
+  }
+
+  @media print{
+    body{background:#fff;}
+    .page{box-shadow:none;margin:0;width:auto;min-height:auto;
+      page-break-after:always;padding:12mm;}
+    .page:last-child{page-break-after:auto;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= PAGE 1: COVER + LEGEND ================= -->
+<section class="page">
+  <div class="cover-head">
+    <p class="kicker">Курс Machine Learning · Фаза 4 · Demo Day</p>
+    <h1>Финальные проекты:<br>ТЗ учеников</h1>
+    <p class="sub">Одна карточка — один проект. Задача · датасет · таргет · метрика · baseline · Pipeline · Gradio · что исправить.</p>
+  </div>
+
+  <div class="legend">
+    <span class="lg"><span class="dot ok"></span> Готов — дать датасет и не мешать</span>
+    <span class="lg"><span class="dot warn"></span> Жизнеспособен после 1 правки</span>
+    <span class="lg"><span class="dot bad"></span> Требует смены жанра</span>
+  </div>
+
+  <div class="howto">
+    <b>Как пользоваться.</b> Раздайте каждому ученику его карточку. Проект допускается к защите только когда закрыты все поля:
+    выбран конкретный <b>датасет</b> (не «данные из интернета»), назван числовой/классовый <b>таргет</b>,
+    метрика соответствует типу задачи, есть <b>baseline</b> (модель <code class="mono">Dummy…</code>) и обёрнутый
+    <code class="mono">sklearn Pipeline</code>. Без baseline и Pipeline потолок оценки ≈ 14/20.
+  </div>
+
+  <div style="margin-top:22px;">
+    <h2 class="section">Быстрая карта группы</h2>
+    <div class="card" style="page-break-inside:avoid;">
+      <div class="grid" style="grid-template-columns:1fr;">
+        <div class="cell" style="border-right:none;"><span class="dot ok"></span> &nbsp;#2 Смартфон · #7 Жильё · #9 Машина &nbsp;→&nbsp; классические табличные задачи, эталонные проекты</div>
+        <div class="cell" style="border-right:none;"><span class="dot warn"></span> &nbsp;#1 Оценки · #4 UFC · #5 Погода · #8 Домашка &nbsp;→&nbsp; идея живая, но нужно закрыть ровно одну дыру</div>
+        <div class="cell" style="border-right:none;"><span class="dot bad"></span> &nbsp;#3 Ai-Помощник · #6 TG BOT &nbsp;→&nbsp; сейчас это обёртка над чужим API, обучаемой модели нет</div>
+      </div>
+    </div>
+    <p class="sub" style="font-size:10.5pt;margin-top:10px;">
+      💡 Карточка #10 (Turmsek + В) закрывает провальный «Ai-Помощник»: посадите В в пару на реальную табличную задачу.
+    </p>
+  </div>
+
+  <div class="footer">Стандарты курса: <code>random_state=42</code> везде · <code>sklearn Pipeline</code> обязателен с урока 10 · метрики только из реального прогона, без хардкода.</div>
+</section>
+
+<!-- ================= PAGE 2: CARDS 1–3 ================= -->
+<section class="page">
+  <h2 class="section">Карточки-ТЗ · 1–3</h2>
+
+  <!-- 1 -->
+  <div class="card">
+    <div class="card-head">
+      <span class="who">AI-прогноз оценки ученика<small>Muhammad Musaev · #1</small></span>
+      <span class="status warn">● ПОЧТИ ГОТОВ</span>
+    </div>
+    <div class="grid">
+      <div class="cell"><div class="k">Тип задачи</div><div class="v">Регрессия</div></div>
+      <div class="cell"><div class="k">Метрика</div><div class="v">MAE</div></div>
+      <div class="cell"><div class="k">Что предсказываем</div><div class="v">Итоговую оценку по данным <b>первой половины</b> курса</div></div>
+      <div class="cell"><div class="k">Датасет</div><div class="v">Свой (посещаемость + первые 2–3 работы) или UCI Student Performance</div></div>
+      <div class="cell"><div class="k">Baseline</div><div class="v"><code>DummyRegressor(strategy="mean")</code></div></div>
+      <div class="cell"><div class="k">Pipeline</div><div class="v">StandardScaler + OneHot → LinearRegression</div></div>
+      <div class="cell"><div class="k">Gradio</div><div class="v">посещаемость + ранние оценки → прогноз итога</div></div>
+      <div class="cell"><div class="k">Уровень ★</div><div class="v">RandomForest + важность признаков</div></div>
+    </div>
+    <div class="fix">
+      <div class="k">Что исправить</div>
+      Не подавать в признаки то, из чего складывается итог — иначе <b>утечка данных</b> и «MAE≈0» пустышкой.
+      Разбор этой ловушки на защите — сильнейший момент по теме data leakage.
+    </div>
+  </div>
+
+  <!-- 2 -->
+  <div class="card">
+    <div class="card-head">
+      <span class="who">Ценовой класс смартфона<small>Turmsek · #2</small></span>
+      <span class="status ok">● ГОТОВ</span>
+    </div>
+    <div class="grid">
+      <div class="cell"><div class="k">Тип задачи</div><div class="v">Классификация (4 класса)</div></div>
+      <div class="cell"><div class="k">Метрика</div><div class="v">Accuracy + F1-macro</div></div>
+      <div class="cell"><div class="k">Что предсказываем</div><div class="v"><code>price_range</code> 0–3</div></div>
+      <div class="cell"><div class="k">Датасет</div><div class="v">Kaggle «Mobile Price Classification»</div></div>
+      <div class="cell"><div class="k">Baseline</div><div class="v"><code>DummyClassifier("most_frequent")</code></div></div>
+      <div class="cell"><div class="k">Pipeline</div><div class="v">StandardScaler → LogisticRegression</div></div>
+      <div class="cell"><div class="k">Gradio</div><div class="v">RAM, батарея, камера… → ценовой класс</div></div>
+      <div class="cell"><div class="k">Уровень ★</div><div class="v">GridSearchCV, confusion matrix</div></div>
+    </div>
+    <div class="fix">
+      <div class="k">Что исправить</div>
+      В карточке указана метрика <b>MAE</b> — это метрика регрессии. Заменить на <b>Accuracy / F1</b>.
+    </div>
+  </div>
+
+  <!-- 3 -->
+  <div class="card">
+    <div class="card-head">
+      <span class="who">Ai-Помощник<small>В · #3</small></span>
+      <span class="status bad">● СМЕНИТЬ ЖАНР</span>
+    </div>
+    <div class="grid">
+      <div class="cell"><div class="k">Проблема</div><div class="v">Это обёртка над LLM: нет baseline, нет Pipeline, модель не обучается</div></div>
+      <div class="cell"><div class="k">По рубрике</div><div class="v">0 из 7 «модельных» баллов — жанр не тот</div></div>
+      <div class="cell"><div class="k">Решение А</div><div class="v">Пара с Turmsek (см. #10): В берёт регрессию цены техники</div></div>
+      <div class="cell"><div class="k">Решение Б</div><div class="v">Любая своя табличная задача из «зелёных»</div></div>
+    </div>
+    <div class="fix badfix">
+      <div class="k">Что исправить</div>
+      Идея помощника — хорошая, но не финальный ML-проект. Нужна <b>обучаемая модель</b> на табличных/текстовых данных.
+      Проще всего — закрепить пару с Turmsek.
+    </div>
+  </div>
+</section>
+
+<!-- ================= PAGE 3: CARDS 4–6 ================= -->
+<section class="page">
+  <h2 class="section">Карточки-ТЗ · 4–6</h2>
+
+  <!-- 4 -->
+  <div class="card">
+    <div class="card-head">
+      <span class="who">Прогноз очков игрока UFC<small>Okilov · #4</small></span>
+      <span class="status warn">● ПОЧТИ ГОТОВ</span>
+    </div>
+    <div class="grid">
+      <div class="cell"><div class="k">Тип задачи</div><div class="v">Регрессия <i>или</i> классификация — выбрать одно</div></div>
+      <div class="cell"><div class="k">Метрика</div><div class="v">MAE (регр.) / F1 (класс.)</div></div>
+      <div class="cell"><div class="k">Что предсказываем</div><div class="v">Significant strikes за бой (число) <b>или</b> исход боя (win/loss)</div></div>
+      <div class="cell"><div class="k">Датасет</div><div class="v">Kaggle «UFC Fight Data»</div></div>
+      <div class="cell"><div class="k">Baseline</div><div class="v"><code>DummyRegressor</code> / <code>DummyClassifier</code></div></div>
+      <div class="cell"><div class="k">Pipeline</div><div class="v">Scaler + OneHot(весовая категория) → модель</div></div>
+      <div class="cell"><div class="k">Gradio</div><div class="v">статы бойца → прогноз</div></div>
+      <div class="cell"><div class="k">Уровень ★</div><div class="v">сравнить 2 модели по метрике</div></div>
+    </div>
+    <div class="fix">
+      <div class="k">Что исправить</div>
+      «Очки» в UFC — размытый таргет. Зафиксировать <b>одну конкретную числовую цель</b> либо перейти в классификацию, иначе застрянет на «а что предсказываем».
+    </div>
+  </div>
+
+  <!-- 5 -->
+  <div class="card">
+    <div class="card-head">
+      <span class="who">Прогноз погоды<small>Akbar · #5</small></span>
+      <span class="status warn">● ПОЧТИ ГОТОВ</span>
+    </div>
+    <div class="grid">
+      <div class="cell"><div class="k">Тип задачи</div><div class="v">Регрессия (свести с time-series)</div></div>
+      <div class="cell"><div class="k">Метрика</div><div class="v">MAE</div></div>
+      <div class="cell"><div class="k">Что предсказываем</div><div class="v">Температуру <b>завтра</b> по признакам сегодня (или «дождь: да/нет»)</div></div>
+      <div class="cell"><div class="k">Датасет</div><div class="v">Статичный CSV (Kaggle «Seattle Weather»), <b>не live API</b></div></div>
+      <div class="cell"><div class="k">Baseline</div><div class="v"><code>DummyRegressor("mean")</code> + «завтра = сегодня»</div></div>
+      <div class="cell"><div class="k">Pipeline</div><div class="v">StandardScaler → регрессор</div></div>
+      <div class="cell"><div class="k">Gradio</div><div class="v">показатели сегодня → прогноз на завтра</div></div>
+      <div class="cell"><div class="k">Уровень ★</div><div class="v">сравнить с baseline-persistence</div></div>
+    </div>
+    <div class="fix">
+      <div class="k">Что исправить</div>
+      Прогноз в «открытое будущее» из API — это временные ряды, рано. Свести к обычной регрессии на историческом CSV: <b>признаки дня → значение следующего дня</b>.
+    </div>
+  </div>
+
+  <!-- 6 -->
+  <div class="card">
+    <div class="card-head">
+      <span class="who">TG BOT Аъзамчон<small>AM · #6</small></span>
+      <span class="status bad">● СМЕНИТЬ ЖАНР</span>
+    </div>
+    <div class="grid">
+      <div class="cell"><div class="k">Проблема</div><div class="v">Сейчас — обёртка над Kimi API, обучаемой модели нет</div></div>
+      <div class="cell"><div class="k">Новый тип</div><div class="v">Текстовая классификация</div></div>
+      <div class="cell"><div class="k">Что предсказываем</div><div class="v">Отзыв настоящий / накрученный (или спам / не спам)</div></div>
+      <div class="cell"><div class="k">Датасет</div><div class="v">Kaggle «Fake Reviews» или «SMS Spam»</div></div>
+      <div class="cell"><div class="k">Метрика</div><div class="v">F1</div></div>
+      <div class="cell"><div class="k">Pipeline</div><div class="v"><code>TfidfVectorizer → LogisticRegression</code></div></div>
+      <div class="cell"><div class="k">Baseline</div><div class="v"><code>DummyClassifier</code></div></div>
+      <div class="cell"><div class="k">Gradio</div><div class="v">текст отзыва → метка + вероятность</div></div>
+    </div>
+    <div class="fix badfix">
+      <div class="k">Что исправить</div>
+      Тема мошенничества сохраняется, но модель теперь <b>учится сама</b> на размеченных текстах. Это ляжет прямо в блок LLM/NLP курса.
+    </div>
+  </div>
+</section>
+
+<!-- ================= PAGE 4: CARDS 7–10 ================= -->
+<section class="page">
+  <h2 class="section">Карточки-ТЗ · 7–10</h2>
+
+  <!-- 7 -->
+  <div class="card">
+    <div class="card-head">
+      <span class="who">Прогноз цены на жильё<small>Нозанин · #7</small></span>
+      <span class="status ok">● ГОТОВ</span>
+    </div>
+    <div class="grid">
+      <div class="cell"><div class="k">Тип задачи</div><div class="v">Регрессия</div></div>
+      <div class="cell"><div class="k">Метрика</div><div class="v">MAE / RMSE</div></div>
+      <div class="cell"><div class="k">Что предсказываем</div><div class="v">Медианную цену дома в районе</div></div>
+      <div class="cell"><div class="k">Датасет</div><div class="v"><code>fetch_california_housing</code> — <b>не Boston</b></div></div>
+      <div class="cell"><div class="k">Baseline</div><div class="v"><code>DummyRegressor("mean")</code></div></div>
+      <div class="cell"><div class="k">Pipeline</div><div class="v">StandardScaler → LinearRegression</div></div>
+      <div class="cell"><div class="k">Gradio</div><div class="v">признаки района → прогноз цены</div></div>
+      <div class="cell"><div class="k">Уровень ★</div><div class="v">RandomForest + важность признаков</div></div>
+    </div>
+    <div class="fix">
+      <div class="k">Что исправить</div>
+      Заполнить описание карточки. Boston Housing не брать (удалён из sklearn по этическим причинам — заодно тема для 2-минутного обсуждения на защите).
+    </div>
+  </div>
+
+  <!-- 8 -->
+  <div class="card">
+    <div class="card-head">
+      <span class="who">Прогноз времени на домашку<small>Muhammadsharif · #8</small></span>
+      <span class="status warn">● ПОЧТИ ГОТОВ</span>
+    </div>
+    <div class="grid">
+      <div class="cell"><div class="k">Тип задачи</div><div class="v">Регрессия</div></div>
+      <div class="cell"><div class="k">Метрика</div><div class="v">MAE</div></div>
+      <div class="cell"><div class="k">Что предсказываем</div><div class="v">Минуты на задание</div></div>
+      <div class="cell"><div class="k">Датасет</div><div class="v"><b>Общая Google-таблица класса</b> (замеры всех)</div></div>
+      <div class="cell"><div class="k">Baseline</div><div class="v"><code>DummyRegressor("mean")</code></div></div>
+      <div class="cell"><div class="k">Pipeline</div><div class="v">OneHot(предмет) + Scaler(объём) → регрессор</div></div>
+      <div class="cell"><div class="k">Gradio</div><div class="v">предмет + объём → минуты</div></div>
+      <div class="cell"><div class="k">Уровень ★</div><div class="v">добавить признак «день недели»</div></div>
+    </div>
+    <div class="fix">
+      <div class="k">Что исправить</div>
+      Один ученик соберёт 20–30 строк — модель не обучится. Решение: <b>весь класс скидывает замеры в одну таблицу</b> (200+ строк). Отличный кейс «личные данные» для вовлечения.
+    </div>
+  </div>
+
+  <!-- 9 -->
+  <div class="card">
+    <div class="card-head">
+      <span class="who">Цена подержанной машины<small>участник #9</small></span>
+      <span class="status ok">● ГОТОВ</span>
+    </div>
+    <div class="grid">
+      <div class="cell"><div class="k">Тип задачи</div><div class="v">Регрессия</div></div>
+      <div class="cell"><div class="k">Метрика</div><div class="v">MAE / RMSE</div></div>
+      <div class="cell"><div class="k">Что предсказываем</div><div class="v">Цену авто</div></div>
+      <div class="cell"><div class="k">Датасет</div><div class="v">Kaggle «Used Cars»</div></div>
+      <div class="cell"><div class="k">Baseline</div><div class="v"><code>DummyRegressor("mean")</code></div></div>
+      <div class="cell"><div class="k">Pipeline</div><div class="v">OneHot(марка, топливо) + Scaler(пробег, год) → RandomForest</div></div>
+      <div class="cell"><div class="k">Gradio</div><div class="v">параметры авто → цена</div></div>
+      <div class="cell"><div class="k">Уровень ★</div><div class="v">лог-преобразование цены</div></div>
+    </div>
+    <div class="fix">
+      <div class="k">Что исправить</div>
+      Заполнить пустое описание карточки и зафиксировать конкретный датасет. Образцовый проект — дальше просто не мешать.
+    </div>
+  </div>
+
+  <!-- 10 -->
+  <div class="card">
+    <div class="card-head">
+      <span class="who">Цена товара техники + класс смартфона<small>Turmsek + В · #10</small></span>
+      <span class="status warn">● РАЗДЕЛИТЬ</span>
+    </div>
+    <div class="grid">
+      <div class="cell"><div class="k">Проблема</div><div class="v">Две задачи в одном + дубль #2</div></div>
+      <div class="cell"><div class="k">Turmsek</div><div class="v">Классификация класса смартфона (= #2)</div></div>
+      <div class="cell"><div class="k">В</div><div class="v">Регрессия цены техники (закрывает #3)</div></div>
+      <div class="cell"><div class="k">Метрики</div><div class="v">F1 (класс.) / MAE (регр.) — раздельно</div></div>
+      <div class="cell"><div class="k">Общее</div><div class="v">оба — sklearn Pipeline + свой baseline</div></div>
+    </div>
+    <div class="fix">
+      <div class="k">Что исправить</div>
+      Не делать две ML-задачи в одном проекте. <b>Разделить между партнёрами</b>: каждый защищает свою модель. Пара закрывает и #2, и провальный #3.
+    </div>
+  </div>
+</section>
+
+<!-- ================= PAGE 5: RED FLAGS ================= -->
+<section class="page">
+  <div class="cover-head" style="border-color:var(--bad);">
+    <p class="kicker" style="color:var(--bad);">Перед защитой · Demo Day</p>
+    <h1 style="color:var(--bad);">Красные флаги</h1>
+    <p class="sub">Пройдите по списку с каждым учеником накануне защиты. Хотя бы один незакрытый пункт роняет оценку.</p>
+  </div>
+
+  <div class="flag">
+    <h3><span class="cb"></span> Нет baseline</h3>
+    <div class="why">Не с чем сравнить модель — непонятно, «умная» она или просто угадала частый ответ.</div>
+    <div class="check"><b>Проверка:</b> в коде есть <code>DummyRegressor</code> / <code>DummyClassifier</code>, и метрика модели <b>лучше</b> baseline.</div>
+  </div>
+
+  <div class="flag">
+    <h3><span class="cb"></span> Метрика не по типу задачи</h3>
+    <div class="why">MAE для классификации или Accuracy для регрессии — классическая путаница (см. карточку #2).</div>
+    <div class="check"><b>Проверка:</b> регрессия → MAE/RMSE; классификация → Accuracy + F1. Одной Accuracy на несбалансированных классах <b>мало</b>.</div>
+  </div>
+
+  <div class="flag">
+    <h3><span class="cb"></span> Проверка на обучающих данных</h3>
+    <div class="why">Модель «отвечает» на то, что уже видела — метрика завышена и врёт.</div>
+    <div class="check"><b>Проверка:</b> есть <code>train_test_split(..., random_state=42)</code>, метрика считается на <b>test</b>.</div>
+  </div>
+
+  <div class="flag">
+    <h3><span class="cb"></span> Утечка данных (data leakage)</h3>
+    <div class="why">Признак содержит ответ (или таргет входит в фичи) — «MAE≈0», а на реальных данных провал. См. #1.</div>
+    <div class="check"><b>Проверка:</b> ни один признак не вычисляется из таргета; будущая информация не попадает в прошлое.</div>
+  </div>
+
+  <div class="flag">
+    <h3><span class="cb"></span> Нет sklearn Pipeline</h3>
+    <div class="why">Ручной препроцессинг «протекает» с train на test — обязателен с урока 10.</div>
+    <div class="check"><b>Проверка:</b> весь препроцессинг + модель внутри одного <code>Pipeline</code>; <code>.fit()</code> только на train.</div>
+  </div>
+
+  <div class="flag">
+    <h3><span class="cb"></span> Прогноз «в открытое будущее»</h3>
+    <div class="why">Задача незаметно становится временным рядом — рано для финального проекта. См. #5.</div>
+    <div class="check"><b>Проверка:</b> таргет известен для каждой строки датасета; предсказываем «следующий шаг», а не абстрактное завтра.</div>
+  </div>
+
+  <div class="flag">
+    <h3><span class="cb"></span> Крошечный датасет (&lt;100 строк)</h3>
+    <div class="why">Модель переобучается, метрики скачут от запуска к запуску. См. #8.</div>
+    <div class="check"><b>Проверка:</b> ≥100–200 строк; если данные свои — собраны всем классом.</div>
+  </div>
+
+  <div class="flag">
+    <h3><span class="cb"></span> Хардкод чисел в презентации</h3>
+    <div class="why">Метрики вписаны руками, а не получены из реального прогона — на вопрос «покажи код» проект рушится.</div>
+    <div class="check"><b>Проверка:</b> каждая цифра в слайдах воспроизводится запуском ноутбука при жюри.</div>
+  </div>
+
+  <div class="flag">
+    <h3><span class="cb"></span> Нет интерпретации результата</h3>
+    <div class="why">«Модель работает» — недостаточно. Нужно объяснить, <b>где</b> и <b>почему</b> ошибается.</div>
+    <div class="check"><b>Проверка:</b> есть важность признаков / confusion matrix и 2–3 фразы «что это значит».</div>
+  </div>
+
+  <div class="flag">
+    <h3><span class="cb"></span> Нет README и живого демо</h3>
+    <div class="why">Родители реагируют на работающий Gradio, а не на слайды. Это сильнейший момент защиты.</div>
+    <div class="check"><b>Проверка:</b> есть README (задача/данные/как запустить) и Gradio, с которым <b>родитель сам</b> может повзаимодействовать.</div>
+  </div>
+
+  <div class="footer">Финальный проект: 18–20 «Отлично» · 15–17 «Хорошо» · 12–14 «Зачёт» · &lt;12 доработка. Без baseline и Pipeline потолок ≈ 14.</div>
+</section>
+
+</body>
+</html>
